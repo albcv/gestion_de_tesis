@@ -1,0 +1,47 @@
+.entidades{
+
+    margin-top: 60px;
+    margin-left: 650px;
+    width: 450px;
+   
+  
+ 
+}
+
+
+.entidades li{
+    display: block;
+    margin-top: 30px;
+   
+  
+}
+
+.entidades a{
+   color: #000;
+   font-weight: bold;
+   
+}
+
+
+
+@media(max-width: 780px){
+
+
+.entidades li{
+    display: block;
+    margin-left: -550px;
+    
+  
+}
+
+#i3, #i4{
+   position: absolute;
+   top: 1500px;
+
+
+
+}
+
+}
+
+

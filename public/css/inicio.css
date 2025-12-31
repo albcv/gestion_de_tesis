@@ -1,0 +1,23 @@
+#i1, #i4{
+
+    height: 200px;
+    width: 300px;
+}
+
+@media(max-width: 780px){
+    #i1, #i4{
+    height: 100px;
+    width: 200px;
+    }
+
+    #i1{
+        margin-left: 150px;
+    }
+
+    .bienvenido{
+        width: 800px;
+        margin-left: 300px;
+    }
+
+  
+}

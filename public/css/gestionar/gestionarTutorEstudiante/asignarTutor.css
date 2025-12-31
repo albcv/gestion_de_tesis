@@ -1,0 +1,521 @@
+
+.asignar-tutor-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Encabezado del formulario */
+.form-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-top: 20px;
+}
+
+.form-header h1 {
+    color: #000;
+    margin: 0 0 10px 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.form-header .subtitle {
+    color: #222;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Información del estudiante */
+.info-estudiante {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    border-top: 4px solid #28a745;
+}
+
+.info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.info-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: #000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-badge {
+    background: #d4edda;
+    color: #155724;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid #c3e6cb;
+}
+
+.info-badge-warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.info-label {
+    font-size: 0.9rem;
+    color: #222;
+    font-weight: 500;
+}
+
+.info-value {
+    font-size: 1rem;
+    color: #000;
+    font-weight: 600;
+}
+
+/* Lista de tutores actuales */
+.tutores-actuales {
+    grid-column: 1 / -1;
+}
+
+.lista-tutores-actual {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.tutor-actual-item {
+    padding: 12px 15px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #28a745;
+}
+
+.tutor-actual-nombre {
+    display: block;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 5px;
+}
+
+.tutor-actual-info {
+    font-size: 0.9rem;
+    color: #222;
+}
+
+/* Contenedor del formulario */
+.form-container {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+}
+
+.form-asignar {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Grupo de formulario */
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #000;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.label-hint {
+    font-size: 0.85rem;
+    color: #222;
+    font-weight: normal;
+    margin-left: 5px;
+}
+
+/* Select personalizado */
+.select-profesor {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #030;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #000;
+    background-color: white;
+    transition: all 0.3s;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px 12px;
+}
+
+.select-profesor:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.15);
+}
+
+.select-profesor option {
+    padding: 10px;
+}
+
+/* Vista previa del profesor */
+.profesor-preview {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #28a745;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.profesor-preview h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #155724;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.profesor-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+/* Sin datos */
+.no-data {
+    padding: 25px;
+    text-align: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px dashed #dee2e6;
+}
+
+.no-data p {
+    margin: 8px 0;
+    color: #222;
+}
+
+/* Alertas */
+.alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+.alert-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* Botones */
+.form-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eaeaea;
+}
+
+.btn-cancelar, .btn-asignar {
+    padding: 12px 30px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    border: none;
+    min-width: 160px;
+}
+
+.btn-cancelar {
+    background-color: #222;
+    color: #fff;
+}
+
+.btn-cancelar:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-asignar {
+    background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+    color: white;
+}
+
+.btn-asignar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+}
+
+.btn-asignar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Mensaje de límite alcanzado */
+.max-tutores-alcanzado {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.max-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #ffc107;
+}
+
+.max-tutores-alcanzado h3 {
+    color: #000;
+    margin-bottom: 15px;
+}
+
+.max-tutores-alcanzado p {
+    color: #222;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.btn-volver-estudiante {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px;
+    background-color: #222;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-volver-estudiante:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+}
+
+/* Profesores disponibles */
+.profesores-disponibles {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+}
+
+.profesores-disponibles h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #000;
+    font-size: 1.3rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.table-profesores {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    min-width: 600px;
+}
+
+.table-profesores th {
+    background: #f8f9fa;
+    color: #495057;
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+    white-space: nowrap;
+}
+
+.table-profesores td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eaeaea;
+    color: #000;
+    transition: background-color 0.2s ease;
+}
+
+.table-profesores tr:last-child td {
+    border-bottom: none;
+}
+
+.table-profesores tr:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.table-profesores tr.selected {
+    background-color: #e8f5e9;
+    border-left: 3px solid #28a745;
+}
+
+.tutorados-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-width: 28px;
+    text-align: center;
+}
+
+.badge-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.badge-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+/* Botón Volver ajustado para header/sidebar */
+.btn-volver {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #222;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 100;
+}
+
+.btn-volver:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* Estilo para mensajes de error del formulario */
+.error-message {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: #f8d7da;
+    border-radius: 4px;
+    border-left: 4px solid #dc3545;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .info-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .info-badge {
+        align-self: flex-start;
+    }
+    
+    .form-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-cancelar, .btn-asignar {
+        width: 100%;
+        min-width: unset;
+    }
+    
+    .btn-volver {
+        position: relative;
+        top: 0;
+        left: 0;
+        margin-bottom: 20px;
+        align-self: flex-start;
+    }
+
+    .asignar-tutor-container{
+        margin-left: 300px;
+    }
+}

@@ -1,0 +1,15 @@
+.entidades{
+
+    margin-left: 640px;
+
+ 
+}
+
+@media(max-width: 780px){
+    .entidades{
+       
+        margin-left: 500px;
+    }
+
+
+}

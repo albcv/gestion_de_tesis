@@ -1,0 +1,25 @@
+form{
+    width: 500px;
+}
+
+#departamento{
+    width: 250px;
+}
+
+#campo_departamento{
+     margin-left: -30px;
+}
+
+@media(max-width: 780px){
+
+
+
+    table{
+        margin-top: 150px;
+    }
+
+    h1{
+        margin-left: -60px;
+    }
+
+}

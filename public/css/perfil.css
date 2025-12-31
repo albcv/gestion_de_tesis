@@ -1,0 +1,24 @@
+.perfil-info {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    width: 25%;
+    margin-left: 37%;
+    margin-top: 2%;
+    font-size: 18px;
+}
+
+.campo {
+    margin: 20px 0;
+    display: flex;
+}
+
+.campo label {
+    font-weight: bold;
+    width: 150px;
+}
+
+.campo span {
+    color: #333;
+}
+

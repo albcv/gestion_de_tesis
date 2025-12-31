@@ -1,0 +1,40 @@
+.entidades{
+
+    margin-left: 550px;
+    
+ 
+}
+
+
+
+
+
+h1{
+    text-align: center;
+}
+
+
+@media(max-width: 780px){
+    .entidades{
+        margin-top: 100px;
+        margin-left: 460px;
+    }
+
+    .entidades li{
+    display: block;
+    margin-left: -170px;
+    
+}
+
+#i4{
+    top: 720px;
+}
+
+h1{
+    margin-left: -250px;
+}
+
+
+
+
+}

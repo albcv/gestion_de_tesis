@@ -1,0 +1,142 @@
+.contenedor_botones{
+
+    position: absolute;
+    right: 30px;
+    top: 150px;
+    height: 280px;
+    width: 380px;
+    padding: 20px;
+    border-color: black;
+    font-weight: bold;
+    font-size: 20px;
+
+
+}
+
+button{
+    font-size: 20px;
+    padding: 15px;
+    border: none;
+    margin: 10px;
+    margin-top: 20px;
+    margin-left: 50px;
+ 
+    
+}
+
+button:hover{
+    cursor: pointer;
+}
+
+
+#b1{
+ 
+    background-color: #0f0;
+}
+
+#b2, #b6{
+    margin-left: 60px;
+    color: #fff;
+    background-color: #f00;
+}
+
+#b3{
+    background-color: #ff0;
+}
+
+#b4{
+    background-color:brown;
+    color: #fff;
+}
+
+#b5{
+   
+    background-color: #0f0;
+    display: none;
+}
+
+
+
+#b1:hover{
+    outline: 4px solid #0f0;
+}
+
+#b2:hover, #b6:hover{
+    outline: 4px solid #f00;
+}
+
+#b3:hover{
+    outline: 4px solid #ff0;
+}
+
+#b4:hover{
+    outline: 4px solid brown;
+}
+
+#b3, #b4{
+    margin-top: 30px;
+}
+
+
+
+#b5:hover{
+    outline: 4px solid #0f0;
+   
+   
+}
+
+#b6{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+table, td, th{
+
+border: 4px solid #000;
+font-size: 20px;
+background-color: lightgreen;
+
+
+}
+
+td, th{
+    padding: 20px;
+}
+
+table{
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 200px;
+}
+
+tr:hover td{
+    cursor: pointer;
+    background-color: #33f;
+}
+
+tr.seleccionado td{
+    background-color: #33f;
+}
+
+
+@media(max-width: 780px){
+
+.contenedor_botones{
+  
+   position: absolute;
+   left: 820px;
+    
+}
+
+
+
+table{
+    margin-top: 100px;
+    margin-left: 300px;
+  
+
+}
+
+
+}

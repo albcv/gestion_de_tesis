@@ -1,0 +1,97 @@
+#campo_rol{
+    margin-left: 40px;
+}
+
+table{
+    margin-top: 300px;
+    width: 50%;
+    table-layout: fixed;
+    
+}
+
+td{
+    font-size: 22px;
+}
+
+#campo_permisos{
+    margin-top: 50px;
+}
+
+#label_permiso, #label_rol{
+    font-weight: bold;
+    color: #200;
+}
+
+
+.permisos-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+
+
+}
+
+.permiso-item {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+.permiso-checkbox {
+    margin-right: 8px;
+    transform: scale(1.2);
+}
+
+.permiso-label {
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.permiso-checkbox:checked + .permiso-label {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.permisos-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.permiso-badge {
+    display: inline-block;
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin: 2px;
+}
+
+.sin-permisos {
+    color: #f00;
+    font-weight: bold;
+    font-style: italic;
+}
+
+
+
+
+@media(max-width: 780px){
+
+.contenedor_botones{
+    left: 900px;
+}
+
+table{
+    margin-left: 450px;
+}
+
+}

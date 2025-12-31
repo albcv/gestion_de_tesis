@@ -1,0 +1,357 @@
+/* editarTesis.css - Tema verde (#030) */
+
+.editar-tesis-container {
+    max-width: 800px;
+    margin: 20px auto; /* Margen para header y sidebar */
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 51, 0, 0.15);
+    border: 2px solid #030;
+}
+
+.editar-tesis-container h1 {
+    color: #030;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.editar-tesis-container h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(to right, #030, #0a3);
+    border-radius: 2px;
+}
+
+.botones-superiores {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.btn-volver, .btn-ver {
+    background: #030;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-volver:hover, .btn-ver:hover {
+    background: #020;
+    transform: translateX(-5px);
+    color: white;
+}
+
+.btn-ver:hover {
+    transform: translateX(5px);
+}
+
+.informacion-actual {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-left: 4px solid #030;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #030;
+    min-width: 150px;
+}
+
+.info-valor {
+    flex: 1;
+    color: #333;
+    text-align: right;
+}
+
+.no-asignado {
+    color: #dc3545;
+    font-style: italic;
+}
+
+.seccion-formulario {
+    margin-bottom: 30px;
+}
+
+.seccion-formulario h2 {
+    color: #030;
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-left: 10px;
+    border-left: 4px solid #030;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+}
+
+
+
+.campo-formulario {
+    display: flex;
+    flex-direction: column;
+}
+
+.campo-formulario label {
+    color: #030;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.campo-formulario label::after {
+    content: '*';
+    color: #dc3545;
+    font-size: 18px;
+}
+
+.atributo {
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s;
+    background: #f9f9f9;
+    color: #333;
+}
+
+.atributo:focus {
+    outline: none;
+    border-color: #030;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0, 51, 0, 0.1);
+}
+
+.atributo.invalido {
+    border-color: #dc3545;
+    background: #f8d7da;
+}
+
+.ayuda-campo {
+    margin-top: 5px;
+    color: #666;
+    font-size: 13px;
+    font-style: italic;
+}
+
+.seccion-acciones {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #f0f0f0;
+    flex-wrap: wrap;
+}
+
+.btn-guardar {
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 51, 0, 0.2);
+}
+
+.btn-guardar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 51, 0, 0.3);
+}
+
+.btn-cancelar {
+    background: #6c757d;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.btn-cancelar:hover {
+    background: #5a6268;
+    transform: translateY(-3px);
+    color: white;
+}
+
+.btn-eliminar {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+}
+
+.btn-eliminar:hover {
+    background: #c82333;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+/* Animaciones */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.editar-tesis-container {
+    animation: slideIn 0.5s ease-out;
+}
+
+.informacion-actual {
+    animation: slideIn 0.3s ease-out;
+}
+
+.campo-formulario {
+    animation: slideIn 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.campo-formulario:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.campo-formulario:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+/* Estilos para el select */
+.atributo[type="select"] {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23030' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+    padding-right: 40px;
+}
+
+/* Estilos para mensajes de alerta */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 2px solid;
+    animation: slideIn 0.3s ease-out;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.alert-danger ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.alert-danger li {
+    margin-bottom: 5px;
+}
+
+.alert-danger li:last-child {
+    margin-bottom: 0;
+}
+
+
+/* Estilos para estados de focus */
+.atributo:focus {
+    outline: 2px solid #030;
+    outline-offset: 2px;
+}
+
+/* Estilos para botones deshabilitados */
+.btn-guardar:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-guardar:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Estilos para campos con error */
+.campo-error .atributo {
+    border-color: #dc3545;
+    background: #f8d7da;
+}
+
+.campo-error label {
+    color: #dc3545;
+}
+
+@media(max-width: 780px){
+
+.editar-tesis-container {
+    max-width: 800px;
+    margin-left: 300px;
+}
+
+
+
+
+}

@@ -1,0 +1,481 @@
+/* Contenedor de detalles */
+.container-detalles {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-left: 250px; /* Igual que las otras vistas */
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar-collapsed .container-detalles {
+    margin-left: 80px;
+}
+
+/* Header - TEMA VERDE */
+.header-detalles {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #2e7d32;
+}
+
+.header-detalles h1 {
+    color: #030;
+    margin: 0;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.acciones-header {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-volver {
+    background: linear-gradient(135deg, #757575, #616161);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(117, 117, 117, 0.2);
+}
+
+.btn-volver:hover {
+    background: linear-gradient(135deg, #616161, #424242);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(117, 117, 117, 0.3);
+    color: white;
+}
+
+.btn-editar {
+    background: linear-gradient(135deg, #8bc34a, #689f38);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(139, 195, 74, 0.2);
+}
+
+.btn-editar:hover {
+    background: linear-gradient(135deg, #689f38, #558b2f);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(139, 195, 74, 0.3);
+}
+
+/* Tarjeta principal - TEMA VERDE */
+.card-detalles {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(3, 0, 0, 0.08);
+    border: 1px solid #e8f3e8;
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Información principal - TEMA VERDE */
+.seccion-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #edf5ed;
+}
+
+.info-principal h2 {
+    color: #030;
+    margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+.facultad-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.badge-facultad {
+    background: linear-gradient(135deg, #030, #2e7d32);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 4px 10px rgba(46, 125, 50, 0.2);
+}
+
+.facultad-info h3 {
+    color: #030;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.estadisticas {
+    display: flex;
+    gap: 30px;
+}
+
+.estadistica-item {
+    text-align: center;
+    padding: 25px;
+    background: linear-gradient(135deg, #f5f9f5, #e8f3e8);
+    border-radius: 15px;
+    min-width: 160px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.estadistica-item:hover {
+    border-color: #2e7d32;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(46, 125, 50, 0.1);
+}
+
+.estadistica-icono {
+    font-size: 40px;
+    color: #2e7d32;
+    margin-bottom: 15px;
+}
+
+.estadistica-valor {
+    display: block;
+    font-size: 32px;
+    font-weight: 800;
+    color: #030;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.estadistica-label {
+    color: #757575;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* Secciones de detalle - TEMA VERDE */
+.seccion-detalle {
+    margin-bottom: 40px;
+    padding: 30px;
+    background: linear-gradient(135deg, #f5f9f5, #e8f3e8);
+    border-radius: 15px;
+    border: 2px solid #dce7dc;
+}
+
+.seccion-detalle:last-child {
+    margin-bottom: 0;
+}
+
+.seccion-detalle h3 {
+    color: #030;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #2e7d32;
+    font-weight: 600;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.seccion-detalle h3 i {
+    color: #2e7d32;
+    font-size: 1.3rem;
+}
+
+/* Tablas - TEMA VERDE */
+.tabla-detalle,
+.tabla-estudiantes {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(3, 0, 0, 0.05);
+}
+
+.tabla-detalle th,
+.tabla-estudiantes th {
+    background: linear-gradient(135deg, #030, #1b5e20);
+    color: white;
+    padding: 18px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 15px;
+    border: none;
+}
+
+.tabla-detalle td,
+.tabla-estudiantes td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #edf5ed;
+    transition: background-color 0.2s ease;
+    color: #030;
+}
+
+.tabla-detalle tr:last-child td,
+.tabla-estudiantes tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-detalle tr:hover,
+.tabla-estudiantes tr:hover {
+    background-color: #f5f9f5;
+}
+
+/* Badges - TEMA VERDE */
+.badge-duracion {
+    background: linear-gradient(135deg, #009688, #00796b);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(0, 150, 136, 0.2);
+}
+
+.badge-grupo {
+    background: linear-gradient(135deg, #757575, #616161);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(117, 117, 117, 0.2);
+}
+
+.badge-modalidad {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+}
+
+.badge-cantidad {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: #212529;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(255, 152, 0, 0.2);
+}
+
+/* Año académico - TEMA VERDE */
+.ano-academico {
+    margin-bottom: 30px;
+    border: 2px solid #dce7dc;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.ano-academico:hover {
+    border-color: #2e7d32;
+    box-shadow: 0 5px 15px rgba(46, 125, 50, 0.1);
+}
+
+.ano-header {
+    background: linear-gradient(135deg, #f5f9f5, #e8f3e8);
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ano-header:hover {
+    background: linear-gradient(135deg, #e8f3e8, #dce7dc);
+}
+
+.ano-header h4 {
+    margin: 0;
+    color: #030;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* Información adicional - TEMA VERDE */
+.info-adicional {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 25px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(3, 0, 0, 0.05);
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    background: #f5f9f5;
+    border-radius: 8px;
+    border-left: 4px solid #2e7d32;
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    background: #e8f3e8;
+    transform: translateY(-2px);
+}
+
+.info-label {
+    font-weight: 600;
+    color: #030;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.info-valor {
+    color: #030;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Estados y mensajes - TEMA VERDE */
+.no-datos {
+    text-align: center;
+    padding: 50px 30px;
+    color: #757575;
+}
+
+.no-datos i {
+    font-size: 60px;
+    margin-bottom: 25px;
+    color: #c8e6c9;
+    opacity: 0.6;
+}
+
+.no-datos p {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.text-muted {
+    color: #757575;
+    font-style: italic;
+}
+
+/* Animaciones adicionales - TEMA VERDE */
+@keyframes fadeInGreen {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.seccion-detalle {
+    animation: fadeInGreen 0.5s ease-out;
+}
+
+/* Efectos de hover mejorados */
+.tabla-detalle tr,
+.tabla-estudiantes tr {
+    position: relative;
+}
+
+.tabla-detalle tr::after,
+.tabla-estudiantes tr::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, #2e7d32, #4caf50);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tabla-detalle tr:hover::after,
+.tabla-estudiantes tr:hover::after {
+    opacity: 1;
+}
+
+
+
+/* Animación de pulso para elementos destacados */
+@keyframes pulse-green {
+    0% {
+        box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(46, 125, 50, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(46, 125, 50, 0);
+    }
+}
+
+.badge-facultad {
+    animation: pulse-green 2s infinite;
+}
+
+/* Efecto de transición para botones */
+.btn-volver,
+.btn-editar {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+/* Mejoras de accesibilidad */
+.tabla-detalle th,
+.tabla-estudiantes th {
+    position: relative;
+}
+
+.tabla-detalle th::after,
+.tabla-estudiantes th::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 60%;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tabla-detalle th:last-child::after,
+.tabla-estudiantes th:last-child::after {
+    display: none;
+}

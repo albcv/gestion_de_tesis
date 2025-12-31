@@ -1,0 +1,52 @@
+form{
+    margin-top: 50px;
+}
+
+#carrera{
+    width: 220px;
+}
+
+#aceptar{
+    font-size: 20px;
+    padding: 15px;
+    border: none;
+    margin: 10px;
+    margin-top: 40px;
+    margin-left: 30px;
+    background-color: #0f0;
+    width: 100px;
+    height: 50px;
+ 
+    
+}
+
+#aceptar:hover{
+    cursor: pointer;
+    outline: 4px solid #0f0;
+}
+
+
+table, td, th{
+
+border: 4px solid #000;
+font-size: 20px;
+background-color: lightgreen;
+
+
+}
+
+td, th{
+    padding: 20px;
+}
+
+table{
+    margin: auto;
+    margin-top: 20px;
+    margin-left: 320px;
+}
+
+@media(max-width: 780px){
+    form{
+        margin-left: 350px;
+    }
+}

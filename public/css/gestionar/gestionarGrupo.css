@@ -1,0 +1,24 @@
+#carrera{
+    margin-top: 50px;
+}
+
+#campo_número{
+    margin-left: -40px;
+}
+
+#campo_carrera{
+    margin-left: 52px;
+}
+
+
+@media(max-width: 780px){
+    #campo_número{
+    margin-left: -70px;
+}
+
+#campo_carrera{
+    margin-left: 22px;
+}
+
+}
+

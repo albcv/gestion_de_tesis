@@ -1,0 +1,52 @@
+body{
+    background-color: #48e;
+    font-family: sans-serif;
+}
+
+
+form{
+    width: 290px;
+}
+
+
+h1{
+    text-align: center;
+}
+
+#campo_password{
+    margin-left: -37px;
+    margin-top: 20px;
+
+}
+
+
+p{
+    margin-top: 50px;
+}
+
+.btn{
+    font-size: 25px;
+    background-color: #0f0;
+    width: 120px;
+    height: 60px;
+    margin-top: 50px;
+    border: none;
+    margin-left: 70px;
+}
+
+.btn:hover{
+    cursor: pointer;
+    outline: 4px solid #0f0;
+
+}
+
+
+@media (max-width: 780px){
+
+
+form{
+    margin-left: 50px;
+}
+
+
+}

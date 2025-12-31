@@ -1,0 +1,89 @@
+form{
+    width: 500px;
+    margin-top: 20px;
+}
+
+input{
+    margin-top: 30px;
+}
+
+#campo_nombre_profesor{
+
+    margin-left: 105px;
+}
+
+#campo_apellido1, #campo_apellido2{
+    margin-left: 90px;
+}
+
+#campo_id_departamento{
+    margin-left: 45px;
+}
+select{
+    width: 250px;
+}
+
+
+#campo_categoría_docente{
+    margin-left: 14px;
+}
+
+#campo_categoría_científica{
+    margin-left: 5px;
+}
+
+table, td, th{
+    font-size: 16px;
+}
+
+table{
+    margin-top: 280px;
+    margin-left: 300px;
+}
+
+
+
+/*Diseño responsive*/
+
+@media(max-width: 780px){
+
+#campo_id_departamento{
+    margin-left: 10px;
+}
+
+#campo_ci{
+    margin-left: 10px;
+}
+
+
+#campo_nombre_profesor{
+
+    margin-left: 115px;
+}
+
+#campo_apellido1, #campo_apellido2{
+    margin-left: 100px;
+}
+
+#campo_categoría_docente{
+    margin-left: 24px;
+}
+
+#campo_categoría_científica{
+    margin-left: 15px;
+}
+
+table{
+    margin-top: 350px;
+}
+
+form{
+    margin-left: 350px;
+}
+
+h1{
+    margin-left: -200px;
+}
+
+
+}

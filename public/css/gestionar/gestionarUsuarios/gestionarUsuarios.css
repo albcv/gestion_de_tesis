@@ -1,0 +1,376 @@
+.campo{
+    margin-top: 20px;
+}
+
+#campo_email{
+
+    margin-left: 21px;
+    margin-top: 24px;
+
+}
+
+#campo_password{
+    margin-left: -17px;
+}
+
+#campo_rol{
+    margin-left: 40px;
+    margin-top: 10px;
+    
+}
+
+table{
+
+    margin: auto;
+    margin-top: 60px;
+    margin-left: 350px;
+    
+}
+
+table, td, th{
+
+border: 4px solid #000;
+font-size: 20px;
+background-color: lightgreen;
+
+
+}
+
+td, th{
+    padding: 50px 20px;
+}
+
+td{
+    position: relative;
+}
+
+
+#crearUsuario{
+    position: absolute;
+    background-color: #00f;
+    padding: 20px;
+    font-size: 22px;
+    border-radius: 5px;
+    left: 20%;
+}
+
+#crearUsuario:hover{
+    outline: 4px solid #00f;
+}
+
+.imagen_botón{
+    width: 35px;
+    height: 35px;
+    position: absolute;
+    
+}
+
+
+.imagen_botón:hover{
+    cursor: pointer;
+}
+
+#imagen_eliminar{
+    bottom: 10px;
+    left: 10px;
+}
+
+#imagen_editar{
+    top: 10px;
+    right: 10px;
+}
+
+#imagen_ver{
+    top: 10px;
+    left: 10px;
+}
+
+
+
+/* Estilos para herramientas de búsqueda y filtros */
+.herramientas-usuarios {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    gap: 15px;
+    max-width: 1200px;
+    margin: 20px auto;
+    margin-left: 350px;
+    margin-top: 70px;
+    height: 60px;
+
+    
+}
+
+.herramienta-item{
+    margin-top: 20px;
+}
+
+/* Información de resultados */
+.info-resultados {
+    margin: 0 auto 20px auto;
+    margin-top: 0;
+    margin-left: 350px;
+    padding: 0 15px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #000;
+    max-width: 1200px;
+    text-align: center;
+
+}
+
+
+/* Contenedor principal de herramientas */
+.herramientas-contenedor {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* Formulario de herramientas */
+.form-herramientas {
+    width: 100%;
+}
+
+/* Grid para organizar herramientas en línea */
+.herramientas-grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Cada item de herramienta */
+.herramienta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Etiquetas de filtros */
+.filtro-label {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Grupo de búsqueda */
+.grupo-busqueda {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Input de búsqueda */
+.input-busqueda {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 18px;
+    width: 240px;
+    transition: all 0.3s;
+}
+
+.input-busqueda::placeholder{
+    color: #000;
+    font-size: 20px;
+}
+
+.input-busqueda:focus {
+    outline: none;
+    border-color: #4dabf7;
+    box-shadow: 0 0 0 0.2rem rgba(77, 171, 247, 0.25);
+}
+
+/* Botón de búsqueda */
+.btn-buscar {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    position: relative;
+    margin-top: 12px;
+}
+
+
+
+
+/* Icono de búsqueda */
+#ícono_buscar {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 0;
+    left: 0;
+   
+}
+
+#ícono_buscar:hover {
+    width: 60px;
+    height: 60px;
+  
+   
+}
+
+/* Select de filtros */
+.select-filtro {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+    cursor: pointer;
+    min-width: 120px;
+    transition: all 0.3s;
+}
+
+.select-filtro:focus {
+    outline: none;
+    border-color: #4dabf7;
+    box-shadow: 0 0 0 0.2rem rgba(77, 171, 247, 0.25);
+}
+
+/* Botón aplicar */
+.btn-aplicar {
+    padding: 8px 16px;
+    background-color: #030;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.btn-aplicar:hover {
+    background-color: #218838;
+}
+
+/* Botón limpiar */
+.btn-limpiar {
+    padding: 8px 12px;
+    background-color:#f00;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 35px;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin-top: 12px;
+}
+
+.btn-limpiar:hover {
+    outline: 3px solid #f00;
+
+}
+
+/* Botón limpiar todo */
+.btn-limpiar-todo {
+    padding: 8px 16px;
+    background-color: #f00;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 20px;
+    margin-left: 10px;
+    transition: background-color 0.3s;
+}
+
+.btn-limpiar-todo:hover {
+    background-color: #c82333;
+
+}
+
+
+
+/* Paginación */
+.paginacion {
+    margin-top: 40px;
+    margin-bottom: 200px;
+    display: flex;
+    justify-content: center;
+}
+
+.paginacion .pagination {
+    margin: 0;
+}
+
+.paginacion .page-item.active .page-link {
+    background-color: #007bff;
+    border-radius: 10px;
+}
+
+.paginacion .page-link {
+    color: #000;
+    padding: 8px 16px;
+}
+
+.paginacion .page-link:hover {
+    background-color: #e9ecef;
+    border-radius: 10px;
+}
+
+
+
+
+@media(max-width: 780px){
+
+    .campo{
+        margin-left: 30px;
+    }
+
+#campo_email{
+
+    margin-left: 51px;
+
+}
+
+#campo_password{
+    margin-left: 13px;
+}
+
+#campo_rol{
+    margin-left: 70px;
+}
+
+    table{
+      margin-top: 50px;
+      margin-left: 300px;
+    }
+
+
+
+    #crearUsuario{
+    position: absolute;
+    background-color: #00f;
+    padding: 20px;
+    font-size: 22px;
+    border-radius: 5px;
+    left: 65%;
+    top: 12%;
+}
+
+
+.info-resultados {
+   
+    margin-top: -40px;
+  
+
+}
+}

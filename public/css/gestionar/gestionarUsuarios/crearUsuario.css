@@ -1,0 +1,149 @@
+body{
+    height: 1500px;
+}
+
+#campo_id_carrera{
+    margin-left: 105px;
+}
+
+
+
+form{
+
+    width: 350px;
+}
+
+#crear_usuario{
+    font-size: 30px;
+    padding: 10px 30px;
+    border: none;
+    margin: 10px;
+    margin-top: 20px;
+    margin-left: 50px;
+    background-color: #00f;
+    color: #fff;
+    position: absolute;
+    top: 200px;
+    left: 1050px;
+    height: 80px;
+    border-radius: 10px;
+ 
+    
+}
+
+#crear_usuario:hover{
+    cursor: pointer;
+    outline: 3px solid #00f;
+}
+
+
+
+.datos{
+
+    margin: auto;
+    margin-left: -80px;
+    margin-top: 70px;
+    display: flex;
+    width: 500px;
+    background-color: rgb(52, 224, 52);
+    padding: 20px 40px;
+    border-radius: 10px;
+  
+}
+
+/*Estilos a datos de estudiante*/
+
+#campo_nombre_estudiante{
+    margin-left: 105px;
+}
+
+#campo_apellido1_estudiante{
+     margin-left: 40px;
+}
+
+#campo_apellido2_estudiante{
+     margin-left: 20px;
+}
+
+
+
+#campo_numero_estudiante{
+
+    margin-left: -25px;
+}
+
+
+#campo_sexo_estudiante{
+
+    margin-left: 135px;
+}
+
+#fecha_ingreso{
+    width: 170px;
+}
+
+
+#campo_fecha_ingreso{
+    margin-left: 25px;
+}
+
+#campo_año_académico{
+    margin-left: 40px;
+}
+
+#campo_id_grupo{
+    margin-left: 125px;
+}
+
+#campo_id_modalidad{
+    margin-left: 80px;
+}
+
+
+/*Estilos a datos de profesor*/
+
+#campo_nombre_profesor{
+    margin-left: 105px;
+}
+
+#campo_apellido1_profesor{
+     margin-left: 40px;
+}
+
+#campo_apellido2_profesor{
+     margin-left: 20px;
+}
+
+#campo_id_departamento{
+    margin-left: 50px;
+}
+
+#campo_categoría_docente{
+    margin-left: 10px;
+}
+
+@media(max-width: 780px)
+{
+
+    #campo_ci_estudiante{
+        margin-left: 0px;
+    }
+
+    
+    #campo_ci_profesor{
+        margin-left: 0px;
+    }
+
+    #campo_categoría_docente{
+        margin-left: 5px;
+    }
+
+    #campo_categoría_científica{
+        margin-left: -5px;
+    }
+
+    #crear_usuario{
+        top: 200px;
+        left: 700px;
+    }
+}

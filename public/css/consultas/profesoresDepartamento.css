@@ -1,0 +1,22 @@
+select{
+    width: 400px;
+    height: 30px;
+}
+
+
+form{
+    width: 600px;
+    
+}
+
+#aceptar{
+    margin-left: 240px;
+    
+}
+
+@media(max-width: 780px){
+    #aceptar{
+    margin-left: 220px;
+    
+}
+}

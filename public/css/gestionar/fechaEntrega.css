@@ -1,0 +1,421 @@
+    
+    :root {
+        --fecha-color-primary: #2c3e50;
+        --fecha-color-secondary: #3498db;
+        --fecha-color-success: #27ae60;
+        --fecha-color-danger: #e74c3c;
+        --fecha-color-warning: #f39c12;
+        --fecha-color-light: #f8f9fa;
+        --fecha-color-border: #e0e6ed;
+    }
+    
+    /* Contenedor principal */
+    .fechas-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        min-height: calc(100vh - 70px);
+    }
+    
+    /* Título principal */
+    .fechas-title {
+        color: var(--fecha-color-primary);
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 40px;
+        padding-bottom: 15px;
+        position: relative;
+        text-align: center;
+    }
+    
+    .fechas-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--fecha-color-secondary), var(--fecha-color-primary));
+        border-radius: 2px;
+    }
+    
+    /* Grid principal */
+    .fechas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+    
+  
+    
+    /* Tarjetas */
+    .fechas-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .fechas-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+    }
+    
+    .fechas-card-header {
+        background: linear-gradient(135deg, var(--fecha-color-primary), var(--fecha-color-secondary));
+        color: white;
+        padding: 25px 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .fechas-card-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    }
+    
+    .fechas-card-title {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 600;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+    }
+    
+    .fechas-card-title i {
+        margin-right: 15px;
+        font-size: 1.6rem;
+    }
+    
+    .fechas-card-subtitle {
+        font-size: 0.95rem;
+        opacity: 0.9;
+        margin-top: 8px;
+        font-weight: 400;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .fechas-card-body {
+        padding: 30px;
+    }
+    
+    /* Información actual */
+    .fecha-info-current {
+        background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), rgba(52, 152, 219, 0.02));
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        border-left: 4px solid var(--fecha-color-secondary);
+    }
+    
+    .fecha-info-label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #7f8c8d;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .fecha-info-value {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--fecha-color-primary);
+        display: flex;
+        align-items: center;
+    }
+    
+    .fecha-info-value i {
+        margin-right: 10px;
+        color: var(--fecha-color-secondary);
+    }
+    
+    .fecha-no-set {
+        color: #95a5a6;
+        font-style: italic;
+    }
+    
+    /* Formularios */
+    .fecha-form {
+        margin-top: 25px;
+    }
+    
+    .fecha-form-group {
+        margin-bottom: 25px;
+    }
+    
+    .fecha-form-label {
+        display: block;
+        margin-bottom: 12px;
+        font-weight: 600;
+        color: var(--fecha-color-primary);
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .fecha-form-label i {
+        margin-right: 10px;
+        color: var(--fecha-color-secondary);
+    }
+    
+    .fecha-form-input {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid var(--fecha-color-border);
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+        font-family: inherit;
+    }
+    
+    .fecha-form-input:focus {
+        outline: none;
+        border-color: var(--fecha-color-secondary);
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+    
+    .fecha-form-help {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        margin-top: 8px;
+        display: block;
+        line-height: 1.4;
+    }
+    
+    .fecha-form-help i {
+        margin-right: 5px;
+        color: var(--fecha-color-secondary);
+    }
+    
+    /* Botones */
+    .fecha-btn {
+        background: linear-gradient(135deg, var(--fecha-color-secondary), #2980b9);
+        color: white;
+        border: none;
+        padding: 15px 35px;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .fecha-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        background: linear-gradient(135deg, #2980b9, var(--fecha-color-secondary));
+    }
+    
+    .fecha-btn:active {
+        transform: translateY(0);
+    }
+    
+    .fecha-btn i {
+        margin-right: 10px;
+    }
+    
+    .fecha-btn-success {
+        background: linear-gradient(135deg, var(--fecha-color-success), #229954);
+    }
+    
+    .fecha-btn-success:hover {
+        background: linear-gradient(135deg, #229954, var(--fecha-color-success));
+        box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
+    }
+    
+    /* Tabla de cortes */
+    .fechas-cortes-table {
+        width: 100%;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        margin-top: 20px;
+    }
+    
+    .fechas-cortes-table thead {
+        background: linear-gradient(135deg, var(--fecha-color-primary), #34495e);
+    }
+    
+    .fechas-cortes-table th {
+        color: white;
+        padding: 18px 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        text-align: left;
+    }
+    
+    .fechas-cortes-table tbody tr {
+        border-bottom: 1px solid #f1f2f6;
+        transition: background 0.3s ease;
+    }
+    
+    .fechas-cortes-table tbody tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .fechas-cortes-table td {
+        padding: 18px 15px;
+        color: #2c3e50;
+        vertical-align: middle;
+    }
+    
+    /* Badge de corte */
+    .corte-badge {
+        background: linear-gradient(135deg, var(--fecha-color-secondary), #2980b9);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        margin: 0 auto;
+    }
+    
+    /* Formulario en tabla */
+    .fecha-corte-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .fecha-corte-input {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid var(--fecha-color-border);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+    
+    .fecha-corte-input:focus {
+        outline: none;
+        border-color: var(--fecha-color-secondary);
+    }
+    
+    .fecha-corte-btn {
+        background: linear-gradient(135deg, var(--fecha-color-success), #229954);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+    
+    .fecha-corte-btn:hover {
+        background: linear-gradient(135deg, #229954, var(--fecha-color-success));
+        transform: translateY(-2px);
+    }
+    
+    /* Alertas */
+    .fecha-alert {
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        border-left: 5px solid;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    
+    .fecha-alert-success {
+        background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(39, 174, 96, 0.05));
+        border-left-color: var(--fecha-color-success);
+        color: #155724;
+    }
+    
+    .fecha-alert-error {
+        background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(231, 76, 60, 0.05));
+        border-left-color: var(--fecha-color-danger);
+        color: #721c24;
+    }
+    
+    .fecha-alert-info {
+        background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(52, 152, 219, 0.05));
+        border-left-color: var(--fecha-color-secondary);
+        color: #0c5460;
+    }
+    
+    /* Estado de la fecha */
+    .fecha-status {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+    
+    .fecha-status-future {
+        background: rgba(46, 213, 115, 0.1);
+        color: #2ed573;
+    }
+    
+    .fecha-status-today {
+        background: rgba(243, 156, 18, 0.1);
+        color: #f39c12;
+    }
+    
+    .fecha-status-past {
+        background: rgba(255, 71, 87, 0.1);
+        color: #ff4757;
+    }
+    
+    
+    
+    /* Animaciones */
+    @keyframes fechaFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fecha-fade-in {
+        animation: fechaFadeIn 0.5s ease forwards;
+    }
+
+
+    @media(max-width:780px){
+         .fechas-container {
+       margin-left: 300px;
+    }
+
+    body{
+        height: 3000px;
+    }
+    }

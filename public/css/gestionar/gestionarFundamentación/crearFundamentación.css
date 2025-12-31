@@ -1,0 +1,320 @@
+
+/* Estructura principal */
+body {
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+/* Contenedor principal */
+h1 {
+    color: #000;
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #000;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* Contenedor del formulario */
+form#formulario_fundamentación {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(3, 3, 0, 0.15);
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+form#formulario_fundamentación:hover {
+    box-shadow: 0 10px 30px rgba(3, 3, 0, 0.2);
+}
+
+/* Campos del formulario */
+.select, .campo {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.select label, .campo label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #030;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+.select label:after, .campo label:after {
+    content: " *";
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.atributo {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    color: #333;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.atributo:focus {
+    outline: none;
+    border-color: #030;
+    box-shadow: 0 0 0 3px rgba(3, 3, 0, 0.1);
+    background-color: #f9fff9;
+}
+
+.atributo:disabled {
+    background-color: #f8f8f8;
+    color: #666;
+    cursor: not-allowed;
+    border-color: #ccc;
+}
+
+/* Estilo específico para select */
+select.atributo {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23030' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+select.atributo option {
+    padding: 12px;
+    background-color: white;
+    color: #333;
+}
+
+select.atributo option:checked {
+    background-color: #030;
+    color: white;
+    font-weight: 600;
+}
+
+/* Campo de archivo */
+input[type="file"] {
+    padding: 12px;
+    border: 2px dashed #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+input[type="file"]:hover {
+    border-color: #030;
+    background-color: #f9fff9;
+}
+
+input[type="file"]::file-selector-button {
+    background-color: #030;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 15px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background-color: #025202;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(3, 3, 0, 0.2);
+}
+
+/* Botones de acción */
+.botones-accion {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #e0e0e0;
+}
+
+input[type="submit"] {
+    background-color: #030;
+    color: white;
+    border: none;
+    padding: 14px 35px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    min-width: 150px;
+}
+
+input[type="submit"]:hover {
+    background-color: #025202;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(3, 3, 0, 0.2);
+}
+
+input[type="submit"]:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(3, 3, 0, 0.2);
+}
+
+#btn_cancelar {
+    display: inline-block;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    padding: 14px 35px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+    min-width: 150px;
+}
+
+#btn_cancelar:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.2);
+    color: white;
+    text-decoration: none;
+}
+
+/* Información de tesis seleccionada */
+.info-tesis-seleccionada {
+    background: linear-gradient(135deg, #f9fff9 0%, #e8f5e8 100%);
+    border-left: 4px solid #030;
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(3, 3, 0, 0.08);
+}
+
+.info-tesis-seleccionada h3 {
+    color: #030;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-tesis-seleccionada h3:before {
+    content: "📋";
+    font-size: 1.4rem;
+}
+
+.info-tesis-seleccionada p {
+    margin: 8px 0;
+    color: #333;
+    line-height: 1.6;
+}
+
+.info-tesis-seleccionada strong {
+    color: #030;
+    font-weight: 600;
+}
+
+/* Mensajes de validación */
+select:invalid, input:invalid {
+    border-color: #dc3545;
+}
+
+select:valid, input:valid {
+    border-color: #28a745;
+}
+
+/* Tooltip para campos deshabilitados */
+select[disabled] {
+    cursor: not-allowed;
+    position: relative;
+}
+
+select[disabled]:hover:after {
+    content: attr(title);
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background-color: #030;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+
+/* Animación de carga para el botón submit */
+input[type="submit"]:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Efecto de transición para elementos del formulario */
+.atributo, input[type="submit"], #btn_cancelar {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estilo para placeholders */
+.atributo::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* Estilo para el título de los campos file */
+input[type="file"] {
+    position: relative;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+    visibility: hidden;
+}
+
+input[type="file"]::before {
+    content: '📄 Seleccionar archivo';
+    display: inline-block;
+    background: #030;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    outline: none;
+    white-space: nowrap;
+    cursor: pointer;
+    font-weight: 600;
+    margin-right: 15px;
+}
+
+input[type="file"]:hover::before {
+    background-color: #025202;
+}
+
+input[type="file"]:active::before {
+    background-color: #014401;
+}
+
+@media(max-width: 780px){
+    form#formulario_fundamentación{
+        margin-left: 300px;
+    }
+}

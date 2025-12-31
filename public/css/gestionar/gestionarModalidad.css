@@ -1,0 +1,18 @@
+
+
+table{
+    margin-top: 0;
+}
+
+@media(max-width: 780px){
+
+
+#campo_cantidad_años{
+    margin-left: -60px;
+}
+
+#campo_nombre_modalidad{
+    margin-left: 22px;
+}
+
+}

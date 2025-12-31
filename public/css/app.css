@@ -1,0 +1,186 @@
+body{
+    background-color: rgb(84, 238, 84);
+    font-family: sans-serif;
+    margin: 0;
+    
+}
+
+header{
+    background-color: #030;
+    margin: 0;
+    margin-left: 180px;
+    padding: 20px;
+    position: relative;
+
+}
+
+#perfil {
+    border-radius: 50%; 
+    background-color: white;
+    width: 50px; 
+    height: 50px; 
+    position: absolute;
+    top: 13%;
+    right: 2%;
+    padding: 15px; 
+    font-size: 20px;
+    font-weight: bold;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    border: 2px solid white; 
+}
+
+
+
+
+
+#perfil:hover{
+    outline: 3px solid white;
+    cursor: pointer;
+}
+
+li{
+     list-style: none;
+     font-size: 30px;
+     display: inline-block;
+     margin-left: 80px;
+   
+
+}
+
+li:hover{
+    font-size: 40px;
+}
+
+a{
+    color: #fff;
+    text-decoration: none;
+}
+
+img{
+    width: 500px;
+    border-radius: 6px;
+    position: absolute;
+   
+}
+
+#logo_unica{
+    width: 74px;
+    height: 74px;
+}
+
+#siglas_sistema{
+    font-weight: bold;
+}
+
+#siglas_sistema:hover{
+    font-size: 30px;
+}
+
+#i1{
+
+    width: 25%;
+    height: 30%;
+    top: 110px;
+    right: 0;
+    
+}
+
+#i2{
+    
+    left: 0;
+    height: 300px;
+    width: 500px;
+}
+
+#i3{
+    
+    left: 40px;
+    bottom: 0;
+    height: 300px;
+    width: 350px;
+}
+
+#i4{
+    
+    right: 0;
+    bottom: 0;
+    height: 35%;
+    width: 20%;
+}
+
+
+
+h1{
+    margin-top: 35px;
+    text-align: center;
+
+}
+
+.bienvenido{
+
+    width: 1000px;
+    height: 300px;
+    margin: auto;
+    margin-top: 40px;
+
+    
+}
+
+p{
+    text-align: justify;
+    font-size: 22px;
+    line-height: 30px;
+}
+
+
+/* Diseño responsive*/
+
+@media(max-width: 780px){
+
+
+#i1, #i2, #i3, #i4{
+
+    height: 100px;
+    width: 100px;
+}
+
+#i1{
+
+   top: 110px;
+   left: 720px;
+}
+
+ header{
+    width: 1100px;
+ }
+
+ p{
+    margin-left: 20px;
+ }
+
+ h1{
+    font-size: 24px;
+ }
+
+ li{
+    margin-left: 20px;
+ }
+
+ p{
+    font-size: 16px;
+    margin-top: 40px;
+    padding: 20px 0;
+ }
+
+#i3, #i4{
+    top: 500px;
+}
+
+#i4{
+    left: 710px;
+}
+
+
+}
