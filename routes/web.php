@@ -386,11 +386,7 @@ Route::post('/profesor/tutor/guardar-opinion-corte', [App\Http\Controllers\Profe
     Route::post('/fechas/corte/{numeroCorte}', [App\Http\Controllers\fechaEntregaController::class, 'actualizarCorte'])
         ->name('fechas.corte.actualizar');
     
-    Route::put('/fechas/fundamentacion', [App\Http\Controllers\fechaEntregaController::class, 'actualizarFundamentacion'])
-        ->name('fechas.fundamentacion.actualizar');
     
-    Route::put('/fechas/corte/{numeroCorte}', [App\Http\Controllers\fechaEntregaController::class, 'actualizarCorte'])
-        ->name('fechas.corte.actualizar');
     
     
     Route::delete('/fechas/reiniciar', [App\Http\Controllers\fechaEntregaController::class, 'reiniciarFechas'])
