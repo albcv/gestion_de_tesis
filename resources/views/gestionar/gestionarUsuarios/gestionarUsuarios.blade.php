@@ -2,10 +2,10 @@
 
 @section('content')
 
-<link rel="stylesheet" href="css/formulario.css">
-<link rel="stylesheet" href="css/gestionar/gestionarUsuarios/gestionarUsuarios.css">
-<script src="js/gestionarUsuarios/eliminarUsuario.js"></script>
-<script src="js/fila_seleccionada.js"></script>
+@vite(['resources/css/formulario.css'])
+@vite(['resources/css/gestionar/gestionarUsuarios/gestionarUsuarios.css'])
+@vite(['resources/js/gestionarUsuarios/eliminarUsuario.js'])
+@vite(['resources/js/fila_seleccionada.js'])
 
 
 <a href="/crearUsuario" id="crearUsuario" class="btn-crear"><span id="ícono_crear">+</span> Crear Usuario</a>

@@ -2,11 +2,13 @@
 
 @section('content')
 
-<link rel="stylesheet" href="css/formulario.css">
-<link rel="stylesheet" href="css/gestionar/gestionarCortes.css">
-<script src="js/agregar/agregarCorte.js"></script>
-<script src="js/actualizar/actualizarCorte.js"></script>
-<script src="js/eliminar.js"></script>
+@vite(['resources/css/gestionar/gestionarCortes.css'])
+@vite(['resources/css/formulario.css'])
+@vite(['resources/js/agregar/agregarCorte.js'])
+@vite(['resources/js/actualizar/actualizarCorte.js'])
+@vite(['resources/js/eliminar.js'])
+
+
 
 <h1>Gestionar versiones de fundamentaciones</h1>
 

@@ -24,7 +24,7 @@ function obtenerIDFilaSeleccionada(){
         return null;
     }
     
-    id=filaSeleccionada.getAttribute('id');
+    const id=filaSeleccionada.getAttribute('id');
     
     return id;
 }
@@ -49,7 +49,7 @@ function enviarModificacion(){
 
 function validarFacultad(){
 
-nombre = document.getElementById('nombre_facultad').value;
+let nombre = document.getElementById('nombre_facultad').value;
 
 if (nombre.length==0 || nombre.length>100 || nombre.length<20 || !isNaN(nombre)){
     return false;
@@ -68,7 +68,7 @@ return true;
 
 function validarSiglas(){
 
-siglas = document.getElementById('siglas').value;
+const siglas = document.getElementById('siglas').value;
 
 if(siglas.length==0 || siglas.length>10 || siglas.length<3){
     return false;

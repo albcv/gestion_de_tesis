@@ -2,9 +2,10 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarCortes/verCorte.css') }}">
+@vite(['resources/css/app.css'])
+@vite(['resources/css/sidebar.css'])
+@vite(['resources/css/gestionar/gestionarCortes/verCorte.css'])
+
 
 <style>
     /* Estilos para las versiones de corte */

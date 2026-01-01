@@ -2,9 +2,9 @@
 
 @section('content')
 
-<link rel="stylesheet" href="css/formulario.css">
-<link rel="stylesheet" href="css/consultas/estudiantesAtrasadosFundamentación.css">
-<link rel="stylesheet" href="css/consultas/estudiantesFacultad.css">
+@vite(['resources/css/formulario.css'])
+@vite(['resources/css/consultas/estudiantesAtrasadosFundamentación.css'])
+@vite(['resources/css/consultas/estudiantesFacultad.css'])
 
 
 <form action="{{ route('estudiantesFacultad') }}" id="formulario_estudiantes_facultad" method="GET">

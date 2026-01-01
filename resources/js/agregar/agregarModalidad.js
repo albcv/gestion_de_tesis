@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
 
 
-agregar = document.querySelector('.agregar');
+const agregar = document.querySelector('.agregar');
 
 
 agregar.setAttribute('form', 'formulario_modalidad');
@@ -31,7 +31,7 @@ if(!validarNombre()){
 
 function validarNombre(){
 
-nombre = document.getElementById('nombre_modalidad').value;
+const nombre = document.getElementById('nombre_modalidad').value;
 
 if (nombre.length==0 || nombre.length>50 || nombre.length<10 || !isNaN(nombre)){
     return false;

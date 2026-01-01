@@ -1,7 +1,7 @@
 @extends('layouts.app') 
 
 
-<link rel="stylesheet" href="css/perfil.css">
+@vite(['resources/css/perfil.css'])
 
 @section('content')
 

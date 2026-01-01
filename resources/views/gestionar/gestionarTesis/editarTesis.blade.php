@@ -2,9 +2,10 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarTesis/editarTesis.css') }}">
+@vite(['resources/css/app.css'])
+@vite(['resources/css/sidebar.css'])
+@vite(['resources/css/gestionar/gestionarTesis/editarTesis.css'])
+
 
 <div class="editar-tesis-container">
     <h1>Editar Tesis</h1>

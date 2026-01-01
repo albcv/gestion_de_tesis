@@ -2,8 +2,7 @@
 
 @section('content')
 
-
-<link rel="stylesheet" href="css/gestionar/gestionarCortes/gestionarCortes.css">
+@vite(['resources/css/gestionar/gestionarCortes/gestionarCortes.css'])
 
 
 <!-- Botón Crear Corte -->

@@ -1,13 +1,10 @@
 document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('b5').addEventListener('click', function(){
 
-   if(!validarRol()){
-    alert('Rol de usuario incorrecto');
+   if(!validarDeficienciasDetectadas()){
+    alert('Introduzca las deficiencias detectadas');
     return;
 }
-
-
-
 
         enviarModificacion();
     });
@@ -21,7 +18,7 @@ function obtenerIDFilaSeleccionada(){
         return null;
     }
     
-    id=filaSeleccionada.getAttribute('id');
+    const id=filaSeleccionada.getAttribute('id');
     
     return id;
 }
@@ -34,22 +31,22 @@ function enviarModificacion(){
     document.getElementById('enviar_id').value = id;
     
     // Cambiar acción del formulario a modificar
-    document.getElementById('formulario_rol').action = '/modificarRol';
+    document.getElementById('formulario_no_conformidades').action = '/modificarNoConformidades';
     
     // Enviar formulario
-    document.getElementById('formulario_rol').submit();
+    document.getElementById('formulario_no_conformidades').submit();
    
 }
 
 
 //Validaciones
 
-function validarRol(){
+function validarDeficienciasDetectadas(){
 
 
-rol = document.getElementById('rol').value;
+const deficiencia = document.getElementById('deficiencias_detectadas').value;
 
-if(rol.length==0 || rol.length>120 || rol.length<3){
+if(deficiencia.length==0){
 
 return false;
 

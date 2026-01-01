@@ -1,0 +1,54 @@
+
+#siglas{
+    margin-top: 40px;
+}
+
+#campo_nombre_facultad{
+    margin-left: -100px;
+}
+
+#campo_siglas{
+     margin-left: -100px;
+     margin-top: 10px;
+
+}
+
+table{
+    margin-top: 100px;
+   
+}
+
+input{
+    width: 400px;
+}
+
+form{
+    width: 500px;
+    margin-left: 570px;
+    
+}
+
+@media(max-width: 780px){
+
+
+form{
+    margin-left: -800;
+}
+
+#campo_nombre_facultad{
+    margin-left: -150px;
+}
+
+#campo_siglas{
+     margin-left: -130px;
+}
+
+.contenedor_botones{
+    margin-left: 100px;
+}
+
+}
+
+
+
+

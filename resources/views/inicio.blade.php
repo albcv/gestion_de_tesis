@@ -14,8 +14,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <link rel="stylesheet" href="{{ asset('css/inicio.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/stats.css') }}">
+    @vite(['resources/css/inicio.css'])
+    @vite(['resources/css/stats.css'])
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <img src="{{ asset('img/UNICA.png') }}" alt="Imagen de la UNICA" id="i1">
 

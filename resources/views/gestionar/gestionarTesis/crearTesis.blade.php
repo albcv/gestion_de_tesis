@@ -2,7 +2,10 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarTesis/crearTesis.css') }}">
+
+@vite(['resources/css/gestionar/gestionarTesis/crearTesis.css'])
+
+
 
 <div class="crear-tesis-container">
     <h1>Crear Nueva Tesis</h1>

@@ -2,11 +2,13 @@
 
 @section('content')
 
-<link rel="stylesheet" href="css/formulario.css">
-<link rel="stylesheet" href="css/gestionar/gestionarGrupo.css">
-<script src="js/agregar/agregarGrupo.js"></script>
-<script src="js/actualizar/actualizarGrupo.js"></script>
-<script src="js/eliminar.js"></script>
+@vite(['resources/css/gestionar/gestionarGrupo.css'])
+@vite(['resources/css/formulario.css'])
+@vite(['resources/js/agregar/agregarGrupo.js'])
+@vite(['resources/js/actualizar/actualizarGrupo.js'])
+@vite(['resources/js/eliminar.js'])
+
+
 
 <h1>Gestionar Grupos</h1>
 

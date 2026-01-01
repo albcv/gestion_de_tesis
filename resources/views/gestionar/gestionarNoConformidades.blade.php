@@ -2,11 +2,11 @@
 
 @section('content')
 
-<link rel="stylesheet" href="css/formulario.css">
-<link rel="stylesheet" href="css/gestionar/gestionarNoConformidades.css">
-<script src="js/agregar/agregarNoConformidades.js"></script>
-<script src="js/actualizar/actualizarNoConformidad.js"></script>
-<script src="js/eliminar.js"></script>
+@vite(['resources/css/gestionar/gestionarNoConformidades.css'])
+@vite(['resources/css/formulario.css'])
+@vite(['resources/js/agregar/agregarNoConformidades.js'])
+@vite(['resources/js/actualizar/actualizarNoConformidad.js'])
+@vite(['resources/js/eliminar.js'])
 
 
 

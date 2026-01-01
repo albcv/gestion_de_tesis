@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('b5').addEventListener('click', function(){
 
-if(!validarNúmero()){
-    alert('Número de grupo no válido');
+if(!validarNombre()){
+    alert('Nombre no válido');
     return;
 }
 
@@ -19,7 +19,7 @@ function obtenerIDFilaSeleccionada(){
         return null;
     }
     
-    id=filaSeleccionada.getAttribute('id');
+    const id=filaSeleccionada.getAttribute('id');
     
     return id;
 }
@@ -32,28 +32,25 @@ function enviarModificacion(){
     document.getElementById('enviar_id').value = id;
     
     // Cambiar acción del formulario a modificar
-    document.getElementById('formulario_grupo').action = '/modificarGrupo';
+    document.getElementById('formulario_departamento').action = '/modificarDepartamento';
     
     // Enviar formulario
-    document.getElementById('formulario_grupo').submit();
-   
+    document.getElementById('formulario_departamento').submit();
+
 }
 
 
 //Validaciones
 
-function validarNúmero(){
+function validarNombre(){
 
-numero = document.getElementById('número').value;
+const nombre = document.getElementById('departamento').value;
 
-if(isNaN(numero) || numero.length==0 || parseInt(numero)<=0 || parseInt(numero)>999){
+if (nombre.length==0 || nombre.length>100 || nombre.length<10 || !isNaN(nombre)){
     return false;
 }
 
+
 return true;
 
-
 }
-
-
-

@@ -1,11 +1,10 @@
 document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('b5').addEventListener('click', function(){
 
-   if(!validarPermiso()){
-    alert('Permiso no válido');
+ if(!validarNombre()){
+    alert('Nombre de modalidad incorrecto');
     return;
 }
-
 
 
         enviarModificacion();
@@ -20,7 +19,7 @@ function obtenerIDFilaSeleccionada(){
         return null;
     }
     
-    id=filaSeleccionada.getAttribute('id');
+    const id=filaSeleccionada.getAttribute('id');
     
     return id;
 }
@@ -29,36 +28,30 @@ function enviarModificacion(){
     const id = obtenerIDFilaSeleccionada();
     if (!id) return;
 
-
-
     // Asignar el ID al campo oculto
     document.getElementById('enviar_id').value = id;
     
     // Cambiar acción del formulario a modificar
-    document.getElementById('formulario_permiso').action = '/modificarPermiso';
+    document.getElementById('formulario_modalidad').action = '/modificarModalidad';
     
     // Enviar formulario
-    document.getElementById('formulario_permiso').submit();
-   
+    document.getElementById('formulario_modalidad').submit();
+
 }
-
-
-
 
 
 //Validaciones
 
-function validarPermiso(){
+function validarNombre(){
 
+const nombre = document.getElementById('nombre_modalidad').value;
 
-permiso = document.getElementById('permiso').value;
-
-if(permiso.length==0 || permiso.length>150 || permiso.length<3){
-
-return false;
-
+if (nombre.length==0 || nombre.length>50 || nombre.length<10 || !isNaN(nombre)){
+    return false;
 }
 
 return true;
 
 }
+
+

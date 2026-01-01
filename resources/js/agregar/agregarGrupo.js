@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
 
 
-agregar = document.querySelector('.agregar');
+const agregar = document.querySelector('.agregar');
 
 
 agregar.setAttribute('form', 'formulario_grupo');
@@ -29,7 +29,7 @@ if(!validarNúmero()){
 
 function validarNúmero(){
 
-numero = document.getElementById('número').value;
+const numero = document.getElementById('número').value;
 
 if(isNaN(numero) || numero.length==0 || parseInt(numero)<=0 || parseInt(numero)>999){
     return false;

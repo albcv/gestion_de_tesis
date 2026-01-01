@@ -2,7 +2,8 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarTesis/gestionarTesis.css') }}">
+@vite(['resources/css/gestionar/gestionarTesis/gestionarTesis.css'])
+
 
 <div class="contenido-principal">
     <div class="contenedor-tesis">

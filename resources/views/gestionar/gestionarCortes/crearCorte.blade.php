@@ -2,8 +2,11 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarCortes/crearEditarCorte.css') }}">
-<script src="js/gestionarCortes/validarCorte.js"></script>
+
+@vite(['resources/css/gestionar/gestionarCortes/crearEditarCorte.css'])
+@vite(['resources/js/gestionarCortes/validarCorte.js'])
+
+
 
 <h1>Crear Corte de Tesis</h1>
 

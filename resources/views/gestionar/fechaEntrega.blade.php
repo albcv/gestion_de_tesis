@@ -2,7 +2,8 @@
 
 @section('title', 'Gestión de Fechas de Entrega')
 
-<link rel="stylesheet" href="css/gestionar/fechaEntrega.css">
+@vite(['resources/css/gestionar/fechaEntrega.css'])
+
 
 @section('content')
 <div class="fechas-container fecha-fade-in">

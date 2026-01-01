@@ -2,9 +2,9 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarFundamentación/verFundamentación.css') }}">
+@vite(['resources/css/app.css'])
+@vite(['resources/css/sidebar.css'])
+@vite(['resources/css/gestionar/gestionarFundamentación/verFundamentación.css'])
 
 
 <div class="detalle-container">

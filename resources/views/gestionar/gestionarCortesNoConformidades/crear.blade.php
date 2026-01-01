@@ -2,10 +2,12 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/formulario.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarCortesNoConformidades/crear.css') }}">
+@vite(['resources/css/app.css'])
+@vite(['resources/css/sidebar.css'])
+@vite(['resources/css/formulario.css'])
+@vite(['resources/css/gestionar/gestionarCortesNoConformidades/crear.css'])
+
+
 
 <div class="crear-nc-container">
     <div class="form-header">

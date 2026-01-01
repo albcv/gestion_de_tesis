@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-<link rel="stylesheet" href="{{ asset('css/profesor/listaEstudiantesTutorados.css') }}">
+@vite(['resources/css/profesor/listaEstudiantesTutorados.css'])>
 
 @section('content')
 <div class="container-fluid">

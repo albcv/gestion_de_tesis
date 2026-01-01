@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function(){
 
-cancelar = document.getElementById('b4');
+const cancelar = document.getElementById('b4');
 
 cancelar.addEventListener('click', function(){
 

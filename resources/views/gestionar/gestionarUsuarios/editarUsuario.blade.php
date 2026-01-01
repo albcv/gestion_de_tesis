@@ -2,14 +2,17 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/formulario.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarUsuarios/gestionarUsuarios.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarUsuarios/crearUsuario.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarUsuarios/editarUsuario.css') }}">
-<script src="{{ asset('js/gestionarUsuarios/editarUsuario.js') }}"></script>
-<script src="{{ asset('js/gestionarUsuarios/validarUsuario.js') }}"></script>
+
+@vite(['resources/css/app.css'])
+@vite(['resources/css/sidebar.css'])
+@vite(['resources/css/formulario.css'])
+@vite(['resources/css/gestionar/gestionarUsuarios/gestionarUsuarios.css'])
+@vite(['resources/css/gestionar/gestionarUsuarios/crearUsuario.css'])
+@vite(['resources/css/gestionar/gestionarUsuarios/editarUsuario.css'])
+@vite(['resources/js/gestionarUsuarios/editarUsuario.js'])
+@vite(['resources/js/gestionarUsuarios/validarUsuario.js'])
+
+
 
 <h1 id="editar">Editar Usuario</h1>
 

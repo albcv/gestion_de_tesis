@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('b5').addEventListener('click', function(){
 
-   if(!validarDeficienciasDetectadas()){
-    alert('Introduzca las deficiencias detectadas');
+   if(!validarPermiso()){
+    alert('Permiso no válido');
     return;
 }
+
+
 
         enviarModificacion();
     });
@@ -18,7 +20,7 @@ function obtenerIDFilaSeleccionada(){
         return null;
     }
     
-    id=filaSeleccionada.getAttribute('id');
+    const id=filaSeleccionada.getAttribute('id');
     
     return id;
 }
@@ -27,26 +29,31 @@ function enviarModificacion(){
     const id = obtenerIDFilaSeleccionada();
     if (!id) return;
 
+
+
     // Asignar el ID al campo oculto
     document.getElementById('enviar_id').value = id;
     
     // Cambiar acción del formulario a modificar
-    document.getElementById('formulario_no_conformidades').action = '/modificarNoConformidades';
+    document.getElementById('formulario_permiso').action = '/modificarPermiso';
     
     // Enviar formulario
-    document.getElementById('formulario_no_conformidades').submit();
+    document.getElementById('formulario_permiso').submit();
    
 }
 
 
+
+
+
 //Validaciones
 
-function validarDeficienciasDetectadas(){
+function validarPermiso(){
 
 
-deficiencia = document.getElementById('deficiencias_detectadas').value;
+const permiso = document.getElementById('permiso').value;
 
-if(deficiencia.length==0){
+if(permiso.length==0 || permiso.length>150 || permiso.length<3){
 
 return false;
 

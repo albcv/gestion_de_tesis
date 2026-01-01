@@ -8,11 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Document</title>
-    <link rel="stylesheet" href="css/crud.css">
-    <script src="js/fila_seleccionada.js"></script>
-    <script src="js/cancelar.js"></script>
-    <script src="js/modificar.js"></script>
-    <script src="js/vaciar.js"></script>
+    @vite(['resources/css/crud.css'])
+    @vite(['resources/js/fila_seleccionada.js'])
+    @vite(['resources/js/cancelar.js'])
+    @vite(['resources/js/modificar.js'])
+    @vite(['resources/js/vaciar.js'])
 </head>
 <body>
 

@@ -2,9 +2,9 @@
 
 @section('content')
 
-<link rel="stylesheet" href="css/formulario.css">
-<link rel="stylesheet" href="css/consultas/estudiantesAtrasadosFundamentación.css">
-<link rel="stylesheet" href="css/consultas/buscarEstudiante.css">
+@vite(['resources/css/formulario.css'])
+@vite(['resources/css/consultas/estudiantesAtrasadosFundamentación.css'])
+@vite(['resources/css/consultas/buscarEstudiante.css'])
 
 <form action="{{ route('mostrar_profesor') }}" id="formulario_buscar_profesor" method="post">
     

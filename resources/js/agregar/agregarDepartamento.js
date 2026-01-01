@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
 
 
-agregar = document.querySelector('.agregar');
+const agregar = document.querySelector('.agregar');
 
 
 agregar.setAttribute('form', 'formulario_departamento');
@@ -27,7 +27,7 @@ if(!validarNombre()){
 
 function validarNombre(){
 
-nombre = document.getElementById('departamento').value;
+const nombre = document.getElementById('departamento').value;
 
 if (nombre.length==0 || nombre.length>100 || nombre.length<10 || !isNaN(nombre)){
     return false;

@@ -2,13 +2,17 @@
 
 @section('content')
 
-<link rel="stylesheet" href="css/formulario.css">
-<link rel="stylesheet" href="css/gestionar/gestionarGrupo.css">
-<link rel="stylesheet" href="css/gestionar/gestionarRoles.css">
-<link rel="stylesheet" href="css/gestionar/gestionarPermisos.css">
-<script src="js/agregar/agregarPermiso.js"></script>
-<script src="js/actualizar/actualizarPermiso.js"></script>
-<script src="js/eliminar.js"></script>
+
+@vite(['resources/css/gestionar/gestionarGrupo.css'])
+@vite(['resources/css/gestionar/gestionarRoles.css'])
+@vite(['resources/css/gestionar/gestionarPermisos.css'])
+@vite(['resources/css/formulario.css'])
+@vite(['resources/js/agregar/agregarPermiso.js'])
+@vite(['resources/js/actualizar/actualizarPermiso.js'])
+@vite(['resources/js/eliminar.js'])
+
+
+
 
 <h1>Gestionar Permisos</h1>
 

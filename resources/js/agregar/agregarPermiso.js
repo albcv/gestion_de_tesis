@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
 
 
-agregar = document.querySelector('.agregar');
+const agregar = document.querySelector('.agregar');
 
 
 agregar.setAttribute('form', 'formulario_permiso');
@@ -30,7 +30,7 @@ document.getElementById('formulario_permiso').addEventListener('submit', functio
 function validarPermiso(){
 
 
-permiso = document.getElementById('permiso').value;
+const permiso = document.getElementById('permiso').value;
 
 if(permiso.length==0 || permiso.length>150 || permiso.length<3){
 

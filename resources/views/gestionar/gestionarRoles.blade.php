@@ -2,13 +2,15 @@
 
 @section('content')
 
-<link rel="stylesheet" href="css/formulario.css">
-<link rel="stylesheet" href="css/gestionar/gestionarGrupo.css">
-<link rel="stylesheet" href="css/gestionar/gestionarRoles.css">
-<script src="js/agregar/agregarRol.js"></script>
-<script src="js/modificarRol.js"></script>
-<script src="js/actualizar/actualizarRol.js"></script>
-<script src="js/eliminar.js"></script>
+@vite(['resources/css/gestionar/gestionarGrupo.css'])
+@vite(['resources/css/gestionar/gestionarRoles.css'])
+@vite(['resources/css/formulario.css'])
+@vite(['resources/js/agregar/agregarRol.js'])
+@vite(['resources/js/actualizar/actualizarRol.js'])
+@vite(['resources/js/eliminar.js'])
+@vite(['resources/js/modificarRol.js'])
+
+
 
 <h1>Gestionar Roles</h1>
 

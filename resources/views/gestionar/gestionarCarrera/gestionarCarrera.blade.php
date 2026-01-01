@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarCarrera/gestionarCarrera.css') }}">
+@vite(['resources/css/gestionar/gestionarCarrera/gestionarCarrera.css'])
 
 <div class="container-fluid">
     <div class="main-content">

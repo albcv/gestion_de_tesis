@@ -2,11 +2,12 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarCortes/crearEditarCorte.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarCortes/editarCorte.css') }}">
-<script src="js/gestionarCortes/validarCorte.js"></script>
+@vite(['resources/css/app.css'])
+@vite(['resources/css/sidebar.css'])
+@vite(['resources/css/gestionar/gestionarCortes/crearEditarCorte.css'])
+@vite(['resources/css/gestionar/gestionarCortes/editarCorte.css'])
+@vite(['resources/js/gestionarCortes/validarCorte.js'])
+
 
 <h1 id="editar">Editar Corte de Tesis</h1>
 

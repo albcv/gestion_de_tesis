@@ -2,10 +2,11 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarFundamentación/editarFundamentación.css') }}">
-<script src="{{ asset('js/gestionarFundamentaciones/validarFundamentación.js') }}"></script>
+@vite(['resources/css/app.css'])
+@vite(['resources/css/sidebar.css'])
+@vite(['resources/css/gestionar/gestionarFundamentación/editarFundamentación.css'])
+@vite(['resources/js/gestionarFundamentaciones/validarFundamentación.js'])
+
 
 <h1 id="editar">Editar Fundamentación</h1>
 

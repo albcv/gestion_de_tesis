@@ -2,9 +2,11 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarTutorEstudiante/asignarTutor.css') }}">
+@vite(['resources/css/app.css'])
+@vite(['resources/css/sidebar.css'])
+@vite(['resources/css/gestionar/gestionarTutorEstudiante/asignarTutor.css'])
+
+
 
 @php
     $profesoresArray = $profesores->map(function($profesor) {

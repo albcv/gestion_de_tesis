@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/profesor/revisarCorte.css') }}">
+@vite(['resources/css/app.css'])
+@vite(['resources/css/sidebar.css'])
+@vite(['resources/css/profesor/revisarCorte.css'])
 
 @section('content')
 <div class="container-fluid">

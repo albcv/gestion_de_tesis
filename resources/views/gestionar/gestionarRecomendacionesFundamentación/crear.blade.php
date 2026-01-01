@@ -2,10 +2,11 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/formulario.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarRecomendacionesFundamentación/crear.css') }}">
+@vite(['resources/css/app.css'])
+@vite(['resources/css/sidebar.css'])
+@vite(['resources/css/formulario.css'])
+@vite(['resources/css/gestionar/gestionarRecomendacionesFundamentación/crear.css'])
+
 
 <div class="crear-recomendacion-container">
     <div class="form-header">

@@ -2,9 +2,10 @@
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-<link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-<link rel="stylesheet" href="{{ asset('css/gestionar/gestionarCarrera/formularioCarrera.css') }}">
+@vite(['resources/css/app.css'])
+@vite(['resources/css/sidebar.css'])
+@vite(['resources/css/gestionar/gestionarCarrera/formularioCarrera.css'])
+
 
 <div class="container-formulario">
     <h1>Agregar Nueva Carrera</h1>

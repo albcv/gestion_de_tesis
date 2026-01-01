@@ -2,12 +2,14 @@
 
 @section('content')
 
-<link rel="stylesheet" href="css/formulario.css">
-<link rel="stylesheet" href="css/crud.css">
-<link rel="stylesheet" href="css/gestionar/gestionarUsuarios/gestionarUsuarios.css">
-<link rel="stylesheet" href="css/gestionar/gestionarUsuarios/crearUsuario.css">
-<script src="js/gestionarUsuarios/crearUsuario.js"></script>
-<script src="js/gestionarUsuarios/validarUsuario.js"></script>
+@vite(['resources/css/formulario.css'])
+@vite(['resources/css/crud.css'])
+@vite(['resources/css/gestionar/gestionarUsuarios/gestionarUsuarios.css'])
+@vite(['resources/css/gestionar/gestionarUsuarios/crearUsuario.css'])
+@vite(['resources/js/gestionarUsuarios/crearUsuario.js'])
+@vite(['resources/js/gestionarUsuarios/validarUsuario.js'])
+
+
 
 <h1>Crear Usuario</h1>
 

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-<link rel="stylesheet" href="{{ asset('css/profesor/listaCortes.css') }}">
+@vite(['resources/css/profesor/listaCortes.css'])
+
 
 @section('content')
 <div class="container-fluid">

@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
 
 
-agregar = document.querySelector('.agregar');
+const agregar = document.querySelector('.agregar');
 
 
 agregar.setAttribute('form', 'formulario_no_conformidades');
@@ -29,7 +29,7 @@ if(!validarDeficienciasDetectadas()){
 function validarDeficienciasDetectadas(){
 
 
-deficiencia = document.getElementById('deficiencias_detectadas').value;
+const deficiencia = document.getElementById('deficiencias_detectadas').value;
 
 if(deficiencia.length==0){
 

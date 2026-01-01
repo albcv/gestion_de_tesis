@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-<link rel="stylesheet" href="css/estudiante/subirFundamentación.css">
+@vite(['resources/css/estudiante/subirFundamentación.css'])
 
 @section('content')
 <div class="fundamentacion-container">

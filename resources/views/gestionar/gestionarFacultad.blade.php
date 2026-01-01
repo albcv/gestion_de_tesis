@@ -2,11 +2,12 @@
 
 @section('content')
 
-<link rel="stylesheet" href="css/formulario.css">
-<link rel="stylesheet" href="css/gestionar/gestionarFacultad.css">
-<script src="js/agregar/agregarFacultad.js"></script>
-<script src="js/actualizar/actualizarFacultad.js"></script>
-<script src="js/eliminar.js"></script>
+@vite(['resources/css/gestionar/gestionarFacultad.css'])
+@vite(['resources/css/formulario.css'])
+@vite(['resources/js/agregar/agregarFacultad.js'])
+@vite(['resources/js/actualizar/actualizarFacultad.js'])
+@vite(['resources/js/eliminar.js'])
+
 
 
 <h1>Gestionar Facultad</h1>

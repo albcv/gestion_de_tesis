@@ -21,7 +21,7 @@ function obtenerIDFilaSeleccionada(){
         return null;
     }
 
-    id=filaSeleccionada.getAttribute('id');
+    const id = filaSeleccionada.getAttribute('id');
 
     return id;
 }

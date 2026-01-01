@@ -2,9 +2,9 @@
 
 @section('content')
 
-<link rel="stylesheet" href="css/formulario.css">
-<link rel="stylesheet" href="css/consultas/estudiantesAtrasadosFundamentación.css">
-<link rel="stylesheet" href="css/consultas/estudiantes.css">
+@vite(['resources/css/formulario.css'])
+@vite(['resources/css/consultas/estudiantesAtrasadosFundamentación.css'])
+@vite(['resources/css/consultas/estudiantes.css'])
 
 <form action="/estudiantesCursoDiurno" id="formulario_estudiantes_curso_diurno" method="get">
     @csrf

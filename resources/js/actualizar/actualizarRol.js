@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('b5').addEventListener('click', function(){
 
-if(!validarNombre()){
-    alert('Nombre no válido');
+   if(!validarRol()){
+    alert('Rol de usuario incorrecto');
     return;
 }
+
+
 
 
         enviarModificacion();
@@ -19,7 +21,7 @@ function obtenerIDFilaSeleccionada(){
         return null;
     }
     
-    id=filaSeleccionada.getAttribute('id');
+    const id=filaSeleccionada.getAttribute('id');
     
     return id;
 }
@@ -32,24 +34,26 @@ function enviarModificacion(){
     document.getElementById('enviar_id').value = id;
     
     // Cambiar acción del formulario a modificar
-    document.getElementById('formulario_departamento').action = '/modificarDepartamento';
+    document.getElementById('formulario_rol').action = '/modificarRol';
     
     // Enviar formulario
-    document.getElementById('formulario_departamento').submit();
-
+    document.getElementById('formulario_rol').submit();
+   
 }
 
 
 //Validaciones
 
-function validarNombre(){
+function validarRol(){
 
-nombre = document.getElementById('departamento').value;
 
-if (nombre.length==0 || nombre.length>100 || nombre.length<10 || !isNaN(nombre)){
-    return false;
+const rol = document.getElementById('rol').value;
+
+if(rol.length==0 || rol.length>120 || rol.length<3){
+
+return false;
+
 }
-
 
 return true;
 

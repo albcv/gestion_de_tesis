@@ -3,8 +3,7 @@
 @section('content')
 
 
-<link rel="stylesheet" href="css/gestionar/gestionarFundamentación/gestionarFundamentaciones.css">
-
+@vite(['resources/css/gestionar/gestionarFundamentación/gestionarFundamentaciones.css'])
 
 
 <!-- Botón Crear Fundamentación -->
