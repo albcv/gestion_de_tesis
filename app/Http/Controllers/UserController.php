@@ -976,7 +976,7 @@ private function setupInitialSystem(): void
         ]);
 
         // 2. Crear todos los permisos
-         $permisos = [
+        $permisos = [
             ['permiso' => 'gestionarFacultad'],
             ['permiso' => 'gestionarCarrera'],
             ['permiso' => 'gestionarModalidad'],
@@ -1040,33 +1040,52 @@ private function setupInitialSystem(): void
             ['permiso' => 'revisarEstudianteTutorado'],
         ];
 
+        // Insertar permisos y obtener sus IDs
+        $permisoIds = [];
         $id = 1;
+        
         foreach ($permisos as $permiso) {
-            DB::table('permisos')->updateOrInsert(
-                ['permiso' => $permiso['permiso']],
-                [
+            // Verificar si el permiso ya existe (por si acaso)
+            $existing = DB::table('permisos')->where('permiso', $permiso['permiso'])->first();
+            
+            if ($existing) {
+                $permisoIds[] = $existing->id;
+            } else {
+                // Insertar nuevo permiso
+                DB::table('permisos')->insert([
                     'id' => $id,
                     'permiso' => $permiso['permiso'],
                     'created_at' => now(),
                     'updated_at' => now(),
-                ]
-            );
-            $id++;
+                ]);
+                $permisoIds[] = $id;
+                $id++;
+            }
         }
-
 
         // 3. Asignar todos los permisos al rol Administrador
         $rolesPermisosData = [];
-        foreach ($permisos as $permiso) {
-            $rolesPermisosData[] = [
-                'id_rol' => $adminRoleId,
-                'id_permiso' => $permiso['id'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+        foreach ($permisoIds as $permisoId) {
+            // Verificar si ya existe esta asignación
+            $exists = DB::table('roles_permisos')
+                ->where('id_rol', $adminRoleId)
+                ->where('id_permiso', $permisoId)
+                ->exists();
+                
+            if (!$exists) {
+                $rolesPermisosData[] = [
+                    'id_rol' => $adminRoleId,
+                    'id_permiso' => $permisoId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
         }
 
-        DB::table('roles_permisos')->insert($rolesPermisosData);
+        // Insertar las asignaciones si hay datos
+        if (!empty($rolesPermisosData)) {
+            DB::table('roles_permisos')->insert($rolesPermisosData);
+        }
 
         DB::commit();
         
