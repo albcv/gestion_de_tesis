@@ -955,6 +955,85 @@ class UserController extends Controller
     return view('registrarAdmin');
 }
 
+/**
+ * Configuración inicial del sistema (permisos y roles)
+ * Solo se ejecuta cuando no hay usuarios en el sistema
+ */
+private function setupInitialSystem(): void
+{
+    // Verificar que no haya usuarios existentes
+    if ($this->modelo::count() > 0) {
+        return;
+    }
+
+    DB::beginTransaction();
+    try {
+        // 1. Crear rol Administrador
+        $adminRoleId = DB::table('roles')->insertGetId([
+            'rol' => 'Administrador',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // 2. Crear todos los permisos
+        $permisos = [
+            'gestionarFacultad', 'gestionarCarrera', 'gestionarModalidad', 'gestionarGrupos',
+            'gestionarDepartamento', 'gestionarTesis', 'gestionarCortes', 'gestionarNoConformidades',
+            'subirCorte', 'revisarCorte', 'revisarFundamentación', 'gestionarUsuarios',
+            'gestionarRoles', 'gestionarPermisos', 'inicio', 'consultas',
+            'estudiantes', 'profesores', 'buscarEstudiante', 'estudiantes_sin_tutor',
+            'estudiantesAtrasadosFundamentación', 'estudiantesCursoDiurno', 'estudiantesCursoEncuentro',
+            'estudiantesFacultad', 'buscarProfesor', 'profesoresDepartamento', 'profesoresDoctores',
+            'profesoresMáster', 'profesoresNoTutores', 'mostrar_estudiante', 'mostrar_profesor',
+            'crearUsuario', 'perfil', 'verUsuario', 'editarUsuario',
+            'crearFundamentación', 'editarFundamentación', 'crearCorte', 'editarCorte',
+            'verCorte', 'verFundamentación', 'agregarRecomendacionFundamentacion',
+            'editarRecomendacionFundamentacion', 'agregarNoConformidadCorte', 'editarNoConformidadCorte',
+            'vincularProfesorCorte', 'vincularProfesorFundamentación', 'asignarTutor',
+            'agregarCarrera', 'verCarrera', 'editarCarrera', 'crearTesis',
+            'editarTesis', 'verTesis', 'gestionarFundamentaciones', 'subirFundamentación',
+            'fechaEntrega', 'revisarFundamentaciónEstudiante', 'revisarCorteEstudiante',
+            'estudiantesTutorados', 'revisarEstudianteTutorado'
+        ];
+
+        $permisosData = [];
+        $id = 1;
+        foreach ($permisos as $permiso) {
+            $permisosData[] = [
+                'id' => $id,
+                'permiso' => $permiso,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            $id++;
+        }
+
+        DB::table('permisos')->insert($permisosData);
+
+        // 3. Asignar todos los permisos al rol Administrador
+        $rolesPermisosData = [];
+        foreach ($permisosData as $permiso) {
+            $rolesPermisosData[] = [
+                'id_rol' => $adminRoleId,
+                'id_permiso' => $permiso['id'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        DB::table('roles_permisos')->insert($rolesPermisosData);
+
+        DB::commit();
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        throw new \Exception('Error al configurar el sistema: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Registra el primer administrador del sistema
+ */
 public function registerFirstAdmin(Request $request)
 {
     // Verificar que no haya usuarios existentes
@@ -1004,27 +1083,39 @@ public function registerFirstAdmin(Request $request)
             ->withInput();
     }
     
-    // Asegurar que exista el rol de Administrador
-    $this->obtenerIdsDeRoles();
-    
-    if (!$this->rolAdministradorId) {
-        // Si no existe el rol, crear uno básico
-        $rol = new $this->modeloRol();
-        $rol->rol = self::ROL_ADMINISTRADOR;
-        $rol->save();
-        $this->rolAdministradorId = $rol->id;
+    DB::beginTransaction();
+    try {
+        // Configurar el sistema (permisos y roles)
+        $this->setupInitialSystem();
+        
+        // Obtener el ID del rol Administrador
+        $adminRole = DB::table('roles')->where('rol', 'Administrador')->first();
+        
+        if (!$adminRole) {
+            throw new \Exception('No se pudo crear el rol Administrador');
+        }
+        
+        // Crear el usuario administrador
+        $user = new $this->modelo();
+        $user->{$this->columnaName} = $request->name;
+        $user->{$this->columnaEmail} = $request->email;
+        $user->{$this->columnaRol} = $adminRole->id;
+        $user->{$this->columnaPassword} = Hash::make($request->password);
+        $user->save();
+        
+        DB::commit();
+        
+        return redirect()->route('login')
+            ->with('success', '¡Administrador creado exitosamente! Ahora puede iniciar sesión.')
+            ->with('info', 'Se han creado todos los permisos y asignado al rol Administrador.');
+            
+    } catch (\Exception $e) {
+        DB::rollBack();
+        
+        return redirect()->back()
+            ->with('error', 'Error al crear el administrador: ' . $e->getMessage())
+            ->withInput();
     }
-    
-    // Crear el usuario administrador
-    $user = new $this->modelo();
-    $user->{$this->columnaName} = $request->name;
-    $user->{$this->columnaEmail} = $request->email;
-    $user->{$this->columnaRol} = $this->rolAdministradorId;
-    $user->{$this->columnaPassword} = Hash::make($request->password);
-    $user->save();
-    
-    return redirect()->route('login')
-        ->with('success', '¡Administrador creado exitosamente! Ahora puede iniciar sesión.');
 }
 
 
