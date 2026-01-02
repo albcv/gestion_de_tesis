@@ -976,43 +976,88 @@ private function setupInitialSystem(): void
         ]);
 
         // 2. Crear todos los permisos
-        $permisos = [
-            'gestionarFacultad', 'gestionarCarrera', 'gestionarModalidad', 'gestionarGrupos',
-            'gestionarDepartamento', 'gestionarTesis', 'gestionarCortes', 'gestionarNoConformidades',
-            'subirCorte', 'revisarCorte', 'revisarFundamentación', 'gestionarUsuarios',
-            'gestionarRoles', 'gestionarPermisos', 'inicio', 'consultas',
-            'estudiantes', 'profesores', 'buscarEstudiante', 'estudiantes_sin_tutor',
-            'estudiantesAtrasadosFundamentación', 'estudiantesCursoDiurno', 'estudiantesCursoEncuentro',
-            'estudiantesFacultad', 'buscarProfesor', 'profesoresDepartamento', 'profesoresDoctores',
-            'profesoresMáster', 'profesoresNoTutores', 'mostrar_estudiante', 'mostrar_profesor',
-            'crearUsuario', 'perfil', 'verUsuario', 'editarUsuario',
-            'crearFundamentación', 'editarFundamentación', 'crearCorte', 'editarCorte',
-            'verCorte', 'verFundamentación', 'agregarRecomendacionFundamentacion',
-            'editarRecomendacionFundamentacion', 'agregarNoConformidadCorte', 'editarNoConformidadCorte',
-            'vincularProfesorCorte', 'vincularProfesorFundamentación', 'asignarTutor',
-            'agregarCarrera', 'verCarrera', 'editarCarrera', 'crearTesis',
-            'editarTesis', 'verTesis', 'gestionarFundamentaciones', 'subirFundamentación',
-            'fechaEntrega', 'revisarFundamentaciónEstudiante', 'revisarCorteEstudiante',
-            'estudiantesTutorados', 'revisarEstudianteTutorado'
+         $permisos = [
+            ['permiso' => 'gestionarFacultad'],
+            ['permiso' => 'gestionarCarrera'],
+            ['permiso' => 'gestionarModalidad'],
+            ['permiso' => 'gestionarGrupos'],
+            ['permiso' => 'gestionarDepartamento'],
+            ['permiso' => 'gestionarTesis'],
+            ['permiso' => 'gestionarCortes'],
+            ['permiso' => 'gestionarNoConformidades'],
+            ['permiso' => 'subirCorte'],
+            ['permiso' => 'revisarCorte'],
+            ['permiso' => 'revisarFundamentación'],
+            ['permiso' => 'gestionarUsuarios'],
+            ['permiso' => 'gestionarRoles'],
+            ['permiso' => 'gestionarPermisos'],
+            ['permiso' => 'inicio'],
+            ['permiso' => 'consultas'],
+            ['permiso' => 'estudiantes'],
+            ['permiso' => 'profesores'],
+            ['permiso' => 'buscarEstudiante'],
+            ['permiso' => 'estudiantes_sin_tutor'],
+            ['permiso' => 'estudiantesAtrasadosFundamentación'],
+            ['permiso' => 'estudiantesCursoDiurno'],
+            ['permiso' => 'estudiantesCursoEncuentro'],
+            ['permiso' => 'estudiantesFacultad'],
+            ['permiso' => 'buscarProfesor'],
+            ['permiso' => 'profesoresDepartamento'],
+            ['permiso' => 'profesoresDoctores'],
+            ['permiso' => 'profesoresMáster'],
+            ['permiso' => 'profesoresNoTutores'],
+            ['permiso' => 'mostrar_estudiante'],
+            ['permiso' => 'mostrar_profesor'],
+            ['permiso' => 'crearUsuario'],
+            ['permiso' => 'perfil'],
+            ['permiso' => 'verUsuario'],
+            ['permiso' => 'editarUsuario'],
+            ['permiso' => 'crearFundamentación'],
+            ['permiso' => 'editarFundamentación'],
+            ['permiso' => 'crearCorte'],
+            ['permiso' => 'editarCorte'],
+            ['permiso' => 'verCorte'],
+            ['permiso' => 'verFundamentación'],
+            ['permiso' => 'agregarRecomendacionFundamentacion'],
+            ['permiso' => 'editarRecomendacionFundamentacion'],
+            ['permiso' => 'agregarNoConformidadCorte'],
+            ['permiso' => 'editarNoConformidadCorte'],
+            ['permiso' => 'vincularProfesorCorte'],
+            ['permiso' => 'vincularProfesorFundamentación'],
+            ['permiso' => 'asignarTutor'],
+            ['permiso' => 'agregarCarrera'],
+            ['permiso' => 'verCarrera'],
+            ['permiso' => 'editarCarrera'],
+            ['permiso' => 'crearTesis'],
+            ['permiso' => 'editarTesis'],
+            ['permiso' => 'verTesis'],
+            ['permiso' => 'gestionarFundamentaciones'],
+            ['permiso' => 'subirFundamentación'],
+            ['permiso' => 'fechaEntrega'],
+            ['permiso' => 'revisarFundamentaciónEstudiante'],
+            ['permiso' => 'revisarCorteEstudiante'],
+            ['permiso' => 'estudiantesTutorados'],
+            ['permiso' => 'revisarEstudianteTutorado'],
         ];
 
-        $permisosData = [];
         $id = 1;
         foreach ($permisos as $permiso) {
-            $permisosData[] = [
-                'id' => $id,
-                'permiso' => $permiso,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+            DB::table('permisos')->updateOrInsert(
+                ['permiso' => $permiso['permiso']],
+                [
+                    'id' => $id,
+                    'permiso' => $permiso['permiso'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
             $id++;
         }
 
-        DB::table('permisos')->insert($permisosData);
 
         // 3. Asignar todos los permisos al rol Administrador
         $rolesPermisosData = [];
-        foreach ($permisosData as $permiso) {
+        foreach ($permisos as $permiso) {
             $rolesPermisosData[] = [
                 'id_rol' => $adminRoleId,
                 'id_permiso' => $permiso['id'],
