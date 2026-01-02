@@ -140,7 +140,8 @@ export default defineConfig({
                 // === validaciones  ===
                 'resources/js/validaciones/validarLogin.js',
         
-                
+                // Registrar admin
+                'resources/css/registrar-admin.css'
             
             ],
             refresh: true,

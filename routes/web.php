@@ -24,15 +24,25 @@ use App\Http\Controllers\permisosController;
 use App\Http\Controllers\ProfesorFundamentaciónController;
 use App\Http\Controllers\EstadisticasController;
 use Illuminate\Support\Facades\Route;
+use App\Models\User;
 
 
 Route::get('/', function(){
+
+    $usuarios = User::all();
+
+    if(count($usuarios)==0){
+        return redirect(route('registrarAdmin'));
+    }
 
     return view('login');
 
 });
 
+//Registrar administrador
 
+Route::get('/registrar-admin', [UserController::class, 'showAdminRegistrationForm'])->name('registrarAdmin');
+Route::post('/registrar-admin', [UserController::class, 'registerFirstAdmin'])->name('registrarAdmin.post');
 
 // Rutas de autenticación de usuario
 Route::view('/login', 'login')->name('login');

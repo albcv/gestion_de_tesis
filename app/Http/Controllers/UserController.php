@@ -943,4 +943,89 @@ class UserController extends Controller
                 ->with('error', 'Error al cargar el perfil: ' . $e->getMessage());
         }
     }
+
+    public function showAdminRegistrationForm()
+{
+    // Verificar si ya existen usuarios
+    if ($this->modelo::count() > 0) {
+        return redirect()->route('login')
+            ->with('error', 'El sistema ya tiene usuarios registrados. Use el login normal.');
+    }
+    
+    return view('auth.registrarAdmin');
+}
+
+public function registerFirstAdmin(Request $request)
+{
+    // Verificar que no haya usuarios existentes
+    if ($this->modelo::count() > 0) {
+        return redirect()->route('login')
+            ->with('error', 'Ya existe un usuario administrador. Use el login normal.');
+    }
+    
+    // Validar datos
+    $validator = Validator::make($request->all(), [
+        'name' => [
+            'required',
+            'string',
+            'min:3',
+            'max:40',
+            'unique:' . $this->tablaUsuario . ',' . $this->columnaName
+        ],
+        'email' => [
+            'required',
+            'email',
+            'max:255',
+            'unique:' . $this->tablaUsuario . ',' . $this->columnaEmail
+        ],
+        'password' => [
+            'required',
+            'string',
+            'min:6',
+            'confirmed'
+        ],
+    ], [
+        'name.required' => 'El nombre de usuario es obligatorio',
+        'name.min' => 'El nombre debe tener al menos 3 caracteres',
+        'name.max' => 'El nombre no puede exceder 40 caracteres',
+        'name.unique' => 'Este nombre de usuario ya está registrado',
+        'email.required' => 'El correo electrónico es obligatorio',
+        'email.email' => 'El correo electrónico debe ser válido',
+        'email.max' => 'El correo electrónico no puede exceder 255 caracteres',
+        'email.unique' => 'Este correo electrónico ya está registrado',
+        'password.required' => 'La contraseña es obligatoria',
+        'password.min' => 'La contraseña debe tener al menos 6 caracteres',
+        'password.confirmed' => 'Las contraseñas no coinciden',
+    ]);
+    
+    if ($validator->fails()) {
+        return redirect()->back()
+            ->withErrors($validator)
+            ->withInput();
+    }
+    
+    // Asegurar que exista el rol de Administrador
+    $this->obtenerIdsDeRoles();
+    
+    if (!$this->rolAdministradorId) {
+        // Si no existe el rol, crear uno básico
+        $rol = new $this->modeloRol();
+        $rol->rol = self::ROL_ADMINISTRADOR;
+        $rol->save();
+        $this->rolAdministradorId = $rol->id;
+    }
+    
+    // Crear el usuario administrador
+    $user = new $this->modelo();
+    $user->{$this->columnaName} = $request->name;
+    $user->{$this->columnaEmail} = $request->email;
+    $user->{$this->columnaRol} = $this->rolAdministradorId;
+    $user->{$this->columnaPassword} = Hash::make($request->password);
+    $user->save();
+    
+    return redirect()->route('login')
+        ->with('success', '¡Administrador creado exitosamente! Ahora puede iniciar sesión.');
+}
+
+
 }
