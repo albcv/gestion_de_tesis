@@ -952,7 +952,7 @@ class UserController extends Controller
             ->with('error', 'El sistema ya tiene usuarios registrados. Use el login normal.');
     }
     
-    return view('auth.registrarAdmin');
+    return view('registrarAdmin');
 }
 
 public function registerFirstAdmin(Request $request)
