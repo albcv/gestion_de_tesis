@@ -16,17 +16,17 @@ class fundamentaciones extends Model
 
     public function aprobada()
     {
-        return $this->hasOne(Fundamentaciones_aprobadas::class, 'id_fundamentacion');
+        return $this->hasOne(fundamentaciones_aprobadas::class, 'id_fundamentacion');
     }
 
     public function desaprobada()
     {
-        return $this->hasOne(Fundamentaciones_desaprobadas::class, 'id_fundamentacion');
+        return $this->hasOne(fundamentaciones_desaprobadas::class, 'id_fundamentacion');
     }
 
     public function recomendacion()
     {
-        return $this->hasOne(Recomendaciones_fundamentacion::class, 'id_fundamentacion');
+        return $this->hasOne(recomendaciones_fundamentacion::class, 'id_fundamentacion');
     }
 
     /**

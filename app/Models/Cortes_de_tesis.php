@@ -16,12 +16,12 @@ class Cortes_de_tesis extends Model
 
     public function aprobado()
     {
-        return $this->hasOne(Cortes_aprobados::class, 'id_corte');
+        return $this->hasOne(cortes_aprobados::class, 'id_corte');
     }
 
     public function desaprobado()
     {
-        return $this->hasOne(Cortes_desaprobados::class, 'id_corte');
+        return $this->hasOne(cortes_desaprobados::class, 'id_corte');
     }
 
     public function noConformidades()
