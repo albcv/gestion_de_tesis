@@ -35,7 +35,7 @@
 <input type="password" id="password" name="password" required>
 </div>
 
-<input type="submit" id="btn_login" class="btn" value="Acceder">
+<input type="submit" id="btn_login" class="btn" value="Aceptar">
 
     </form>
     
