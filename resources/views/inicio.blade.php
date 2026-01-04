@@ -224,7 +224,8 @@
                             })
                             .catch(error => {
                                 console.error('Error al cargar estadísticas:', error);
-                                alert('No se pudieron cargar las estadísticas. Por favor, intente más tarde.', error);
+                                mensajeError += `MENSAJE: ${error.message}`;
+                alert(mensajeError);
                             });
                     } catch (error) {
                         console.error('Error en la inicialización del script:', error);
