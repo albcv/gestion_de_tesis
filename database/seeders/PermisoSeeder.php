@@ -74,7 +74,8 @@ class PermisoSeeder extends Seeder
             ['permiso' => 'revisarCorteEstudiante'],
             ['permiso' => 'estudiantesTutorados'],
             ['permiso' => 'revisarEstudianteTutorado'],
-            ['permiso' => 'estadisticas']
+            ['permiso' => 'estadisticas'],
+            ['permiso' => 'cambiarContraseña']
         ];
 
         $id = 1;

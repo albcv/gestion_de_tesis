@@ -1,10 +1,9 @@
 @extends('layouts.app') 
 
-
-@vite(['resources/css/perfil.css'])
+@vite(['resources/css/perfil.css', 'resources/css/cambiarContraseña.css'])
 
 @section('content')
-
+<div class="perfil-container">
     <h1>Perfil de Usuario</h1>
     
     <div class="perfil-info">
@@ -28,8 +27,11 @@
             <span>{{ $user->created_at->format('d/m/Y') }}</span>
         </div>
 
+        <div class="acciones-perfil">
+            <a href="{{ route('cambiarContraseña') }}" class="btn-cambiar-contrasena">
+                <i class="fas fa-key"></i> Cambiar Contraseña
+            </a>
+        </div>
     </div>
-    
-
-
+</div>
 @endsection

@@ -23,6 +23,7 @@ use App\Http\Controllers\rolesController;
 use App\Http\Controllers\permisosController;
 use App\Http\Controllers\ProfesorFundamentaciónController;
 use App\Http\Controllers\estadisticasController;
+use App\Http\Controllers\CambiarContraseñaController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 
@@ -256,6 +257,10 @@ Route::get('/ver-fundamentacion-documento/{id}', [fundamentacionesController::cl
 
 // Perfil de usuario
 Route::get('/perfil', [UserController::class, 'perfil'])->name('perfil');
+Route::get('/cambiarContraseña', [CambiarContraseñaController::class, 'mostrarFormulario'])
+        ->name('cambiarContraseña');
+Route::post('/cambiarContraseñaProcesar', [CambiarContraseñaController::class, 'cambiarContraseña'])
+        ->name('cambiarContraseña.procesar');
 
 
 // Consultas

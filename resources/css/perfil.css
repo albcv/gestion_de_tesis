@@ -1,24 +1,106 @@
+.perfil-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  
+}
+
 .perfil-info {
     background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    width: 25%;
-    margin-left: 37%;
-    margin-top: 2%;
+    padding: 30px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    margin: 40px auto;
     font-size: 18px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
 }
 
 .campo {
     margin: 20px 0;
     display: flex;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.campo:last-child {
+    border-bottom: none;
 }
 
 .campo label {
-    font-weight: bold;
-    width: 150px;
+    font-weight: 600;
+    width: 180px;
+    color: #000;
 }
 
 .campo span {
-    color: #333;
+    color: #000;
+    flex: 1;
 }
 
+.acciones-perfil {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #eaeaea;
+    text-align: center;
+}
+
+.btn-cambiar-contrasena {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #030 0%, #141 100%);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    border: 2px solid #030;
+}
+
+.btn-cambiar-contrasena:hover {
+    background: linear-gradient(135deg, #141 0%, #030 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(3, 0, 0, 0.2);
+}
+
+.btn-cambiar-contrasena:active {
+    transform: translateY(0);
+}
+
+.btn-cambiar-contrasena i {
+    font-size: 18px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .perfil-info {
+        width: 90%;
+        padding: 20px;
+        margin: 20px auto;
+    }
+    
+    .campo {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .campo label {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .campo span {
+        width: 100%;
+    }
+    
+    .btn-cambiar-contrasena {
+        width: 100%;
+        padding: 15px;
+    }
+}

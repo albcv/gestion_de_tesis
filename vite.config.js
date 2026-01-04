@@ -141,7 +141,9 @@ export default defineConfig({
                 'resources/js/validaciones/validarLogin.js',
         
                 // Registrar admin
-                'resources/css/registrar-admin.css'
+                'resources/css/registrar-admin.css',
+
+                'resources/css/cambiarContraseña.css'
             
             ],
             refresh: true,

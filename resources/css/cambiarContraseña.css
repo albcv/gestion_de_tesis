@@ -1,0 +1,276 @@
+/* cambiar-contrasena.css */
+:root {
+    --verde-principal: #030;
+    --verde-oscuro: #020;
+    --verde-claro: #050;
+    --verde-hover: #141;
+    --texto-claro: #fff;
+    --fondo-card: #fff;
+    --borde: #ddd;
+    --sombra: rgba(3, 0, 0, 0.1);
+    --error: #e74c3c;
+    --exito: #2ecc71;
+}
+
+.cambiar-contrasena-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 120px); 
+    padding: 20px;
+
+}
+
+.cambiar-contrasena-card {
+    background: var(--fondo-card);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px var(--sombra);
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid var(--borde);
+    transition: transform 0.3s ease;
+}
+
+.cambiar-contrasena-card:hover {
+    transform: translateY(-5px);
+}
+
+.cambiar-contrasena-card h1 {
+    color: var(--verde-principal);
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.cambiar-contrasena-card h1 i {
+    font-size: 24px;
+}
+
+/* Alertas */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: rgba(46, 204, 113, 0.1);
+    color: var(--exito);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.alert-error {
+    background: rgba(231, 76, 60, 0.1);
+    color: var(--error);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+/* Formulario */
+.contrasena-form {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: var(--verde-principal);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    border: 2px solid var(--borde);
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: #f9f9f9;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--verde-principal);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(3, 0, 0, 0.1);
+}
+
+.form-control.is-invalid {
+    border-color: var(--error);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--verde-principal);
+    font-size: 18px;
+    padding: 5px;
+    transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+    color: var(--verde-hover);
+}
+
+/* Mensajes de error */
+.error-message {
+    color: var(--error);
+    font-size: 14px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Requisitos de contraseña */
+.requisitos-contrasena {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 25px 0;
+    border-left: 4px solid var(--verde-principal);
+}
+
+.requisitos-contrasena h3 {
+    color: var(--verde-principal);
+    margin-bottom: 10px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.requisitos-contrasena ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.requisitos-contrasena li {
+    margin: 8px 0;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.requisitos-contrasena li i {
+    color: var(--exito);
+}
+
+/* Acciones del formulario */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-cancelar,
+.btn-guardar {
+    flex: 1;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    border: 2px solid;
+}
+
+.btn-cancelar {
+    background: #f00;
+    color: #fff;
+    border-color: #ddd;
+}
+
+.btn-cancelar:hover {
+    background: #f00;
+    transform: translateY(-2px);
+
+}
+
+.btn-guardar {
+    background: linear-gradient(135deg, var(--verde-principal) 0%, var(--verde-claro) 100%);
+    color: var(--texto-claro);
+    border-color: var(--verde-principal);
+}
+
+.btn-guardar:hover {
+    background: linear-gradient(135deg, var(--verde-hover) 0%, var(--verde-principal) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(3, 0, 0, 0.2);
+}
+
+.btn-guardar:active {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cambiar-contrasena-container {
+        padding: 15px;
+        min-height: calc(100vh - 100px);
+    }
+    
+    .cambiar-contrasena-card {
+        padding: 25px;
+        margin: 10px;
+    }
+    
+    .cambiar-contrasena-card h1 {
+        font-size: 24px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    
+    .btn-guardar {
+        width: 100%;
+    }
+
+    .btn-cancelar{
+        width: 94%;
+    }
+}
+
+@media (max-width: 480px) {
+    .cambiar-contrasena-card {
+        padding: 20px;
+    }
+    
+    .form-control {
+        padding: 10px 40px 10px 12px;
+    }
+}
