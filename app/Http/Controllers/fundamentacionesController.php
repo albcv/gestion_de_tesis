@@ -600,14 +600,22 @@ class fundamentacionesController extends Controller
 
     public function verDocumentoVersion($idVersion)
     {
-       
+        try {
             $version = version_fundamentacion::findOrFail($idVersion);
             
-           
+            if (empty($version->ruta_documento)) {
+                abort(404, 'No hay documento asociado a esta versión');
+            }
+            
+            if (!Storage::exists($version->ruta_documento)) {
+                abort(404, 'Archivo no encontrado en el almacenamiento');
+            }
             
             // Descargar el archivo
             return Storage::download($version->ruta_documento, $version->nombre_archivo);
-       
+        } catch (\Exception $e) {
+            abort(500, 'Error al descargar el documento: ' . $e->getMessage());
+        }
     }
 
     public function aprobar(Request $request)
