@@ -12,7 +12,7 @@ use App\Models\cortes_desaprobados;
 use App\Models\Estudiante;
 use App\Models\tutor_estudiante;
 
-class EstadisticasController extends Controller
+class estadisticasController extends Controller
 {
     public function obtenerEstadisticas()
     {

@@ -22,7 +22,7 @@ use App\Http\Controllers\gruposController;
 use App\Http\Controllers\rolesController;
 use App\Http\Controllers\permisosController;
 use App\Http\Controllers\ProfesorFundamentaciónController;
-use App\Http\Controllers\EstadisticasController;
+use App\Http\Controllers\estadisticasController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 
@@ -298,7 +298,7 @@ Route::get('/profesoresMáster', [profesorController::class, 'profesoresMáster'
 
 
 //Ver estadísticas en página de inicio
-Route::get('/estadisticas', [EstadisticasController::class, 'obtenerEstadisticas'])->name('estadisticas');
+Route::get('/estadisticas', [estadisticasController::class, 'obtenerEstadisticas'])->name('estadisticas');
 
 
 
