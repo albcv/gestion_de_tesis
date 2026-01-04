@@ -48,7 +48,7 @@ class LoginController extends Controller
 
             // Si la autenticación falla, lanzar excepción de validación
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'email' => 'Credenciales incorrectas',
             ]);
 
         } catch (ValidationException $e) {
