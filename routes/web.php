@@ -298,7 +298,7 @@ Route::get('/profesoresMáster', [profesorController::class, 'profesoresMáster'
 
 
 //Ver estadísticas en página de inicio
-Route::get('estadisticas', [EstadisticasController::class, 'obtenerEstadisticas'])->name('estadisticas');
+Route::get('/estadisticas', [EstadisticasController::class, 'obtenerEstadisticas'])->name('estadisticas');
 
 
 
