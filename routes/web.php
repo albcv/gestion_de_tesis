@@ -13,7 +13,7 @@ use App\Http\Controllers\cortesProfesorController;
 use App\Http\Controllers\tesisController;
 use App\Http\Controllers\departamentoController;
 use App\Http\Controllers\loginController;
-use App\Http\Controllers\FundamentaciónController;
+use App\Http\Controllers\fundamentacionesController;
 use App\Http\Controllers\fundamentacionesAprobadasController;
 use App\Http\Controllers\recomendacionesFundamentacionController;
 use App\Http\Controllers\cortesAprobadosController;
@@ -21,7 +21,7 @@ use App\Http\Controllers\tutorEstudianteController;
 use App\Http\Controllers\gruposController;
 use App\Http\Controllers\rolesController;
 use App\Http\Controllers\permisosController;
-use App\Http\Controllers\ProfesorFundamentaciónController;
+use App\Http\Controllers\ProfesorfundamentacionesController;
 use App\Http\Controllers\estadisticasController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -190,21 +190,21 @@ Route::post('/desvincularProfesorCorte', [cortesProfesorController::class, 'desv
 
 
 // Rutas para Fundamentación
-Route::get('/gestionarFundamentaciones', [FundamentaciónController::class, 'mostrar'])->name('gestionarFundamentaciones');
-Route::get('/crearFundamentación', [FundamentaciónController::class, 'crear'])->name('crearFundamentación');
-Route::get('/verFundamentación/{id}', [FundamentaciónController::class, 'ver'])->name('verFundamentación');
-Route::get('/editarFundamentación/{id}', [FundamentaciónController::class, 'editar'])->name('editarFundamentación');
-Route::post('/agregarFundamentación', [FundamentaciónController::class, 'agregar'])->name('agregarFundamentación');
-Route::post('/eliminarFundamentación', [FundamentaciónController::class, 'eliminar'])->name('eliminarFundamentación');
-Route::post('/modificarFundamentación', [FundamentaciónController::class, 'modificar'])->name('modificarFundamentación');
-Route::post('/vaciarFundamentaciones', [FundamentaciónController::class, 'vaciar']);
-Route::post('/aprobarFundamentación', [FundamentaciónController::class, 'aprobar'])->name('aprobarFundamentación');
-Route::post('/desaprobarFundamentación', [FundamentaciónController::class, 'desaprobar'])->name('desaprobarFundamentación');
-Route::post('/revertirFundamentación', [FundamentaciónController::class, 'revertir'])->name('revertirFundamentación');
+Route::get('/gestionarFundamentaciones', [fundamentacionesController::class, 'mostrar'])->name('gestionarFundamentaciones');
+Route::get('/crearFundamentación', [fundamentacionesController::class, 'crear'])->name('crearFundamentación');
+Route::get('/verFundamentación/{id}', [fundamentacionesController::class, 'ver'])->name('verFundamentación');
+Route::get('/editarFundamentación/{id}', [fundamentacionesController::class, 'editar'])->name('editarFundamentación');
+Route::post('/agregarFundamentación', [fundamentacionesController::class, 'agregar'])->name('agregarFundamentación');
+Route::post('/eliminarFundamentación', [fundamentacionesController::class, 'eliminar'])->name('eliminarFundamentación');
+Route::post('/modificarFundamentación', [fundamentacionesController::class, 'modificar'])->name('modificarFundamentación');
+Route::post('/vaciarFundamentaciones', [fundamentacionesController::class, 'vaciar']);
+Route::post('/aprobarFundamentación', [fundamentacionesController::class, 'aprobar'])->name('aprobarFundamentación');
+Route::post('/desaprobarFundamentación', [fundamentacionesController::class, 'desaprobar'])->name('desaprobarFundamentación');
+Route::post('/revertirFundamentación', [fundamentacionesController::class, 'revertir'])->name('revertirFundamentación');
 
 // Rutas para versiones de fundamentación
-Route::delete('/version-fundamentacion/{id}', [FundamentaciónController::class, 'eliminarVersion'])->name('eliminar-version-fundamentacion');
-Route::get('/version-fundamentacion/{id}/descargar', [FundamentaciónController::class, 'verDocumentoVersion'])->name('ver-documento-version');
+Route::delete('/version-fundamentacion/{id}', [fundamentacionesController::class, 'eliminarVersion'])->name('eliminar-version-fundamentacion');
+Route::get('/version-fundamentacion/{id}/descargar', [fundamentacionesController::class, 'verDocumentoVersion'])->name('ver-documento-version');
 
 
 Route::get('/gestionarFundamentacionesAprobadas', [fundamentacionesAprobadasController::class, 'mostrar'])->name('gestionarFundamentacionesAprobadas');
@@ -224,9 +224,9 @@ Route::post('/eliminarRecomendacionFundamentacion', [recomendacionesFundamentaci
 
 
 // Vincular profesor a una fundamentación
-Route::get('/vincularProfesorFundamentación/{id}', [ProfesorFundamentaciónController::class, 'mostrarVincular'])->name('vincularProfesorFundamentación');
-Route::post('/vincularProfesorFundamentación', [ProfesorFundamentaciónController::class, 'vincular'])->name('vincularProfesorFundamentación.post');
-Route::post('/desvincularProfesorFundamentación', [ProfesorFundamentaciónController::class, 'desvincular'])->name('desvincularProfesorFundamentación');
+Route::get('/vincularProfesorFundamentación/{id}', [ProfesorfundamentacionesController::class, 'mostrarVincular'])->name('vincularProfesorFundamentación');
+Route::post('/vincularProfesorFundamentación', [ProfesorfundamentacionesController::class, 'vincular'])->name('vincularProfesorFundamentación.post');
+Route::post('/desvincularProfesorFundamentación', [ProfesorfundamentacionesController::class, 'desvincular'])->name('desvincularProfesorFundamentación');
     
 
 
@@ -249,7 +249,7 @@ Route::post('/vaciarPermisos', [permisosController::class, 'vaciar']);
 
 // Para descargar documento
 Route::get('/ver-documento/{id}', [cortesController::class, 'verDocumento'])->name('ver-documento');
-Route::get('/ver-fundamentacion-documento/{id}', [FundamentaciónController::class, 'verDocumento'])->name('ver-fundamentacion-documento');
+Route::get('/ver-fundamentacion-documento/{id}', [fundamentacionesController::class, 'verDocumento'])->name('ver-fundamentacion-documento');
 
 
 

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
-class FundamentaciónController extends Controller
+class fundamentacionesController extends Controller
 {
     protected $modelo = fundamentaciones::class;
     protected $modeloTesis = Tesis::class;
