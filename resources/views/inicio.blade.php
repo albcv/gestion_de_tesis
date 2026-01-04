@@ -222,11 +222,30 @@
                                     });
                                 }
                             })
-                            .catch(error => {
-                                console.error('Error al cargar estadísticas:', error);
-                                mensajeError += `MENSAJE: ${error.message}`;
-                alert(mensajeError);
-                            });
+                           .catch(error => {
+    console.error('Error COMPLETO:', error);
+    
+    let mensajeError = '❌ ERROR DETALLADO:\n\n';
+    
+    // Intentar extraer el mensaje del JSON si existe
+    error.text().then(text => {
+        try {
+            const errorData = JSON.parse(text);
+            mensajeError += `🔍 MENSAJE SERVIDOR: ${errorData.message || 'Sin mensaje'}\n`;
+            mensajeError += `📊 SQL STATE: ${errorData.sql_state || 'N/A'}\n`;
+            mensajeError += `📄 TRAZA: ${errorData.trace ? errorData.trace.split('\n')[0] : 'N/A'}\n`;
+        } catch {
+            mensajeError += `📦 RESPUESTA CRUDA: ${text.substring(0, 200)}...\n`;
+        }
+        
+        mensajeError += `\n🌐 URL: ${error.url || '{{ route("estadisticas") }}'}\n`;
+        mensajeError += `📱 ESTADO: ${error.status || 'Desconocido'}`;
+        
+        alert(mensajeError);
+    }).catch(() => {
+        alert(`Error de red o sin respuesta: ${error.message}`);
+    });
+});
                     } catch (error) {
                         console.error('Error en la inicialización del script:', error);
                     }
