@@ -26,7 +26,6 @@ use App\Http\Controllers\EstadisticasController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 
-Route::get('/estadisticas', [EstadisticasController::class, 'obtenerEstadisticas'])->name('estadisticas');
 
 Route::get('/', function(){
 
@@ -297,7 +296,14 @@ Route::get('/profesoresDoctores', [profesorController::class, 'profesoresDoctore
 Route::get('/profesoresMáster', [profesorController::class, 'profesoresMáster'])->name('profesoresMáster');
 
 
+
+//Ver estadísticas en página de inicio
+Route::get('/estadisticas', [EstadisticasController::class, 'obtenerEstadisticas'])->name('estadisticas');
+
+
+
 //Roles estudiante y profesor
+
 
 // Rutas para estudiantes
 
