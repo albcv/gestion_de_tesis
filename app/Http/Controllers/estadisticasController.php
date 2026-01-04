@@ -11,12 +11,35 @@ use App\Models\cortes_aprobados;
 use App\Models\cortes_desaprobados;
 use App\Models\Estudiante;
 use App\Models\tutor_estudiante;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class estadisticasController extends Controller
 {
     public function obtenerEstadisticas()
     {
         try {
+            // Verificar si el usuario está autenticado
+            if (!Auth::check()) {
+                return redirect()->route('login');
+            }
+
+            // Obtener el rol del usuario autenticado
+            $usuario = Auth::user();
+            $id_rol = $usuario->id_rol;
+
+            // Verificar si el rol tiene permiso para ver estadísticas
+            $tienePermiso = DB::table('roles_permisos as rp')
+                ->join('permisos as p', 'rp.id_permiso', '=', 'p.id')
+                ->where('rp.id_rol', $id_rol)
+                ->where('p.permiso', 'estadisticas')
+                ->exists();
+
+            // Si no tiene permiso, redirigir al login
+            if (!$tienePermiso) {
+                return redirect()->route('login');
+            }
+
             // Estadísticas de fundamentaciones
             $totalFundamentaciones = fundamentaciones::count();
             $fundAprobadas = fundamentaciones_aprobadas::count();
