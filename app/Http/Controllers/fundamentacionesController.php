@@ -603,13 +603,7 @@ class fundamentacionesController extends Controller
        
             $version = version_fundamentacion::findOrFail($idVersion);
             
-            if (empty($version->ruta_documento)) {
-                abort(404, 'No hay documento asociado a esta versión');
-            }
-            
-            if (!Storage::exists($version->ruta_documento)) {
-                abort(404, 'Archivo no encontrado en el almacenamiento');
-            }
+           
             
             // Descargar el archivo
             return Storage::download($version->ruta_documento, $version->nombre_archivo);
