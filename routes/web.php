@@ -21,7 +21,7 @@ use App\Http\Controllers\tutorEstudianteController;
 use App\Http\Controllers\gruposController;
 use App\Http\Controllers\rolesController;
 use App\Http\Controllers\permisosController;
-use App\Http\Controllers\ProfesorfundamentacionesController;
+use App\Http\Controllers\ProfesorFundamentaciónController;
 use App\Http\Controllers\estadisticasController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -224,9 +224,9 @@ Route::post('/eliminarRecomendacionFundamentacion', [recomendacionesFundamentaci
 
 
 // Vincular profesor a una fundamentación
-Route::get('/vincularProfesorFundamentación/{id}', [ProfesorfundamentacionesController::class, 'mostrarVincular'])->name('vincularProfesorFundamentación');
-Route::post('/vincularProfesorFundamentación', [ProfesorfundamentacionesController::class, 'vincular'])->name('vincularProfesorFundamentación.post');
-Route::post('/desvincularProfesorFundamentación', [ProfesorfundamentacionesController::class, 'desvincular'])->name('desvincularProfesorFundamentación');
+Route::get('/vincularProfesorFundamentación/{id}', [ProfesorFundamentaciónController::class, 'mostrarVincular'])->name('vincularProfesorFundamentación');
+Route::post('/vincularProfesorFundamentación', [ProfesorFundamentaciónController::class, 'vincular'])->name('vincularProfesorFundamentación.post');
+Route::post('/desvincularProfesorFundamentación', [ProfesorFundamentaciónController::class, 'desvincular'])->name('desvincularProfesorFundamentación');
     
 
 

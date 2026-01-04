@@ -600,7 +600,7 @@ class fundamentacionesController extends Controller
 
     public function verDocumentoVersion($idVersion)
     {
-        try {
+       
             $version = version_fundamentacion::findOrFail($idVersion);
             
             if (empty($version->ruta_documento)) {
@@ -613,9 +613,7 @@ class fundamentacionesController extends Controller
             
             // Descargar el archivo
             return Storage::download($version->ruta_documento, $version->nombre_archivo);
-        } catch (\Exception $e) {
-            abort(500, 'Error al descargar el documento: ' . $e->getMessage());
-        }
+       
     }
 
     public function aprobar(Request $request)
