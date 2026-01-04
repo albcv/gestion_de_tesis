@@ -90,7 +90,6 @@
                 <div class="alert alert-info alert-text-center">
                     <i class="fas fa-inbox fa-3x mb-3"></i>
                     <h4>No hay fundamentaciones asignadas</h4>
-                    <p>Cuando te asignen fundamentaciones, aparecerán aquí.</p>
                 </div>
             @endif
         </div>

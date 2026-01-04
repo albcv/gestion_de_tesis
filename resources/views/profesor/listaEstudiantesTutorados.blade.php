@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@vite(['resources/css/profesor/listaEstudiantesTutorados.css'])>
+@vite(['resources/css/profesor/listaEstudiantesTutorados.css'])
 
 @section('content')
 <div class="container-fluid">
@@ -11,7 +11,6 @@
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible">
                     <div class="icon">
-                        <i class="fas fa-check-circle"></i>
                         {{ session('success') }}
                     </div>
                     <button type="button" class="btn-close" aria-label="Close"></button>
@@ -116,7 +115,6 @@
                 <div class="alert alert-info alert-text-center">
                     <i class="fas fa-user-graduate fa-3x mb-3"></i>
                     <h4>No tienes estudiantes tutorados</h4>
-                    <p>Cuando se te asignen estudiantes como tutor, aparecerán aquí.</p>
                 </div>
             @endif
         </div>

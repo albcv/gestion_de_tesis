@@ -32,7 +32,7 @@ class RolesPermisoSeeder extends Seeder
                 'agregarNoConformidadCorte', 'editarNoConformidadCorte', 'vincularProfesorCorte',
                 'vincularProfesorFundamentación', 'asignarTutor', 'agregarCarrera', 'verCarrera',
                 'editarCarrera', 'crearTesis', 'editarTesis', 'verTesis', 'gestionarFundamentaciones',
-                'fechaEntrega',
+                'fechaEntrega', 'estadisticas'
             ],
             'Profesor' => [
                 'revisarCorte', 'revisarFundamentación', 'revisarFundamentaciónEstudiante',
