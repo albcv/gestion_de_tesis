@@ -126,209 +126,111 @@
                 </div>
             </div>
 
-           <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        function showAlertError(title, error) {
-            let errorMessage = title;
-            
-            if (error) {
-                if (error.message) errorMessage += "\n\nMensaje: " + error.message;
-                if (error.name) errorMessage += "\nTipo: " + error.name;
-                if (error.status) errorMessage += "\nEstado: " + error.status;
-                if (error.statusText) errorMessage += "\nTexto del estado: " + error.statusText;
-                if (error.url) errorMessage += "\nURL: " + error.url;
-                
-                // Para errores de red o fetch
-                if (error.type) errorMessage += "\nTipo de error: " + error.type;
-                
-                // Para errores de respuesta HTTP
-                if (error.response) {
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
                     try {
-                        errorMessage += "\nRespuesta: " + JSON.stringify(error.response);
-                    } catch (e) {
-                        errorMessage += "\nRespuesta: [No se puede serializar]";
-                    }
-                }
-                
-                // Stack trace si está disponible
-                if (error.stack) {
-                    errorMessage += "\n\nStack trace:";
-                    // Tomamos solo las primeras 5 líneas del stack para no hacer el alert demasiado grande
-                    const stackLines = error.stack.split('\n').slice(0, 5);
-                    errorMessage += "\n" + stackLines.join('\n');
-                }
-                
-                // Si es un objeto complejo, tratamos de convertirlo a string
-                if (typeof error === 'object' && !error.message && !error.stack) {
-                    try {
-                        errorMessage += "\n\nObjeto error: " + JSON.stringify(error, null, 2);
-                    } catch (e) {
-                        errorMessage += "\n\n[Error no se puede serializar]";
-                    }
-                }
-            }
-            
-            alert("❌ ERROR: " + errorMessage);
-            console.error(title, error);
-        }
+                        // Obtener estadísticas del servidor
+                        fetch('{{ route("estadisticas") }}')
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Error al cargar estadísticas');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                // Actualizar valores en la interfaz
+                                if (data.fundamentaciones) {
+                                    document.getElementById('fundAprobadas').textContent = data.fundamentaciones.aprobadas || 0;
+                                    document.getElementById('fundDesaprobadas').textContent = data.fundamentaciones.desaprobadas || 0;
+                                    document.getElementById('fundPendientes').textContent = data.fundamentaciones.pendientes || 0;
+                                }
+                                
+                                if (data.cortes) {
+                                    document.getElementById('cortesAprobados').textContent = data.cortes.aprobados || 0;
+                                    document.getElementById('cortesDesaprobados').textContent = data.cortes.desaprobados || 0;
+                                    document.getElementById('cortesPendientes').textContent = data.cortes.pendientes || 0;
+                                }
+                                
+                                if (data.estudiantes) {
+                                    document.getElementById('totalEstudiantes').textContent = data.estudiantes.total || 0;
+                                    document.getElementById('estudiantesSinTutor').textContent = data.estudiantes.sin_tutor || 0;
+                                }
 
-        try {
-            // Obtener estadísticas del servidor
-            fetch('{{ route("estadisticas") }}')
-                .then(response => {
-                    if (!response.ok) {
-                        const httpError = new Error(`Error HTTP ${response.status}: ${response.statusText}`);
-                        httpError.status = response.status;
-                        httpError.statusText = response.statusText;
-                        httpError.url = response.url;
-                        
-                        // Intentar obtener más información del cuerpo de la respuesta
-                        return response.text().then(text => {
-                            try {
-                                const jsonError = JSON.parse(text);
-                                httpError.response = jsonError;
-                            } catch {
-                                httpError.response = text || "Sin cuerpo de respuesta";
-                            }
-                            throw httpError;
-                        }).catch(() => {
-                            throw httpError;
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    try {
-                        // Validar estructura de datos
-                        if (!data) {
-                            throw new Error("La respuesta del servidor está vacía");
-                        }
-
-                        // Actualizar valores en la interfaz
-                        if (data.fundamentaciones) {
-                            document.getElementById('fundAprobadas').textContent = data.fundamentaciones.aprobadas || 0;
-                            document.getElementById('fundDesaprobadas').textContent = data.fundamentaciones.desaprobadas || 0;
-                            document.getElementById('fundPendientes').textContent = data.fundamentaciones.pendientes || 0;
-                        } else {
-                            console.warn('Estructura de datos de fundamentaciones no encontrada');
-                        }
-                        
-                        if (data.cortes) {
-                            document.getElementById('cortesAprobados').textContent = data.cortes.aprobados || 0;
-                            document.getElementById('cortesDesaprobados').textContent = data.cortes.desaprobados || 0;
-                            document.getElementById('cortesPendientes').textContent = data.cortes.pendientes || 0;
-                        } else {
-                            console.warn('Estructura de datos de cortes no encontrada');
-                        }
-                        
-                        if (data.estudiantes) {
-                            document.getElementById('totalEstudiantes').textContent = data.estudiantes.total || 0;
-                            document.getElementById('estudiantesSinTutor').textContent = data.estudiantes.sin_tutor || 0;
-                        } else {
-                            console.warn('Estructura de datos de estudiantes no encontrada');
-                        }
-
-                        // Crear gráfico de Fundamentaciones
-                        const ctxFund = document.getElementById('fundamentacionesChart');
-                        if (ctxFund) {
-                            try {
-                                new Chart(ctxFund.getContext('2d'), {
-                                    type: 'doughnut',
-                                    data: {
-                                        labels: ['Aprobadas', 'Desaprobadas', 'Pendientes'],
-                                        datasets: [{
-                                            data: [
-                                                data.fundamentaciones?.aprobadas || 0,
-                                                data.fundamentaciones?.desaprobadas || 0,
-                                                data.fundamentaciones?.pendientes || 0
-                                            ],
-                                            backgroundColor: [
-                                                '#4CAF50',
-                                                '#F44336',
-                                                '#FFC107'
-                                            ],
-                                            borderWidth: 1
-                                        }]
-                                    },
-                                    options: {
-                                        responsive: true,
-                                        maintainAspectRatio: false,
-                                        plugins: {
-                                            legend: {
-                                                display: false
+                                // Crear gráfico de Fundamentaciones
+                                const ctxFund = document.getElementById('fundamentacionesChart');
+                                if (ctxFund) {
+                                    new Chart(ctxFund.getContext('2d'), {
+                                        type: 'doughnut',
+                                        data: {
+                                            labels: ['Aprobadas', 'Desaprobadas', 'Pendientes'],
+                                            datasets: [{
+                                                data: [
+                                                    data.fundamentaciones?.aprobadas || 0,
+                                                    data.fundamentaciones?.desaprobadas || 0,
+                                                    data.fundamentaciones?.pendientes || 0
+                                                ],
+                                                backgroundColor: [
+                                                    '#4CAF50',
+                                                    '#F44336',
+                                                    '#FFC107'
+                                                ],
+                                                borderWidth: 1
+                                            }]
+                                        },
+                                        options: {
+                                            responsive: true,
+                                            maintainAspectRatio: false,
+                                            plugins: {
+                                                legend: {
+                                                    display: false
+                                                }
                                             }
                                         }
-                                    }
-                                });
-                            } catch (chartError) {
-                                showAlertError('Error al crear gráfico de fundamentaciones', chartError);
-                            }
-                        }
+                                    });
+                                }
 
-                        // Crear gráfico de Cortes
-                        const ctxCortes = document.getElementById('cortesChart');
-                        if (ctxCortes) {
-                            try {
-                                new Chart(ctxCortes.getContext('2d'), {
-                                    type: 'doughnut',
-                                    data: {
-                                        labels: ['Aprobados', 'Desaprobados', 'Pendientes'],
-                                        datasets: [{
-                                            data: [
-                                                data.cortes?.aprobados || 0,
-                                                data.cortes?.desaprobados || 0,
-                                                data.cortes?.pendientes || 0
-                                            ],
-                                            backgroundColor: [
-                                                '#4CAF50',
-                                                '#F44336',
-                                                '#FFC107'
-                                            ],
-                                            borderWidth: 1
-                                        }]
-                                    },
-                                    options: {
-                                        responsive: true,
-                                        maintainAspectRatio: false,
-                                        plugins: {
-                                            legend: {
-                                                display: false
+                                // Crear gráfico de Cortes
+                                const ctxCortes = document.getElementById('cortesChart');
+                                if (ctxCortes) {
+                                    new Chart(ctxCortes.getContext('2d'), {
+                                        type: 'doughnut',
+                                        data: {
+                                            labels: ['Aprobados', 'Desaprobados', 'Pendientes'],
+                                            datasets: [{
+                                                data: [
+                                                    data.cortes?.aprobados || 0,
+                                                    data.cortes?.desaprobados || 0,
+                                                    data.cortes?.pendientes || 0
+                                                ],
+                                                backgroundColor: [
+                                                    '#4CAF50',
+                                                    '#F44336',
+                                                    '#FFC107'
+                                                ],
+                                                borderWidth: 1
+                                            }]
+                                        },
+                                        options: {
+                                            responsive: true,
+                                            maintainAspectRatio: false,
+                                            plugins: {
+                                                legend: {
+                                                    display: false
+                                                }
                                             }
                                         }
-                                    }
-                                });
-                            } catch (chartError) {
-                                showAlertError('Error al crear gráfico de cortes', chartError);
-                            }
-                        }
-                        
-                        // Mostrar mensaje de éxito si todo fue bien
-                        if (document.querySelectorAll('.stat-value').length > 0) {
-                            console.log('Estadísticas cargadas correctamente');
-                        }
-                    } catch (processingError) {
-                        showAlertError('Error al procesar los datos de estadísticas', processingError);
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error al cargar estadísticas:', error);
+                            
+                            });
+                    } catch (error) {
+                        console.error('Error en la inicialización del script:', error);
                     }
-                })
-                .catch(error => {
-                    showAlertError('Error al cargar estadísticas desde el servidor', error);
-                    
-                    // También registrar en consola para más detalles
-                    console.error('Error completo del fetch:', {
-                        message: error.message,
-                        name: error.name,
-                        stack: error.stack,
-                        status: error.status,
-                        statusText: error.statusText,
-                        url: error.url,
-                        response: error.response
-                    });
                 });
-        } catch (error) {
-            showAlertError('Error en la inicialización del script de estadísticas', error);
-        }
-    });
-</script>
+            </script>
         @endif
 
         @if ($rolNombre === 'estudiante')
