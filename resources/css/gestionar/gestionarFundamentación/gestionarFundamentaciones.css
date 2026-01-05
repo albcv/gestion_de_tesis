@@ -528,9 +528,23 @@ td:nth-child(8) { /* Columna de acciones */
     margin-top: 60px;
 }
 
+
+#estudiantesAtrasadosFund{
+    margin-left: 780px;
+    background: #f00 !important;
+    position: relative;
+    top: 80px;
+}
+
+
 @media(max-width:780px){
     #crearFundamentación{
     margin-left: 300px;
-   
+    }
+    #estudiantesAtrasadosFund{
+    margin-left: 1200px;
+
 }
 }
+
+

@@ -9,6 +9,8 @@
 <!-- Botón Crear Fundamentación -->
 <a href="/crearFundamentación" id="crearFundamentación" class="btn-crear" title="crear"><span id="ícono_crear">+</span> Crear Fundamentación</a>
 
+<a href="/estudiantesAtrasadosFundamentación" id="estudiantesAtrasadosFund"  class="btn-crear" title="Ver estudiantes que no han subido su fundamentación de tesis">Estudiantes sin fundamentación</a>
+
 <h1>Gestionar fundamentación</h1>
 
 <!-- Barra de herramientas: Búsqueda y Filtros -->

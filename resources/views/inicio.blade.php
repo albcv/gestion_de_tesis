@@ -121,8 +121,32 @@
                                     <div class="stat-label">Estudiantes sin Tutor</div>
                                 </div>
                             </div>
+
+                            
                         </div>
                     </div>
+
+                    <div class="stat-card">
+                        <h3>Estudiantes de Año Culminante</h3>
+                        <div class="students-stats">
+                            <div class="student-stat-item">
+                                <div class="stat-icon">🎓</div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="totalEstudiantesCulminante">0</div>
+                                    <div class="stat-label">Total de Estudiantes</div>
+                                </div>
+                            </div>
+                    
+                            <div class="student-stat-item">
+                                <div class="stat-icon">❌</div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="estudiantesCulminanteSinTutor">0</div>
+                                    <div class="stat-label">Estudiantes sin Tutor</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -155,6 +179,13 @@
                                     document.getElementById('totalEstudiantes').textContent = data.estudiantes.total || 0;
                                     document.getElementById('estudiantesSinTutor').textContent = data.estudiantes.sin_tutor || 0;
                                 }
+
+                                // Actualizar estudiantes de año culminante
+                                if (data.estudiantes_culminante) {
+                                    document.getElementById('totalEstudiantesCulminante').textContent = data.estudiantes_culminante.total || 0;
+                                    document.getElementById('estudiantesCulminanteSinTutor').textContent = data.estudiantes_culminante.sin_tutor || 0;
+                                }
+
 
                                 // Crear gráfico de Fundamentaciones
                                 const ctxFund = document.getElementById('fundamentacionesChart');

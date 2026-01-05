@@ -57,6 +57,31 @@ class estadisticasController extends Controller
             $estudiantesConTutor = tutor_estudiante::distinct('id_estudiante')->count('id_estudiante');
             $estudiantesSinTutor = $totalEstudiantes - $estudiantesConTutor;
 
+            // Estadísticas de estudiantes de año culminante
+            $estudiantesAnioCulminante = Estudiante::select('estudiantes.*', 'carrera_modalidad.cantidad_years')
+                ->join('carrera_modalidad', function($join) {
+                    $join->on('estudiantes.id_carrera', '=', 'carrera_modalidad.Carrera_idCarrera')
+                         ->on('estudiantes.id_modalidad', '=', 'carrera_modalidad.Modalidad_idModalidad');
+                })
+                ->whereColumn('estudiantes.year_academico', '=', 'carrera_modalidad.cantidad_years')
+                ->get();
+
+            $totalEstudiantesCulminante = $estudiantesAnioCulminante->count();
+            
+            // Estudiantes de año culminante con y sin tutor
+            $estudiantesCulminanteIds = $estudiantesAnioCulminante->pluck('id')->toArray();
+            
+            $estudiantesCulminanteConTutor = 0;
+            $estudiantesCulminanteSinTutor = $totalEstudiantesCulminante;
+            
+            if (count($estudiantesCulminanteIds) > 0) {
+                $estudiantesCulminanteConTutor = tutor_estudiante::whereIn('id_estudiante', $estudiantesCulminanteIds)
+                    ->distinct('id_estudiante')
+                    ->count('id_estudiante');
+                
+                $estudiantesCulminanteSinTutor = $totalEstudiantesCulminante - $estudiantesCulminanteConTutor;
+            }
+
             return response()->json([
                 'fundamentaciones' => [
                     'total' => $totalFundamentaciones,
@@ -73,6 +98,11 @@ class estadisticasController extends Controller
                 'estudiantes' => [
                     'total' => $totalEstudiantes,
                     'sin_tutor' => $estudiantesSinTutor
+                ],
+                'estudiantes_culminante' => [
+                    'total' => $totalEstudiantesCulminante,
+                    'sin_tutor' => $estudiantesCulminanteSinTutor,
+                    'con_tutor' => $estudiantesCulminanteConTutor
                 ]
             ]);
         } catch (\Exception $e) {
