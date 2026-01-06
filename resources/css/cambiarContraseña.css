@@ -237,6 +237,11 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+
+    .btn-cambiar-contrasena{
+        width: 420px;
+    }
+
     .cambiar-contrasena-container {
         padding: 15px;
         min-height: calc(100vh - 100px);
