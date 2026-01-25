@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Profesor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Estudiante;
-use App\Models\Fundamentaciones;
+use App\Models\fundamentaciones;
 use App\Models\Cortes_de_tesis;
 use App\Models\OpinionTutorFundamentacion;
 use App\Models\OpinionTutorCorte;
@@ -142,7 +142,7 @@ class EstudianteTutoradoController extends Controller
             }
 
             $profesor = Auth::user()->profesor;
-            $fundamentacion = Fundamentaciones::find($request->id_fundamentacion);
+            $fundamentacion = fundamentaciones::find($request->id_fundamentacion);
 
             // Verificar que el profesor sea tutor del estudiante
             $esTutor = $fundamentacion->tesis->estudiante->tutor()

@@ -23,6 +23,6 @@ class profesorFundamentación extends Model
 
     public function fundamentacion()
     {
-        return $this->belongsTo(Fundamentaciones::class, 'id_fundamentacion');
+        return $this->belongsTo(fundamentaciones::class, 'id_fundamentacion');
     }
 }

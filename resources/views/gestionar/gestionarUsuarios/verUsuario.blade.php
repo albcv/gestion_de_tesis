@@ -202,17 +202,15 @@
             
             <!-- Mostrar estudiantes tutoreados si es profesor -->
             @if($usuario->profesor->tutorados && $usuario->profesor->tutorados->count() > 0)
+            <script>alert($usuario->profesor->tutorados->count())</script>
             <div class="campo-dato tutorados-info">
                 <label>Estudiantes Tutoreados ({{ $usuario->profesor->tutorados->count() }}):</label>
                 <ul class="lista-tutorados">
                     @foreach($usuario->profesor->tutorados as $tutorado)
                     <li>
-                        {{ $tutorado->estudiante->Nombre_estudiante }} 
-                        {{ $tutorado->estudiante->Apellido1 }} 
-                        {{ $tutorado->estudiante->Apellido2 }}
-                        <span class="carrera-tutorado">
-                            ({{ $tutorado->estudiante->carrera->Nombre_carrera ?? 'Sin carrera' }})
-                        </span>
+                        {{ $tutorado->Nombre_estudiante }} 
+                        {{ $tutorado->Apellido1 }} 
+                        {{ $tutorado->Apellido2 }}
                     </li>
                     @endforeach
                 </ul>
