@@ -61,6 +61,25 @@ class cortesController extends Controller
         $this->columnaIdVersionPrimaria = $instanciaVersion->getKeyName();
     }
 
+    // Agrega este método en la clase cortesController
+private function sanitizeFileName($filename)
+{
+    // Reemplazar caracteres especiales latinos
+    $clean = str_replace(
+        ['á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú', 'ñ', 'Ñ', 'ü', 'Ü'],
+        ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'n', 'N', 'u', 'U'],
+        $filename
+    );
+    
+    // Reemplazar espacios por guiones bajos
+    $clean = str_replace(' ', '_', $clean);
+    
+    // Eliminar cualquier otro carácter no alfanumérico (excepto guiones bajos y puntos)
+    $clean = preg_replace('/[^a-zA-Z0-9_\-\.]/', '', $clean);
+    
+    return trim($clean);
+}
+
     public function mostrar(Request $request)
     {
         try {
@@ -301,6 +320,8 @@ class cortesController extends Controller
 
                 // Preparar nombre del archivo para la primera versión
                 $nombreOriginal = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                // SANITIZAR EL NOMBRE
+                $nombreOriginal = $this->sanitizeFileName($nombreOriginal);
                 $nombreArchivo = "corte_{$corte->idCortes_de_tesis}_v1_{$nombreOriginal}.{$extension}";
                 
                 // Almacenar el archivo en una carpeta específica para este corte
@@ -501,8 +522,10 @@ class cortesController extends Controller
 
                     // Preparar nuevo nombre manteniendo el número de versión
                     $nombreOriginal = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                    // SANITIZAR EL NOMBRE
+                    $nombreOriginal = $this->sanitizeFileName($nombreOriginal);
                     $nombreArchivo = "corte_{$corte->idCortes_de_tesis}_v{$version->version_numero}_{$nombreOriginal}.{$extension}";
-                    
+
                     // Almacenar nuevo archivo
                     $path = $file->storeAs("{$this->storageFolder}/{$corte->idCortes_de_tesis}", $nombreArchivo);
 
@@ -524,9 +547,10 @@ class cortesController extends Controller
 
                 // Preparar nombre del archivo
                 $nombreOriginal = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                // SANITIZAR EL NOMBRE
+                $nombreOriginal = $this->sanitizeFileName($nombreOriginal);
                 $nombreArchivo = "corte_{$corte->idCortes_de_tesis}_v{$nuevaVersionNumero}_{$nombreOriginal}.{$extension}";
-                
-                // Almacenar el archivo
+
                 $path = $file->storeAs("{$this->storageFolder}/{$corte->idCortes_de_tesis}", $nombreArchivo);
 
                 // Crear registro de versión
