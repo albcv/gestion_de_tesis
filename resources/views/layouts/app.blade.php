@@ -7,115 +7,108 @@
     <title>Sistema de Gestión de Tesis</title>
     @vite(['resources/css/app.css'])
     @vite(['resources/css/sidebar.css'])
+  
 </head>
 <body>
     @php
         use Illuminate\Support\Facades\Auth;
-        
-        // Verificar autenticación
+        use Illuminate\Support\Facades\Route;
+
         if (!Auth::check()) {
             abort(403, 'Acceso denegado');
         }
 
         $usuario = Auth::user();
+        $ruta = Route::currentRouteName();
+        if (!$usuario->tienePermiso($ruta)) {
+            abort(403, 'Acceso denegado');
+        }
 
-        $ruta = Route::currentRouteName(); 
-            if (!$usuario->tienePermiso($ruta)) {
-                abort(403, 'Acceso denegado');
-            }
-        
-    
-
-        // Definir menús del sidebar
+        // Menús del sidebar (gestión)
         $sidebarMenus = [
-            ['nombre' => 'Facultad', 'url' => route('gestionarFacultad'), 'permiso' => 'gestionarFacultad'],
-            ['nombre' => 'Carrera', 'url' => route('gestionarCarrera'), 'permiso' => 'gestionarCarrera'],
-            ['nombre' => 'Modalidad', 'url' => route('gestionarModalidad'), 'permiso' => 'gestionarModalidad'],
-            ['nombre' => 'Grupo', 'url' => route('gestionarGrupos'), 'permiso' => 'gestionarGrupos'],
-            ['nombre' => 'Departamento', 'url' => route('gestionarDepartamento'), 'permiso' => 'gestionarDepartamento'],
-            ['nombre' => 'Trabajo de diploma', 'url' => route('gestionarTesis'), 'permiso' => 'gestionarTesis'],
-            [
-                'nombre' => 'Fundamentación de tesis', 
-                'url' => route('gestionarFundamentaciones'), 
-                'permiso' => 'gestionarFundamentaciones'
-            ],
-            ['nombre' => 'Cortes de tesis', 'url' => route('gestionarCortes'), 'permiso' => 'gestionarCortes'],
-            ['nombre' => 'No conformidades', 'url' => route('gestionarNoConformidades'), 'permiso' => 'gestionarNoConformidades'],
-            ['nombre' => 'Fechas de entrega', 'url' => route('fechaEntrega'), 'permiso' => 'fechaEntrega'],
-            ['nombre' => 'Subir Fundamentación', 'url' => route('subirFundamentación'), 'permiso' => 'subirFundamentación'],
-            ['nombre' => 'Subir Corte', 'url' => route('subirCorte'), 'permiso' => 'subirCorte'],
-            ['nombre' => 'Revisar Fundamentación', 'url' => route('revisarFundamentación'), 'permiso' => 'revisarFundamentación'],
-            ['nombre' => 'Revisar Corte', 'url' => route('revisarCorte'), 'permiso' => 'revisarCorte'],
-            ['nombre' => 'Estudiantes tutorados', 'url' => route('estudiantesTutorados'), 'permiso' => 'estudiantesTutorados']
+            ['nombre' => 'Facultad',                'url' => route('gestionarFacultad'),         'permiso' => 'gestionarFacultad',         'icono' => '🏛️'],
+            ['nombre' => 'Carrera',                 'url' => route('gestionarCarrera'),          'permiso' => 'gestionarCarrera',          'icono' => '🎓'],
+            ['nombre' => 'Modalidad',               'url' => route('gestionarModalidad'),        'permiso' => 'gestionarModalidad',        'icono' => '📚'],
+            ['nombre' => 'Grupo',                   'url' => route('gestionarGrupos'),           'permiso' => 'gestionarGrupos',           'icono' => '👥'],
+            ['nombre' => 'Departamento',            'url' => route('gestionarDepartamento'),     'permiso' => 'gestionarDepartamento',     'icono' => '🏢'],
+            ['nombre' => 'Trabajo de diploma',      'url' => route('gestionarTesis'),            'permiso' => 'gestionarTesis',            'icono' => '📝'],
+            ['nombre' => 'Fundamentación de tesis', 'url' => route('gestionarFundamentaciones'), 'permiso' => 'gestionarFundamentaciones', 'icono' => '📖'],
+            ['nombre' => 'Cortes de tesis',         'url' => route('gestionarCortes'),           'permiso' => 'gestionarCortes',           'icono' => '📝'],
+            ['nombre' => 'No conformidades',        'url' => route('gestionarNoConformidades'),  'permiso' => 'gestionarNoConformidades',  'icono' => '⚠️'],
+            ['nombre' => 'Fechas de entrega',       'url' => route('fechaEntrega'),              'permiso' => 'fechaEntrega',              'icono' => '📅'],
+            ['nombre' => 'Subir Fundamentación',    'url' => route('subirFundamentación'),       'permiso' => 'subirFundamentación',       'icono' => '⬆️'],
+            ['nombre' => 'Subir Corte',             'url' => route('subirCorte'),                'permiso' => 'subirCorte',                'icono' => '⬆️'],
+            ['nombre' => 'Revisar Fundamentación',  'url' => route('revisarFundamentación'),     'permiso' => 'revisarFundamentación',     'icono' => '🔍'],
+            ['nombre' => 'Revisar Corte',           'url' => route('revisarCorte'),              'permiso' => 'revisarCorte',              'icono' => '🔍'],
+            ['nombre' => 'Estudiantes tutorados',   'url' => route('estudiantesTutorados'),      'permiso' => 'estudiantesTutorados',      'icono' => '🧑‍🎓'],
         ];
 
-        // Definir menús del header
+        // Menús del header (navegación general)
         $headerMenus = [
-            ['nombre' => 'Inicio', 'url' => route('inicio'), 'permiso' => 'inicio'],
-            ['nombre' => 'Usuarios', 'url' => route('gestionarUsuarios'), 'permiso' => 'gestionarUsuarios'],
-            ['nombre' => 'Consultas', 'url' => route('consultas'), 'permiso' => 'consultas'],
-            ['nombre' => 'Roles', 'url' => route('gestionarRoles'), 'permiso' => 'gestionarRoles'],
-            ['nombre' => 'Permisos', 'url' => route('gestionarPermisos'), 'permiso' => 'gestionarPermisos'],
+            ['nombre' => 'Inicio',    'url' => route('inicio'),            'permiso' => 'inicio',            'icono' => '🏠'],
+            ['nombre' => 'Usuarios',  'url' => route('gestionarUsuarios'),  'permiso' => 'gestionarUsuarios', 'icono' => '👤'],
+            ['nombre' => 'Consultas', 'url' => route('consultas'),          'permiso' => 'consultas',         'icono' => '🔎'],
+            ['nombre' => 'Roles',     'url' => route('gestionarRoles'),     'permiso' => 'gestionarRoles',    'icono' => '🛡️'],
+            ['nombre' => 'Permisos',  'url' => route('gestionarPermisos'),  'permiso' => 'gestionarPermisos', 'icono' => '🔑'],
         ];
+
+        $sidebarMenusFiltrados = array_filter($sidebarMenus, function ($menu) use ($usuario) {
+            return is_array($menu['permiso'])
+                ? $usuario->tieneAlgunPermiso($menu['permiso'])
+                : $usuario->tienePermiso($menu['permiso']);
+        });
+
+        $headerMenusFiltrados = array_filter($headerMenus, function ($menu) use ($usuario) {
+            return is_array($menu['permiso'])
+                ? $usuario->tieneAlgunPermiso($menu['permiso'])
+                : $usuario->tienePermiso($menu['permiso']);
+        });
     @endphp
 
-    <div class="container">
-        <!-- Sidebar -->
-        <nav class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <img src="{{ asset('img/UNICA_logo.png') }}" alt="Logo de la UNICA" id="logo_unica">
-                <h2>SGT</h2>
+    <!-- ==============================
+         Header: barra superior a ancho completo
+         ============================== -->
+    <header class="top-nav">
+        <div class="nav-container">
+
+            <!-- Izquierda: hamburguesa + marca -->
+            <div class="nav-left">
+                @if(count($sidebarMenusFiltrados) > 0)
+                    <button id="menuToggle"
+                            class="menu-toggle"
+                            aria-label="Abrir menú de gestión"
+                            aria-expanded="false"
+                            aria-controls="sidebar">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                @endif
+
+                <a href="{{ route('inicio') }}" class="brand">
+                    <img src="{{ asset('img/UNICA_logo.png') }}" alt="UNICA" class="brand-logo">
+                    <span class="brand-name">SGT</span>
+                </a>
             </div>
 
-            <!-- Contenedor con scroll -->
-            <div class="sidebar-menu-container">
-                <ul class="sidebar-menu">
-                    <h2>Gestionar</h2>
-
-                    @foreach($sidebarMenus as $menu)
-                        @php
-                            $tienePermiso = false;
-                            if (is_array($menu['permiso'])) {
-                                $tienePermiso = $usuario->tieneAlgunPermiso($menu['permiso']);
-                            } else {
-                                $tienePermiso = $usuario->tienePermiso($menu['permiso']);
-                            }
-                        @endphp
-                        
-                        @if($tienePermiso)
-                            <li class="menu_item">
-                                <a class="menu_link" href="{{ $menu['url'] }}">{{ $menu['nombre'] }}</a>
-                            </li>
-                        @endif
+            <!-- Derecha: navegación escritorio + perfil -->
+            <div class="nav-right">
+                <ul class="nav-links">
+                    @foreach($headerMenusFiltrados as $menu)
+                        <li>
+                            <a href="{{ $menu['url'] }}">
+                                <span class="nav-icon">{{ $menu['icono'] ?? '' }}</span>
+                                <span>{{ $menu['nombre'] }}</span>
+                            </a>
+                        </li>
                     @endforeach
-                </ul>
-            </div>
-        </nav>
 
-        <!-- Contenido Principal -->
-        <main class="main-content" id="mainContent">
-            <header>
-                <ul>
-                    @foreach($headerMenus as $menu)
-                        @php
-                            $tienePermisoHeader = false;
-                            if (is_array($menu['permiso'])) {
-                                $tienePermisoHeader = $usuario->tieneAlgunPermiso($menu['permiso']);
-                            } else {
-                                $tienePermisoHeader = $usuario->tienePermiso($menu['permiso']);
-                            }
-                        @endphp
-                        
-                        @if($tienePermisoHeader)
-                            <li><a href="{{ $menu['url'] }}">{{ $menu['nombre'] }}</a></li>
-                        @endif
-                    @endforeach
-                    
-                    <!-- Cerrar sesión siempre visible si el usuario está autenticado -->
                     @if($usuario)
                         <li>
-                            <a href="{{ route('logout') }}">
-                                Cerrar sesión
+                            <a href="{{ route('logout') }}"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <span class="nav-icon">🚪</span>
+                                <span>Cerrar sesión</span>
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
@@ -125,37 +118,154 @@
                 </ul>
 
                 @if($usuario && $usuario->tienePermiso('perfil'))
-                    <div id="perfil" onclick="window.location.href='{{ route('perfil') }}'">Perfil</div>
+                    <div id="perfil"
+                         onclick="window.location.href='{{ route('perfil') }}'"
+                         title="Perfil">Perfil</div>
                 @endif
-            </header>
-
-            <div class="content">
-                @yield('content')
-                
-                <!-- Script para mostrar alertas de sesión -->
-                <script>
-                    @if(session('success'))
-                        document.addEventListener('DOMContentLoaded', function() {
-                            alert('{{ session('success') }}');
-                        });
-                    @endif
-                    
-                    @if(session('error'))
-                        document.addEventListener('DOMContentLoaded', function() {
-                            alert('{{ session('error') }}');
-                        });
-                    @endif
-                    
-                    @if($errors->any())
-                        document.addEventListener('DOMContentLoaded', function() {
-                            @foreach($errors->all() as $error)
-                                alert('{{ $error }}');
-                            @endforeach
-                        });
-                    @endif
-                </script>
             </div>
-        </main>
-    </div>
+        </div>
+    </header>
+
+    <!-- Overlay del sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- ==============================
+         Sidebar (drawer)
+         ============================== -->
+    <nav class="sidebar" id="sidebar" aria-hidden="true">
+        <button class="sidebar-close" id="sidebarClose" aria-label="Cerrar menú">×</button>
+
+        <div class="sidebar-menu-container">
+
+            @if(count($sidebarMenusFiltrados) > 0)
+                <h2 class="sidebar-section-title">Gestionar</h2>
+                <ul class="sidebar-menu">
+                    @foreach($sidebarMenusFiltrados as $menu)
+                        <li class="menu_item">
+                            <a class="menu_link" href="{{ $menu['url'] }}" title="{{ $menu['nombre'] }}">
+                                <span class="menu_icon">{{ $menu['icono'] ?? '📄' }}</span>
+                                <span class="menu_text">{{ $menu['nombre'] }}</span>
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+
+            <!-- Navegación general: solo visible en móvil -->
+            @if(count($headerMenusFiltrados) > 0)
+                <div class="sidebar-mobile-only">
+                    <h2 class="sidebar-section-title">Navegación</h2>
+                    <ul class="sidebar-menu">
+                        @foreach($headerMenusFiltrados as $menu)
+                            <li class="menu_item">
+                                <a class="menu_link" href="{{ $menu['url'] }}" title="{{ $menu['nombre'] }}">
+                                    <span class="menu_icon">{{ $menu['icono'] ?? '📄' }}</span>
+                                    <span class="menu_text">{{ $menu['nombre'] }}</span>
+                                </a>
+                            </li>
+                        @endforeach
+
+                        @if($usuario)
+                            <li class="menu_item">
+                                <a class="menu_link" href="{{ route('logout') }}"
+                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <span class="menu_icon">🚪</span>
+                                    <span class="menu_text">Cerrar sesión</span>
+                                </a>
+                            </li>
+                        @endif
+                    </ul>
+                </div>
+            @endif
+
+        </div>
+    </nav>
+
+    <!-- ==============================
+         Contenido principal
+         ============================== -->
+    <main class="main-content">
+        <div class="content">
+            @yield('content')
+
+            <script>
+                @if(session('success'))
+                    document.addEventListener('DOMContentLoaded', function() {
+                        alert('{{ session('success') }}');
+                    });
+                @endif
+
+                @if(session('error'))
+                    document.addEventListener('DOMContentLoaded', function() {
+                        alert('{{ session('error') }}');
+                    });
+                @endif
+
+                @if($errors->any())
+                    document.addEventListener('DOMContentLoaded', function() {
+                        @foreach($errors->all() as $error)
+                            alert('{{ $error }}');
+                        @endforeach
+                    });
+                @endif
+            </script>
+        </div>
+    </main>
+
+    <!-- ==============================
+         JS: toggle del sidebar
+         ============================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const sidebarClose = document.getElementById('sidebarClose');
+
+            if (!menuToggle || !sidebar || !overlay) return;
+
+            function openSidebar() {
+                sidebar.classList.add('sidebar-open');
+                overlay.classList.add('active');
+                menuToggle.classList.add('active');
+                menuToggle.setAttribute('aria-expanded', 'true');
+                sidebar.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('sidebar-open');
+                overlay.classList.remove('active');
+                menuToggle.classList.remove('active');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                sidebar.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }
+
+            menuToggle.addEventListener('click', function () {
+                if (sidebar.classList.contains('sidebar-open')) {
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+            });
+
+            overlay.addEventListener('click', closeSidebar);
+
+            if (sidebarClose) {
+                sidebarClose.addEventListener('click', closeSidebar);
+            }
+
+            sidebar.querySelectorAll('.menu_link').forEach(function (link) {
+                link.addEventListener('click', closeSidebar);
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && sidebar.classList.contains('sidebar-open')) {
+                    closeSidebar();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

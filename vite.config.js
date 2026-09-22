@@ -16,6 +16,7 @@ export default defineConfig({
                 'resources/css/perfil.css',
                 'resources/css/sidebar.css',
                 'resources/css/stats.css',
+            
 
                 //css profesor
                 'resources/css/profesor/listaCortes.css',
