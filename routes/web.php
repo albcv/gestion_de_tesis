@@ -69,8 +69,11 @@ Route::view('/gestionar', 'gestionar.gestionar')->name('gestionar');
 Route::get('/gestionarFacultad', [facultadController::class, 'mostrar'])->name('gestionarFacultad');
 Route::post('/agregarFacultad', [facultadController::class, 'agregar'])->name('agregarFacultad');
 Route::post('/eliminarFacultad', [facultadController::class, 'eliminar'])->name('eliminarFacultad');
+Route::post('/eliminarVariasFacultades', [facultadController::class, 'eliminarVarios'])->name('eliminarVariasFacultades');
 Route::post('/modificarFacultad', [facultadController::class, 'modificar'])->name('modificarFacultad');
 Route::post('/vaciarFacultad', [facultadController::class, 'vaciar'])->name('vaciarFacultad');
+Route::get('/exportarFacultadesCsv',     [facultadController::class, 'exportarCsv'])->name('exportarFacultadesCsv');
+Route::get('/exportarFacultadesPdf',     [facultadController::class, 'exportarPdf'])->name('exportarFacultadesPdf');
 
 
 // Rutas para gestión de carreras

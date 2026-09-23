@@ -46,7 +46,7 @@
         }
     @endphp
 
-    <h1>Gestión de tesis</h1>
+    <h1>Gestión de Tesis</h1>
 
     @if ($hasRoleAccess)
         @if ($rolNombre === 'administrador')

@@ -3,7 +3,6 @@
 @section('content')
 
 @vite(['resources/css/gestionar/gestionarModalidad.css'])
-@vite(['resources/css/formulario.css'])
 @vite(['resources/js/agregar/agregarModalidad.js'])
 @vite(['resources/js/actualizar/actualizarModalidad.js'])
 @vite(['resources/js/eliminar.js'])

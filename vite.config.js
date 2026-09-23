@@ -9,13 +9,12 @@ export default defineConfig({
 
                 //css generales
                 'resources/css/app.css',
-                'resources/css/crud.css',
-                'resources/css/formulario.css',
                 'resources/css/inicio.css',
                 'resources/css/login.css',
                 'resources/css/perfil.css',
                 'resources/css/sidebar.css',
                 'resources/css/stats.css',
+                
             
 
                 //css profesor
@@ -45,13 +44,17 @@ export default defineConfig({
                 'resources/css/gestionar/fechaEntrega.css',
                 'resources/css/gestionar/gestionar.css',
                 'resources/css/gestionar/gestionarDepartamento.css',
-                'resources/css/gestionar/gestionarFacultad.css',
                 'resources/css/gestionar/gestionarGrupo.css',
                 'resources/css/gestionar/gestionarModalidad.css',
                 'resources/css/gestionar/gestionarNoConformidades.css',
                 'resources/css/gestionar/gestionarPermisos.css',
                 'resources/css/gestionar/gestionarProfesor.css',
                 'resources/css/gestionar/gestionarRoles.css',
+               
+
+                //css gestionar facultad
+                 'resources/css/gestionar/facultad/index.css',
+                 'resources/css/gestionar/facultad/formulario.css',
 
                 //css gestionar carrera
                 'resources/css/gestionar/gestionarCarrera/formularioCarrera.css',
@@ -110,7 +113,6 @@ export default defineConfig({
 
                  // === Actualizar  ===
                 'resources/js/actualizar/actualizarDepartamento.js',
-                'resources/js/actualizar/actualizarFacultad.js',
                 'resources/js/actualizar/actualizarGrupo.js',
                 'resources/js/actualizar/actualizarModalidad.js',
                 'resources/js/actualizar/actualizarNoConformidad.js',
@@ -119,7 +121,6 @@ export default defineConfig({
 
                  // === Agregar  ===
                 'resources/js/agregar/agregarDepartamento.js',
-                'resources/js/agregar/agregarFacultad.js',
                 'resources/js/agregar/agregarGrupo.js',
                 'resources/js/agregar/agregarModalidad.js',
                 'resources/js/agregar/agregarNoConformidades.js',

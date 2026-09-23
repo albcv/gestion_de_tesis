@@ -1,0 +1,246 @@
+/* =====================================================
+   formularioFacultad.css — Vista crear / editar
+   ===================================================== */
+
+.contenido-principal {
+    padding: 20px 40px;
+    min-height: calc(100vh - 70px);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.contenedor-formulario {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    animation: slideIn 0.5s ease-out;
+}
+
+/* ---------- Botón volver ---------- */
+.botones-superiores {
+    margin-bottom: 20px;
+}
+
+.btn-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #030;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s;
+    font-size: 15px;
+}
+
+.btn-volver:hover {
+    background: #020;
+    transform: translateX(-3px);
+    color: white;
+}
+
+/* ---------- Título ---------- */
+h1 {
+    color: #000;
+    margin-bottom: 25px;
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #030;
+}
+
+/* ---------- Alertas ---------- */
+.alerta {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    font-size: 15px;
+    font-weight: 500;
+    border-left: 5px solid;
+}
+
+.alerta-error {
+    background: #f8d7da;
+    color: #721c24;
+    border-left-color: #dc3545;
+}
+
+.alerta-exito {
+    background: #d4edda;
+    color: #155724;
+    border-left-color: #28a745;
+}
+
+/* ---------- Tarjeta del formulario ---------- */
+.card-formulario {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 51, 0, 0.15);
+    border: 2px solid #030;
+    padding: 30px;
+}
+
+/* ---------- Secciones ---------- */
+.seccion-formulario {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.seccion-formulario h3 {
+    color: #030;
+    font-size: 18px;
+    margin: 0 0 20px 0;
+    padding-left: 10px;
+    border-left: 4px solid #030;
+}
+
+/* ---------- Grid de campos ---------- */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+}
+
+.campo-formulario {
+    display: flex;
+    flex-direction: column;
+}
+
+.campo-formulario label {
+    color: #030;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.campo-formulario .atributo {
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s;
+    background: #f9f9f9;
+    color: #333;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.campo-formulario .atributo:focus {
+    outline: none;
+    border-color: #030;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0, 51, 0, 0.1);
+}
+
+.campo-formulario .atributo::placeholder {
+    color: #999;
+}
+
+/* Input con error */
+.campo-formulario .atributo.atributo-error {
+    border-color: #dc3545;
+    background: #fff5f5;
+}
+
+.mensaje-error {
+    display: block;
+    margin-top: 6px;
+    color: #dc3545;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ayuda-campo {
+    display: block;
+    margin-top: 6px;
+    color: #666;
+    font-size: 13px;
+    font-style: italic;
+}
+
+/* ---------- Botones de acción ---------- */
+.seccion-acciones {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 2px solid #f0f0f0;
+    flex-wrap: wrap;
+}
+
+.btn-guardar {
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: white;
+    border: none;
+    padding: 14px 35px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 51, 0, 0.2);
+    min-width: 200px;
+}
+
+.btn-guardar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 51, 0, 0.3);
+    background: linear-gradient(135deg, #0a3 0%, #030 100%);
+}
+
+.btn-cancelar {
+    background: #6c757d;
+    color: white;
+    padding: 14px 35px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    min-width: 200px;
+}
+
+.btn-cancelar:hover {
+    background: #5a6268;
+    transform: translateY(-3px);
+    color: white;
+}
+
+/* ---------- Animación ---------- */
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    .contenido-principal { padding: 15px 20px; }
+    .contenedor-formulario { padding: 15px; }
+    .card-formulario { padding: 20px; }
+    h1 { font-size: 24px; }
+}
+
+@media (max-width: 600px) {
+    .contenido-principal { padding: 10px; }
+    .contenedor-formulario { padding: 10px; }
+    .card-formulario { padding: 16px; }
+    h1 { font-size: 22px; padding-bottom: 10px; }
+    .btn-volver { width: 100%; justify-content: center; }
+    .seccion-formulario h3 { font-size: 16px; }
+    .campo-formulario .atributo { font-size: 15px; padding: 10px 12px; }
+    .seccion-acciones { flex-direction: column; gap: 10px; }
+    .btn-guardar,
+    .btn-cancelar { width: 100%; min-width: unset; padding: 13px 20px; }
+}

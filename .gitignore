@@ -25,4 +25,4 @@ Thumbs.db
 
 node_version.sh
 .nvmrc
-
+*.zip
