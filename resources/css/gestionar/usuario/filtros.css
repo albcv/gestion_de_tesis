@@ -1,0 +1,272 @@
+/* =====================================================
+   filtros.css — Filtros de búsqueda y paginación
+   (Complementa a facultad/index.css)
+   ===================================================== */
+
+/* =====================================================
+   Formulario de filtros
+   ===================================================== */
+.form-filtros-usuarios {
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 22px;
+    box-shadow: 0 6px 20px rgba(0, 51, 0, 0.2);
+    border: 2px solid #030;
+    animation: fadeInFiltros 0.35s ease-out;
+}
+
+@keyframes fadeInFiltros {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.filtros-fila {
+    display: grid;
+    grid-template-columns: 2fr 1.3fr 0.9fr auto auto;
+    gap: 12px;
+    align-items: center;
+}
+
+/* ---------- Inputs y selects ---------- */
+.input-filtro {
+    width: 100%;
+    padding: 11px 15px;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #030;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.15s;
+    font-family: inherit;
+    min-width: 0; /* evita desborde en grid */
+}
+
+.input-filtro::placeholder {
+    color: #888;
+}
+
+.input-filtro:focus {
+    border-color: #0f0;
+    box-shadow: 0 0 0 4px rgba(0, 255, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+select.input-filtro {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23003000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+    appearance: none;
+}
+
+/* ---------- Botones ---------- */
+.btn-guardar-filtro,
+.btn-limpiar-filtro {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    border: 2px solid transparent;
+    white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    min-height: 42px;
+}
+
+.btn-guardar-filtro {
+    background: #fff;
+    color: #030;
+    border-color: #fff;
+}
+
+.btn-guardar-filtro:hover {
+    background: #e8f5e9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.25);
+}
+
+.btn-limpiar-filtro {
+    background: #ffc107;
+    color: #030;
+    border-color: #ffc107;
+}
+
+.btn-limpiar-filtro:hover {
+    background: #e0a800;
+    color: #030;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.35);
+}
+
+/* =====================================================
+   Paginación
+   ===================================================== */
+.paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    padding: 20px 10px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.paginacion nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.paginacion .pagination {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.paginacion .page-item {
+    margin: 0;
+}
+
+.paginacion .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    background: #fff;
+    color: #030;
+    border: 2px solid #030;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    line-height: 1;
+    font-family: inherit;
+}
+
+.paginacion .page-link:hover {
+    background: #030;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 51, 0, 0.25);
+}
+
+.paginacion .page-item.active .page-link {
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: #fff;
+    border-color: #030;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 51, 0, 0.3);
+    transform: scale(1.05);
+}
+
+.paginacion .page-item.disabled .page-link,
+.paginacion .page-link[aria-disabled="true"] {
+    background: #e9ecef;
+    color: #adb5bd;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.7;
+}
+
+/* Botones "Anterior" / "Siguiente" */
+.paginacion .page-item:first-child .page-link,
+.paginacion .page-item:last-child .page-link {
+    padding: 0 16px;
+    font-weight: 700;
+}
+
+/* =====================================================
+   Responsive
+   ===================================================== */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .filtros-fila {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .btn-guardar-filtro,
+    .btn-limpiar-filtro {
+        width: 100%;
+    }
+}
+
+/* Móvil */
+@media (max-width: 600px) {
+    .form-filtros-usuarios {
+        padding: 16px;
+        border-radius: 10px;
+    }
+
+    .filtros-fila {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .input-filtro {
+        font-size: 15px; /* evita zoom en iOS */
+        padding: 12px 14px;
+    }
+
+    select.input-filtro {
+        padding-right: 34px;
+    }
+
+    .btn-guardar-filtro,
+    .btn-limpiar-filtro {
+        padding: 13px 18px;
+        font-size: 14px;
+        min-height: 46px;
+    }
+
+    /* Paginación más compacta */
+    .paginacion {
+        margin-top: 22px;
+        padding: 15px 5px;
+        gap: 8px;
+    }
+
+    .paginacion .page-link {
+        min-width: 36px;
+        height: 36px;
+        padding: 0 10px;
+        font-size: 13px;
+        border-radius: 6px;
+    }
+
+    .paginacion .page-item:first-child .page-link,
+    .paginacion .page-item:last-child .page-link {
+        padding: 0 12px;
+        font-size: 12px;
+    }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 400px) {
+    .paginacion .page-link {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        font-size: 12px;
+    }
+}

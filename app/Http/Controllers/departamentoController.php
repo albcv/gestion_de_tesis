@@ -11,130 +11,228 @@ class departamentoController extends Controller
     protected $modelo = Departamento::class;
     protected $rutaVista = 'gestionarDepartamento';
     protected $columnaNombre = 'Nombre_departamento';
+    protected $columnaId = 'idDepartamento';
+
     protected $nombreTabla;
-    protected $columnaId;
+    protected $columnaIdPrimaria;
 
     public function __construct()
     {
         $modeloInstancia = new $this->modelo;
         $this->nombreTabla = $modeloInstancia->getTable();
-        $this->columnaId = $modeloInstancia->getKeyName();
+        $this->columnaIdPrimaria = $modeloInstancia->getKeyName();
     }
 
-    public function mostrar()
+    /**
+     * Listado, formulario de creación o formulario de edición.
+     */
+    public function mostrar(Request $request)
     {
-        try {
-            $departamentos = $this->modelo::all();
-            return view('gestionar.gestionarDepartamento', compact('departamentos'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al cargar los departamentos: ' . $e->getMessage());
+        $accion = $request->query('accion');
+        $id     = $request->query('id');
+
+        if ($accion === 'crear') {
+            return view('gestionar.departamento.formulario');
         }
+
+        if ($accion === 'editar' && $id) {
+            $departamento = $this->modelo::find($id);
+
+            if (!$departamento) {
+                return redirect()
+                    ->route($this->rutaVista)
+                    ->with('error', 'El departamento que intenta editar no existe');
+            }
+
+            return view('gestionar.departamento.formulario', compact('departamento'));
+        }
+
+        $departamentos = $this->modelo::all();
+
+        return view('gestionar.departamento.index', compact('departamentos'));
     }
 
+    /**
+     * Agrega un nuevo departamento.
+     */
     public function agregar(Request $request)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'departamento' => 'required|string|min:10|max:100',
-            ], [
-                'departamento.required' => 'El nombre del departamento es obligatorio',
-                'departamento.string' => 'El nombre debe ser una cadena de texto',
-                'departamento.min' => 'El nombre debe tener al menos 10 caracteres',
-                'departamento.max' => 'El nombre no puede exceder 100 caracteres',
-            ]);
+        $urlFormCrear = route($this->rutaVista, ['accion' => 'crear']);
+        $modoContinuar = $request->input('accion') === 'continuar';
 
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
-            }
+        $validator = Validator::make($request->all(), [
+            'departamento' => 'required|string|min:10|max:100',
+        ], [
+            'departamento.required' => 'El nombre del departamento es obligatorio',
+            'departamento.string'   => 'El nombre debe ser una cadena de texto',
+            'departamento.min'      => 'El nombre debe tener al menos 10 caracteres',
+            'departamento.max'      => 'El nombre no puede exceder 100 caracteres',
+        ]);
 
-            $departamento = new $this->modelo();
-            $departamento->{$this->columnaNombre} = $request->departamento;
-            $departamento->save();
-
-            return redirect(route($this->rutaVista))
-                ->with('success', 'Departamento agregado correctamente');
-
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Error al agregar el departamento: ' . $e->getMessage())
+        if ($validator->fails()) {
+            return redirect($urlFormCrear)
+                ->withErrors($validator)
                 ->withInput();
         }
+
+        if ($this->modelo::where($this->columnaNombre, $request->departamento)->exists()) {
+            return redirect($urlFormCrear)
+                ->with('error', 'Ya existe un departamento con ese nombre')
+                ->withInput();
+        }
+
+        $departamento = new $this->modelo();
+        $departamento->{$this->columnaNombre} = $request->departamento;
+        $departamento->save();
+
+        if ($modoContinuar) {
+            return redirect($urlFormCrear)
+                ->with('success', 'Departamento creado correctamente. Puede seguir agregando.');
+        }
+
+        return redirect()->route($this->rutaVista);
     }
 
+    /**
+     * Elimina un departamento por ID.
+     */
     public function eliminar(Request $request)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'id' => 'required|exists:' . $this->nombreTabla . ',' . $this->columnaId,
-            ]);
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:' . $this->nombreTabla . ',' . $this->columnaIdPrimaria,
+        ]);
 
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->with('error', 'El departamento no existe o ya ha sido eliminado');
-            }
-
-            $id = $request['id'];
-            $this->modelo::destroy($id);
-
-            return redirect(route($this->rutaVista))
-                ->with('success', 'Departamento eliminado correctamente');
-
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Error al eliminar el departamento: ' . $e->getMessage());
+        if ($validator->fails()) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'El departamento no existe o ya ha sido eliminado');
         }
+
+        $this->modelo::destroy($request->id);
+
+        return redirect()->route($this->rutaVista);
     }
 
+    /**
+     * Elimina varios departamentos a la vez.
+     */
+    public function eliminarVarios(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (!is_array($ids) || count($ids) === 0) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'Debe seleccionar al menos un departamento para eliminar');
+        }
+
+        $ids = array_filter(array_map('intval', $ids), fn($id) => $id > 0);
+
+        if (count($ids) === 0) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'Los IDs enviados no son válidos');
+        }
+
+        $this->modelo::whereIn($this->columnaIdPrimaria, $ids)->delete();
+
+        return redirect()->route($this->rutaVista);
+    }
+
+    /**
+     * Modifica un departamento existente.
+     */
     public function modificar(Request $request)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'id' => 'required|exists:' . $this->nombreTabla . ',' . $this->columnaId,
-                'departamento' => 'required|string|min:10|max:100',
-            ], [
-                'departamento.required' => 'El nombre del departamento es obligatorio',
-                'departamento.string' => 'El nombre debe ser una cadena de texto',
-                'departamento.min' => 'El nombre debe tener al menos 10 caracteres',
-                'departamento.max' => 'El nombre no puede exceder 100 caracteres',
-            ]);
+        $urlFormEditar = route($this->rutaVista, [
+            'accion' => 'editar',
+            'id'     => $request->id,
+        ]);
 
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
-            }
+        $validator = Validator::make($request->all(), [
+            'id'           => 'required|exists:' . $this->nombreTabla . ',' . $this->columnaIdPrimaria,
+            'departamento' => 'required|string|min:10|max:100',
+        ], [
+            'id.required'           => 'El ID es obligatorio',
+            'id.exists'             => 'El departamento no existe',
+            'departamento.required' => 'El nombre del departamento es obligatorio',
+            'departamento.string'   => 'El nombre debe ser una cadena de texto',
+            'departamento.min'      => 'El nombre debe tener al menos 10 caracteres',
+            'departamento.max'      => 'El nombre no puede exceder 100 caracteres',
+        ]);
 
-            $departamento = $this->modelo::find($request->id);
-            if ($departamento) {
-                $departamento->{$this->columnaNombre} = $request->departamento;
-                $departamento->save();
-            }
-
-            return redirect(route($this->rutaVista))
-                ->with('success', 'Departamento modificado correctamente');
-
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Error al modificar el departamento: ' . $e->getMessage())
+        if ($validator->fails()) {
+            return redirect($urlFormEditar)
+                ->withErrors($validator)
                 ->withInput();
         }
+
+        if ($this->modelo::where($this->columnaNombre, $request->departamento)
+                ->where($this->columnaIdPrimaria, '!=', $request->id)
+                ->exists()) {
+            return redirect($urlFormEditar)
+                ->with('error', 'Ya existe otro departamento con ese nombre')
+                ->withInput();
+        }
+
+        $departamento = $this->modelo::find($request->id);
+        if (!$departamento) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'No se encontró el departamento a modificar');
+        }
+
+        $departamento->{$this->columnaNombre} = $request->departamento;
+        $departamento->save();
+
+        return redirect()->route($this->rutaVista);
     }
 
+    /**
+     * Vacía la tabla de departamentos.
+     */
     public function vaciar()
     {
         try {
             $this->modelo::query()->delete();
-            return response()->json([
-                'success' => true,
-                'message' => 'Todos los departamentos han sido eliminados correctamente'
-            ]);
+            return redirect()->route($this->rutaVista);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Error al vaciar los departamentos: ' . $e->getMessage()
-            ]);
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'Error al vaciar los departamentos: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Exporta los departamentos a CSV.
+     */
+    public function exportarCsv()
+    {
+        $departamentos = $this->modelo::orderBy($this->columnaNombre)->get();
+
+        $nombreArchivo = 'departamentos_' . date('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $nombreArchivo . '"',
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
+
+        $callback = function () use ($departamentos) {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+
+            fputcsv($out, ['Nombre del Departamento'], ';');
+
+            foreach ($departamentos as $d) {
+                fputcsv($out, [$d->{$this->columnaNombre}], ';');
+            }
+
+            fclose($out);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

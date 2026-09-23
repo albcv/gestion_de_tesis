@@ -1,16 +1,3 @@
-@auth
-    <script>
-        try {
-            let nombre = '{{ Auth::user()->name ?? "" }}';
-            if (nombre && nombre.trim() !== '') {
-                alert('Bienvenido ' + nombre);
-            }
-        } catch (error) {
-            console.error('Error al mostrar bienvenida:', error);
-        }
-    </script>
-@endauth
-
 @extends('layouts.app')
 
 @section('content')
@@ -46,7 +33,7 @@
         }
     @endphp
 
-    <h1>Gestión de Tesis</h1>
+    <h1>Gestión de Tesis 🎓</h1>
 
     @if ($hasRoleAccess)
         @if ($rolNombre === 'administrador')

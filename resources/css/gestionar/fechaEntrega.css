@@ -1,421 +1,530 @@
-    
-    :root {
-        --fecha-color-primary: #2c3e50;
-        --fecha-color-secondary: #3498db;
-        --fecha-color-success: #27ae60;
-        --fecha-color-danger: #e74c3c;
-        --fecha-color-warning: #f39c12;
-        --fecha-color-light: #f8f9fa;
-        --fecha-color-border: #e0e6ed;
-    }
-    
-    /* Contenedor principal */
-    .fechas-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 30px 20px;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        min-height: calc(100vh - 70px);
-    }
-    
-    /* Título principal */
-    .fechas-title {
-        color: var(--fecha-color-primary);
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 40px;
-        padding-bottom: 15px;
-        position: relative;
-        text-align: center;
-    }
-    
-    .fechas-title::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100px;
-        height: 4px;
-        background: linear-gradient(90deg, var(--fecha-color-secondary), var(--fecha-color-primary));
-        border-radius: 2px;
-    }
-    
-    /* Grid principal */
+/* =====================================================
+   fechaEntrega.css — Gestión de fechas de entrega
+   Paleta verde consistente con el resto del sistema
+   ===================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* =====================================================
+   Contenedor principal
+   ===================================================== */
+.fechas-container {
+    max-width: 1300px;
+    margin: 30px auto;
+    padding: 0 20px 40px;
+}
+
+.fecha-fade-in {
+    animation: fechaFadeIn 0.5s ease-out;
+}
+
+@keyframes fechaFadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================================
+   Título
+   ===================================================== */
+.fechas-title {
+    color: #030;
+    font-size: 30px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 30px 0;
+    padding-bottom: 18px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    letter-spacing: 0.3px;
+}
+
+.fechas-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 4px;
+    background: linear-gradient(90deg, #030, #0a3);
+    border-radius: 2px;
+}
+
+/* =====================================================
+   Alertas
+   ===================================================== */
+.fecha-alert {
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-left: 5px solid;
+    animation: fechaFadeIn 0.4s ease-out;
+}
+
+.fecha-alert-success {
+    background: #d4edda;
+    color: #155724;
+    border-left-color: #16a34a;
+}
+
+.fecha-alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border-left-color: #dc2626;
+}
+
+.fecha-alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border-left-color: #0891b2;
+}
+
+/* =====================================================
+   Grid principal
+   ===================================================== */
+.fechas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+/* =====================================================
+   Tarjetas
+   ===================================================== */
+.fechas-card {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 51, 0, 0.12);
+    border: 2px solid #030;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.fechas-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0, 51, 0, 0.18);
+}
+
+/* ---------- Cabecera de la tarjeta ---------- */
+.fechas-card-header {
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: #fff;
+    padding: 22px 28px;
+    position: relative;
+    overflow: hidden;
+}
+
+.fechas-card-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.fechas-card-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.fechas-card-subtitle {
+    margin: 6px 0 0;
+    font-size: 13px;
+    opacity: 0.85;
+    font-weight: 400;
+    position: relative;
+    z-index: 1;
+}
+
+/* ---------- Cuerpo de la tarjeta ---------- */
+.fechas-card-body {
+    padding: 25px 28px;
+}
+
+/* =====================================================
+   Info de fecha actual
+   ===================================================== */
+.fecha-info-current {
+    background: linear-gradient(135deg, #f5fff5 0%, #e8f5e9 100%);
+    padding: 18px 20px;
+    border-radius: 12px;
+    margin-bottom: 22px;
+    border-left: 5px solid #030;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fecha-info-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #030;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    opacity: 0.85;
+}
+
+.fecha-info-value {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Estados de la fecha */
+.fecha-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.fecha-status-future {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #a5d6a7;
+}
+
+.fecha-status-today {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffe0b2;
+}
+
+.fecha-status-past {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.fecha-no-set {
+    color: #95a5a6;
+    font-style: italic;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* =====================================================
+   Formulario de fecha
+   ===================================================== */
+.fecha-form {
+    margin-top: 22px;
+}
+
+.fecha-form-group {
+    margin-bottom: 18px;
+}
+
+.fecha-form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #030;
+}
+
+.fecha-form-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #4caf50;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #222;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+    font-family: inherit;
+}
+
+.fecha-form-input:focus {
+    border-color: #030;
+    background: #f5fff5;
+    box-shadow: 0 0 0 4px rgba(0, 51, 0, 0.15);
+}
+
+.fecha-form-help {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.fecha-form-help i {
+    color: #0a3;
+    margin-right: 4px;
+}
+
+/* =====================================================
+   Botones
+   ===================================================== */
+.fecha-btn {
+    width: 100%;
+    padding: 13px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #fff;
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+    letter-spacing: 0.3px;
+}
+
+.fecha-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0, 51, 0, 0.3);
+    background: linear-gradient(135deg, #0a3 0%, #030 100%);
+}
+
+.fecha-btn:active {
+    transform: translateY(0);
+}
+
+/* =====================================================
+   Tabla de cortes
+   ===================================================== */
+.fechas-cortes-table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 51, 0, 0.08);
+}
+
+.fechas-cortes-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    min-width: 600px;
+}
+
+.fechas-cortes-table thead {
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+}
+
+.fechas-cortes-table th {
+    padding: 14px 16px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.fechas-cortes-table tbody tr {
+    border-bottom: 1px solid #e8f5e9;
+    transition: background 0.2s;
+}
+
+.fechas-cortes-table tbody tr:hover {
+    background: #f5fff5;
+}
+
+.fechas-cortes-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.fechas-cortes-table td {
+    padding: 12px 16px;
+    color: #222;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+/* ---------- Badge circular del corte ---------- */
+.corte-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0, 51, 0, 0.25);
+}
+
+/* ---------- Formulario dentro de la tabla ---------- */
+.fecha-corte-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.fecha-corte-input {
+    flex: 1;
+    min-width: 130px;
+    padding: 9px 12px;
+    border: 2px solid #4caf50;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #222;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    font-family: inherit;
+}
+
+.fecha-corte-input:focus {
+    border-color: #030;
+    box-shadow: 0 0 0 3px rgba(0, 51, 0, 0.15);
+}
+
+.fecha-corte-btn {
+    padding: 9px 16px;
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fecha-corte-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 14px rgba(0, 51, 0, 0.3);
+}
+
+/* =====================================================
+   Panel de estadísticas (dentro del blade con estilos inline)
+   Aquí solo reforzamos lo que el blade ya define
+   ===================================================== */
+.fechas-card .fechas-card-body > div[style*="grid-template-columns"] > div {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.fechas-card .fechas-card-body > div[style*="grid-template-columns"] > div:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0, 51, 0, 0.1);
+}
+
+/* =====================================================
+   Responsive
+   ===================================================== */
+
+/* Tablet */
+@media (max-width: 1024px) {
     .fechas-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-        gap: 30px;
-        margin-bottom: 40px;
+        grid-template-columns: 1fr;
     }
-    
-  
-    
-    /* Tarjetas */
-    .fechas-card {
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Móvil */
+@media (max-width: 600px) {
+    .fechas-container {
+        margin: 15px auto;
+        padding: 0 12px 30px;
     }
-    
-    .fechas-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+
+    .fechas-title {
+        font-size: 22px;
+        padding-bottom: 12px;
+        gap: 8px;
+        flex-wrap: wrap;
     }
-    
+
     .fechas-card-header {
-        background: linear-gradient(135deg, var(--fecha-color-primary), var(--fecha-color-secondary));
-        color: white;
-        padding: 25px 30px;
-        position: relative;
-        overflow: hidden;
+        padding: 18px 20px;
     }
-    
-    .fechas-card-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-    }
-    
+
     .fechas-card-title {
-        margin: 0;
-        font-size: 1.4rem;
-        font-weight: 600;
-        position: relative;
-        z-index: 1;
-        display: flex;
-        align-items: center;
+        font-size: 17px;
     }
-    
-    .fechas-card-title i {
-        margin-right: 15px;
-        font-size: 1.6rem;
-    }
-    
+
     .fechas-card-subtitle {
-        font-size: 0.95rem;
-        opacity: 0.9;
-        margin-top: 8px;
-        font-weight: 400;
-        position: relative;
-        z-index: 1;
+        font-size: 12px;
     }
-    
+
     .fechas-card-body {
-        padding: 30px;
+        padding: 20px 18px;
     }
-    
-    /* Información actual */
-    .fecha-info-current {
-        background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), rgba(52, 152, 219, 0.02));
-        padding: 25px;
-        border-radius: 12px;
-        margin-bottom: 30px;
-        border-left: 4px solid var(--fecha-color-secondary);
-    }
-    
-    .fecha-info-label {
-        display: block;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #7f8c8d;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
+
     .fecha-info-value {
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: var(--fecha-color-primary);
-        display: flex;
-        align-items: center;
+        font-size: 15px;
     }
-    
-    .fecha-info-value i {
-        margin-right: 10px;
-        color: var(--fecha-color-secondary);
-    }
-    
-    .fecha-no-set {
-        color: #95a5a6;
-        font-style: italic;
-    }
-    
-    /* Formularios */
-    .fecha-form {
-        margin-top: 25px;
-    }
-    
-    .fecha-form-group {
-        margin-bottom: 25px;
-    }
-    
-    .fecha-form-label {
-        display: block;
-        margin-bottom: 12px;
-        font-weight: 600;
-        color: var(--fecha-color-primary);
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-    }
-    
-    .fecha-form-label i {
-        margin-right: 10px;
-        color: var(--fecha-color-secondary);
-    }
-    
+
     .fecha-form-input {
-        width: 100%;
-        padding: 15px;
-        border: 2px solid var(--fecha-color-border);
-        border-radius: 10px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: white;
-        font-family: inherit;
+        font-size: 16px; /* evita zoom en iOS */
+        padding: 11px 13px;
     }
-    
-    .fecha-form-input:focus {
-        outline: none;
-        border-color: var(--fecha-color-secondary);
-        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-    }
-    
-    .fecha-form-help {
-        font-size: 0.9rem;
-        color: #7f8c8d;
-        margin-top: 8px;
-        display: block;
-        line-height: 1.4;
-    }
-    
-    .fecha-form-help i {
-        margin-right: 5px;
-        color: var(--fecha-color-secondary);
-    }
-    
-    /* Botones */
+
     .fecha-btn {
-        background: linear-gradient(135deg, var(--fecha-color-secondary), #2980b9);
-        color: white;
-        border: none;
-        padding: 15px 35px;
-        border-radius: 10px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-        width: 100%;
-        margin-top: 10px;
+        padding: 12px 16px;
+        font-size: 14px;
     }
-    
-    .fecha-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
-        background: linear-gradient(135deg, #2980b9, var(--fecha-color-secondary));
-    }
-    
-    .fecha-btn:active {
-        transform: translateY(0);
-    }
-    
-    .fecha-btn i {
-        margin-right: 10px;
-    }
-    
-    .fecha-btn-success {
-        background: linear-gradient(135deg, var(--fecha-color-success), #229954);
-    }
-    
-    .fecha-btn-success:hover {
-        background: linear-gradient(135deg, #229954, var(--fecha-color-success));
-        box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
-    }
-    
-    /* Tabla de cortes */
+
+    /* Tabla de cortes en móvil */
     .fechas-cortes-table {
-        width: 100%;
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        margin-top: 20px;
+        min-width: 520px;
     }
-    
-    .fechas-cortes-table thead {
-        background: linear-gradient(135deg, var(--fecha-color-primary), #34495e);
-    }
-    
-    .fechas-cortes-table th {
-        color: white;
-        padding: 18px 15px;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 1px;
-        text-align: left;
-    }
-    
-    .fechas-cortes-table tbody tr {
-        border-bottom: 1px solid #f1f2f6;
-        transition: background 0.3s ease;
-    }
-    
-    .fechas-cortes-table tbody tr:hover {
-        background: #f8f9fa;
-    }
-    
+
+    .fechas-cortes-table th,
     .fechas-cortes-table td {
-        padding: 18px 15px;
-        color: #2c3e50;
-        vertical-align: middle;
+        padding: 10px 12px;
+        font-size: 13px;
     }
-    
-    /* Badge de corte */
+
     .corte-badge {
-        background: linear-gradient(135deg, var(--fecha-color-secondary), #2980b9);
-        color: white;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1rem;
-        margin: 0 auto;
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
     }
-    
-    /* Formulario en tabla */
+
     .fecha-corte-form {
-        display: flex;
-        gap: 10px;
-        align-items: center;
+        flex-direction: column;
+        align-items: stretch;
     }
-    
-    .fecha-corte-input {
-        flex: 1;
-        padding: 12px;
-        border: 2px solid var(--fecha-color-border);
-        border-radius: 8px;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-    }
-    
-    .fecha-corte-input:focus {
-        outline: none;
-        border-color: var(--fecha-color-secondary);
-    }
-    
+
+    .fecha-corte-input,
     .fecha-corte-btn {
-        background: linear-gradient(135deg, var(--fecha-color-success), #229954);
-        color: white;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        white-space: nowrap;
+        width: 100%;
     }
-    
-    .fecha-corte-btn:hover {
-        background: linear-gradient(135deg, #229954, var(--fecha-color-success));
-        transform: translateY(-2px);
-    }
-    
-    /* Alertas */
-    .fecha-alert {
-        padding: 20px;
-        border-radius: 12px;
-        margin-bottom: 25px;
-        border-left: 5px solid;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        font-size: 1rem;
-        line-height: 1.5;
-    }
-    
-    .fecha-alert-success {
-        background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(39, 174, 96, 0.05));
-        border-left-color: var(--fecha-color-success);
-        color: #155724;
-    }
-    
-    .fecha-alert-error {
-        background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(231, 76, 60, 0.05));
-        border-left-color: var(--fecha-color-danger);
-        color: #721c24;
-    }
-    
-    .fecha-alert-info {
-        background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(52, 152, 219, 0.05));
-        border-left-color: var(--fecha-color-secondary);
-        color: #0c5460;
-    }
-    
-    /* Estado de la fecha */
-    .fecha-status {
-        display: inline-block;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        margin-left: 10px;
-    }
-    
-    .fecha-status-future {
-        background: rgba(46, 213, 115, 0.1);
-        color: #2ed573;
-    }
-    
-    .fecha-status-today {
-        background: rgba(243, 156, 18, 0.1);
-        color: #f39c12;
-    }
-    
-    .fecha-status-past {
-        background: rgba(255, 71, 87, 0.1);
-        color: #ff4757;
-    }
-    
-    
-    
-    /* Animaciones */
-    @keyframes fechaFadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .fecha-fade-in {
-        animation: fechaFadeIn 0.5s ease forwards;
-    }
-
-
-    @media(max-width:780px){
-         .fechas-container {
-       margin-left: 300px;
-    }
-
-    body{
-        height: 3000px;
-    }
-    }
+}

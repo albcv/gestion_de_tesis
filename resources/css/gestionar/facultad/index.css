@@ -327,3 +327,154 @@ tr.fila-seleccionada td {
     .acciones-td { gap: 5px; }
     .checkbox-fila { width: 16px; height: 16px; }
 }
+
+
+
+
+/* =====================================================
+   Reglas específicas para Roles y textos largos
+   ===================================================== */
+
+/* Contenedor de permisos como badges */
+.permisos-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.permiso-badge {
+    display: inline-block;
+    background: #e8f5e9;
+    color: #030;
+    border: 1px solid #a5d6a7;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.sin-permisos {
+    color: #b91c1c;
+    font-style: italic;
+    font-size: 14px;
+}
+
+/* Celdas con texto muy largo (no conformidades) */
+.celda-texto-largo {
+    max-width: 500px;
+    line-height: 1.5;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .permiso-badge {
+        font-size: 11px;
+        padding: 3px 8px;
+    }
+
+    .celda-texto-largo {
+        max-width: 200px;
+        font-size: 13px;
+    }
+}
+
+/* =====================================================
+   Estilos específicos para Fundamentación (versiones)
+   ===================================================== */
+
+.versiones-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.version-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 8px;
+    background: #f5fff5;
+    border-radius: 6px;
+    border-left: 3px solid #0a3;
+    font-size: 13px;
+}
+
+.version-numero {
+    font-weight: 600;
+    color: #030;
+}
+
+.btn-descargar-version {
+    text-decoration: none;
+    font-size: 18px;
+    transition: transform 0.2s;
+}
+
+.btn-descargar-version:hover {
+    transform: scale(1.2);
+}
+
+/* Botones mini de estado (aprobar/desaprobar inline) */
+.acciones-estado-inline {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.btn-estado-mini {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-aprobar-mini {
+    background: #16a34a;
+    color: #fff;
+}
+
+.btn-aprobar-mini:hover {
+    background: #15803d;
+    transform: scale(1.08);
+    box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3);
+}
+
+.btn-desaprobar-mini {
+    background: #dc2626;
+    color: #fff;
+}
+
+.btn-desaprobar-mini:hover {
+    background: #991b1b;
+    transform: scale(1.08);
+    box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+}
+
+.btn-revertir-mini {
+    background: #f59e0b;
+    color: #fff;
+}
+
+.btn-revertir-mini:hover {
+    background: #d97706;
+    transform: scale(1.08);
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+}
+
+@media (max-width: 600px) {
+    .btn-estado-mini {
+        width: 30px;
+        height: 30px;
+        font-size: 13px;
+    }
+}

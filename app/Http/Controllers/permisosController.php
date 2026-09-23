@@ -13,92 +13,84 @@ class permisosController extends Controller
     protected $modelo;
     protected $rutaVista = 'gestionarPermisos';
     protected $columnaPermiso = 'permiso';
-    
+
     protected $tablaPermiso;
     protected $columnaIdPermiso;
-    
+
     public function __construct()
     {
         $this->modelo = permisos::class;
-        
         $instanciaPermiso = new $this->modelo;
-        
         $this->tablaPermiso = $instanciaPermiso->getTable();
         $this->columnaIdPermiso = $instanciaPermiso->getKeyName();
     }
 
-    public function mostrar()
+    public function mostrar(Request $request)
     {
-        try {
-            $objetos = $this->modelo::all();
-            return view('gestionar.gestionarPermisos', compact('objetos'));
-            
-        } catch (\Exception $e) {
-            Log::error('Error al mostrar permisos: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return redirect()->back()
-                ->with('error', 'Error al cargar los permisos: ' . $e->getMessage());
+        $accion = $request->query('accion');
+        $id     = $request->query('id');
+
+        if ($accion === 'crear') {
+            return view('gestionar.permiso.formulario');
         }
+
+        if ($accion === 'editar' && $id) {
+            $permiso = $this->modelo::find($id);
+
+            if (!$permiso) {
+                return redirect()
+                    ->route($this->rutaVista)
+                    ->with('error', 'El permiso que intenta editar no existe');
+            }
+
+            return view('gestionar.permiso.formulario', compact('permiso'));
+        }
+
+        $objetos = $this->modelo::all();
+        return view('gestionar.permiso.index', compact('objetos'));
     }
 
     public function agregar(Request $request)
     {
+        $urlFormCrear = route($this->rutaVista, ['accion' => 'crear']);
+        $modoContinuar = $request->input('accion') === 'continuar';
+
+        $validator = Validator::make($request->all(), [
+            'permiso' => [
+                'required', 'string', 'min:3', 'max:120',
+                'unique:' . $this->tablaPermiso . ',' . $this->columnaPermiso,
+            ],
+        ], [
+            'permiso.required' => 'El nombre del permiso es obligatorio',
+            'permiso.string' => 'El nombre del permiso debe ser texto',
+            'permiso.min' => 'El nombre del permiso debe tener al menos 3 caracteres',
+            'permiso.max' => 'El nombre del permiso no puede exceder los 120 caracteres',
+            'permiso.unique' => 'Este nombre de permiso ya está registrado',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect($urlFormCrear)->withErrors($validator)->withInput();
+        }
+
         DB::beginTransaction();
-        
         try {
-            $validator = Validator::make($request->all(), [
-                'permiso' => [
-                    'required',
-                    'string',
-                    'min:3',
-                    'max:120',
-                    'unique:' . $this->tablaPermiso . ',' . $this->columnaPermiso
-                ],
-            ], [
-                'permiso.required' => 'El nombre del permiso es obligatorio',
-                'permiso.string' => 'El nombre del permiso debe ser texto',
-                'permiso.min' => 'El nombre del permiso debe tener al menos 3 caracteres',
-                'permiso.max' => 'El nombre del permiso no puede exceder los 120 caracteres',
-                'permiso.unique' => 'Este nombre de permiso ya está registrado',
-            ]);
-            
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
-            }
-            
             $obj = new $this->modelo();
             $obj->{$this->columnaPermiso} = $request->permiso;
             $obj->save();
-            
+
             DB::commit();
-            
-            Log::info('Permiso creado exitosamente', [
-                'permiso_id' => $obj->id,
-                'permiso_nombre' => $obj->permiso
-            ]);
-            
-            return redirect(route($this->rutaVista))
-                ->with('success', 'Permiso agregado correctamente');
-            
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            DB::rollback();
-            throw $e;
-            
+
+            if ($modoContinuar) {
+                return redirect($urlFormCrear)
+                    ->with('success', 'Permiso creado correctamente. Puede seguir agregando.');
+            }
+
+            return redirect()->route($this->rutaVista);
+
         } catch (\Exception $e) {
             DB::rollback();
-            
-            Log::error('Error al agregar permiso: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'request_data' => $request->except('_token'),
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return redirect()->back()
+            Log::error('Error al agregar permiso: ' . $e->getMessage());
+            return redirect($urlFormCrear)
                 ->with('error', 'Error al agregar el permiso: ' . $e->getMessage())
                 ->withInput();
         }
@@ -106,144 +98,131 @@ class permisosController extends Controller
 
     public function eliminar(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:' . $this->tablaPermiso . ',' . $this->columnaIdPermiso,
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'El permiso no existe o ya ha sido eliminado');
+        }
+
+        $permiso = $this->modelo::find($request->id);
+
+        if ($permiso && $permiso->roles && $permiso->roles->count() > 0) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'No se puede eliminar el permiso porque está siendo utilizado por ' . $permiso->roles->count() . ' rol(es)');
+        }
+
         DB::beginTransaction();
-        
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => [
-                    'required',
-                    'exists:' . $this->tablaPermiso . ',' . $this->columnaIdPermiso
-                ],
-            ], [
-                'id.required' => 'ID del permiso es requerido',
-                'id.exists' => 'El permiso no existe o ya ha sido eliminado',
-            ]);
-            
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->with('error', 'El permiso no existe o ya ha sido eliminado');
-            }
-            
-            $id = $request['id'];
-            $permiso = $this->modelo::find($id);
-            
-            if (!$permiso) {
-                return redirect()->back()
-                    ->with('error', 'El permiso no existe');
-            }
-            
-            // Guardar información para logs
-            $permisoData = $permiso->toArray();
-            
-            // Verificar si el permiso está siendo utilizado por algún rol
-            if ($permiso->roles && $permiso->roles->count() > 0) {
-                return redirect()->back()
-                    ->with('error', 'No se puede eliminar el permiso porque está siendo utilizado por ' . 
-                           $permiso->roles->count() . ' rol(es)');
-            }
-            
-            // Eliminar el permiso
-            $this->modelo::destroy($id);
-            
+            $this->modelo::destroy($request->id);
             DB::commit();
-            
-            Log::info('Permiso eliminado exitosamente', [
-                'permiso_id' => $id,
-                'permiso_data' => $permisoData
-            ]);
-            
-            return redirect(route($this->rutaVista))
-                ->with('success', 'Permiso eliminado correctamente');
-            
+
+            return redirect()->route($this->rutaVista);
+
         } catch (\Exception $e) {
             DB::rollback();
-            
-            Log::error('Error al eliminar permiso: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'request' => $request->all(),
-                'permiso_id' => $request->id ?? null,
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return redirect()->back()
+            return redirect()
+                ->route($this->rutaVista)
                 ->with('error', 'Error al eliminar el permiso: ' . $e->getMessage());
+        }
+    }
+
+    public function eliminarVarios(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (!is_array($ids) || count($ids) === 0) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'Debe seleccionar al menos un permiso para eliminar');
+        }
+
+        $ids = array_filter(array_map('intval', $ids), fn($id) => $id > 0);
+
+        if (count($ids) === 0) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'Los IDs enviados no son válidos');
+        }
+
+        // Verificar que ninguno tenga roles asociados
+        $permisosConRoles = $this->modelo::whereIn($this->columnaIdPermiso, $ids)
+            ->whereHas('roles')
+            ->count();
+
+        if ($permisosConRoles > 0) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'Alguno de los permisos seleccionados está siendo utilizado por roles y no puede eliminarse');
+        }
+
+        DB::beginTransaction();
+        try {
+            $this->modelo::whereIn($this->columnaIdPermiso, $ids)->delete();
+            DB::commit();
+
+            return redirect()->route($this->rutaVista);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'Error al eliminar los permisos: ' . $e->getMessage());
         }
     }
 
     public function modificar(Request $request)
     {
+        $urlFormEditar = route($this->rutaVista, [
+            'accion' => 'editar',
+            'id'     => $request->id,
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:' . $this->tablaPermiso . ',' . $this->columnaIdPermiso,
+            'permiso' => [
+                'required', 'string', 'min:3', 'max:120',
+                'unique:' . $this->tablaPermiso . ',' . $this->columnaPermiso . ',' . $request->id . ',' . $this->columnaIdPermiso,
+            ],
+        ], [
+            'id.required' => 'ID del permiso es requerido',
+            'id.exists' => 'El permiso no existe',
+            'permiso.required' => 'El nombre del permiso es obligatorio',
+            'permiso.string' => 'El nombre del permiso debe ser texto',
+            'permiso.min' => 'El nombre del permiso debe tener al menos 3 caracteres',
+            'permiso.max' => 'El nombre del permiso no puede exceder los 120 caracteres',
+            'permiso.unique' => 'Este nombre de permiso ya está registrado',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect($urlFormEditar)->withErrors($validator)->withInput();
+        }
+
         DB::beginTransaction();
-        
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => [
-                    'required',
-                    'exists:' . $this->tablaPermiso . ',' . $this->columnaIdPermiso
-                ],
-                'permiso' => [
-                    'required',
-                    'string',
-                    'min:3',
-                    'max:120',
-                    'unique:' . $this->tablaPermiso . ',' . $this->columnaPermiso . ',' . 
-                    $request->id . ',' . $this->columnaIdPermiso
-                ],
-            ], [
-                'id.required' => 'ID del permiso es requerido',
-                'id.exists' => 'El permiso no existe',
-                'permiso.required' => 'El nombre del permiso es obligatorio',
-                'permiso.string' => 'El nombre del permiso debe ser texto',
-                'permiso.min' => 'El nombre del permiso debe tener al menos 3 caracteres',
-                'permiso.max' => 'El nombre del permiso no puede exceder los 120 caracteres',
-                'permiso.unique' => 'Este nombre de permiso ya está registrado',
-            ]);
-            
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
-            }
-            
             $obj = $this->modelo::find($request->id);
-            
+
             if (!$obj) {
-                return redirect()->back()
-                    ->with('error', 'El permiso no existe')
-                    ->withInput();
+                DB::rollback();
+                return redirect()
+                    ->route($this->rutaVista)
+                    ->with('error', 'El permiso no existe');
             }
-            
-            // Guardar datos antiguos para log
-            $oldData = $obj->toArray();
-            
+
             $obj->{$this->columnaPermiso} = $request->permiso;
             $obj->save();
-            
+
             DB::commit();
-            
-            Log::info('Permiso actualizado exitosamente', [
-                'permiso_id' => $obj->id,
-                'old_data' => $oldData,
-                'new_data' => $obj->toArray()
-            ]);
-            
-            return redirect(route($this->rutaVista))
-                ->with('success', 'Permiso actualizado correctamente');
-            
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            DB::rollback();
-            throw $e;
-            
+
+            return redirect()->route($this->rutaVista);
+
         } catch (\Exception $e) {
             DB::rollback();
-            
-            Log::error('Error al modificar permiso: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'request_data' => $request->except('_token'),
-                'permiso_id' => $request->id ?? null,
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return redirect()->back()
+            return redirect($urlFormEditar)
                 ->with('error', 'Error al modificar el permiso: ' . $e->getMessage())
                 ->withInput();
         }
@@ -252,141 +231,52 @@ class permisosController extends Controller
     public function vaciar()
     {
         DB::beginTransaction();
-        
         try {
-            // Obtener información antes de eliminar para logs
-            $permisos = $this->modelo::all();
-            $permisosData = $permisos->map(function($permiso) {
-                return [
-                    'id' => $permiso->id,
-                    'nombre' => $permiso->permiso,
-                    'roles_asociados' => $permiso->roles ? $permiso->roles->count() : 0
-                ];
-            })->toArray();
-            
-            // Verificar si hay permisos asociados a roles
-            $permisosConRoles = $permisos->filter(function($permiso) {
-                return $permiso->roles && $permiso->roles->count() > 0;
-            });
-            
-            if ($permisosConRoles->count() > 0) {
-                return response()->json([
-                    'success' => false,
-                    'error' => 'No se pueden eliminar todos los permisos porque ' . 
-                              $permisosConRoles->count() . ' permiso(s) están siendo utilizados por roles'
-                ], 400);
+            $permisosConRoles = $this->modelo::whereHas('roles')->count();
+
+            if ($permisosConRoles > 0) {
+                return redirect()
+                    ->route($this->rutaVista)
+                    ->with('error', 'No se pueden eliminar todos los permisos porque algunos están en uso');
             }
-            
-            // Eliminar todos los permisos
+
             $this->modelo::query()->delete();
-            
             DB::commit();
-            
-            Log::info('Todos los permisos han sido eliminados', [
-                'method' => __METHOD__,
-                'permisos_eliminados' => $permisosData,
-                'total_permisos' => count($permisosData)
-            ]);
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Todos los permisos han sido eliminados correctamente'
-            ]);
-            
+
+            return redirect()->route($this->rutaVista);
+
         } catch (\Exception $e) {
             DB::rollback();
-            
-            Log::error('Error al vaciar permisos: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return response()->json([
-                'success' => false,
-                'error' => 'Error al vaciar los permisos: ' . $e->getMessage()
-            ], 500);
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'Error al vaciar los permisos: ' . $e->getMessage());
         }
     }
 
-    public function obtenerPermiso($id)
+    public function exportarCsv()
     {
-        try {
-            $validator = Validator::make(['id' => $id], [
-                'id' => [
-                    'required',
-                    'exists:' . $this->tablaPermiso . ',' . $this->columnaIdPermiso
-                ],
-            ]);
-            
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'El permiso no existe'
-                ], 404);
-            }
-            
-            $permiso = $this->modelo::find($id);
-            
-            if ($permiso) {
-                return response()->json([
-                    'success' => true,
-                    'permiso' => $permiso
-                ]);
-            }
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Permiso no encontrado'
-            ], 404);
-            
-        } catch (\Exception $e) {
-            Log::error('Error al obtener permiso: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'permiso_id' => $id,
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al obtener el permiso: ' . $e->getMessage()
-            ], 500);
-        }
-    }
+        $permisos = $this->modelo::orderBy($this->columnaPermiso)->get();
 
-    public function buscar(Request $request)
-    {
-        try {
-            $validator = Validator::make($request->all(), [
-                'buscar' => 'nullable|string|min:1|max:120'
-            ]);
-            
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->with('error', 'Término de búsqueda inválido');
+        $nombreArchivo = 'permisos_' . date('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $nombreArchivo . '"',
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
+
+        $callback = function () use ($permisos) {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+            fputcsv($out, ['Permiso'], ';');
+            foreach ($permisos as $p) {
+                fputcsv($out, [$p->{$this->columnaPermiso}], ';');
             }
-            
-            $buscar = $request->input('buscar');
-            $porPagina = $request->input('por_pagina', 10);
-            
-            $query = $this->modelo::query();
-            
-            if ($buscar) {
-                $query->where($this->columnaPermiso, 'LIKE', "%{$buscar}%");
-            }
-            
-            $objetos = $query->paginate($porPagina);
-            
-            return view('gestionar.gestionarPermisos', compact('objetos'));
-            
-        } catch (\Exception $e) {
-            Log::error('Error al buscar permisos: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'request' => $request->all(),
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return redirect()->back()
-                ->with('error', 'Error al buscar permisos: ' . $e->getMessage());
-        }
+            fclose($out);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

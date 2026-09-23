@@ -8,7 +8,6 @@
     $esEdicion = isset($facultad) && $facultad !== null;
     $accion    = $esEdicion ? route('modificarFacultad') : route('agregarFacultad');
     $titulo    = $esEdicion ? 'Editar Facultad' : 'Crear Facultad';
-    $textoBtn  = $esEdicion ? '💾 Actualizar Facultad' : '+ Crear Facultad';
 @endphp
 
 <div class="contenido-principal">
@@ -105,7 +104,35 @@
                 </div>
 
                 <div class="seccion-acciones">
-                    <button type="submit" class="btn-guardar">{{ $textoBtn }}</button>
+
+                    @if (!$esEdicion)
+                        {{-- Modo CREAR: dos botones --}}
+
+                         <button type="submit"
+                                name="accion"
+                                value="guardar"
+                                class="btn-guardar">
+                            💾 Crear
+                        </button>
+
+
+                        <button type="submit"
+                                name="accion"
+                                value="continuar"
+                                class="btn-guardar btn-continuar">
+                            ➕ Crear y continuar
+                        </button>
+                       
+                    @else
+                        {{-- Modo EDITAR: solo actualizar --}}
+                        <button type="submit"
+                                name="accion"
+                                value="guardar"
+                                class="btn-guardar">
+                            💾 Actualizar Facultad
+                        </button>
+                    @endif
+
                     <a href="{{ route('gestionarFacultad') }}" class="btn-cancelar">Cancelar</a>
                 </div>
             </form>

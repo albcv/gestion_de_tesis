@@ -16,370 +16,313 @@ class rolesController extends Controller
     protected $rutaVista = 'gestionarRoles';
     protected $columnaRol = 'rol';
     protected $relacionPermisos = 'permisos';
-    
+
     protected $tablaRol;
     protected $tablaPermiso;
     protected $columnaIdRol;
     protected $columnaIdPermiso;
-    
+
     public function __construct()
     {
         $this->modelo = roles::class;
         $this->modeloPermiso = permisos::class;
-        
+
         $instanciaRol = new $this->modelo;
         $instanciaPermiso = new $this->modeloPermiso;
-        
+
         $this->tablaRol = $instanciaRol->getTable();
         $this->tablaPermiso = $instanciaPermiso->getTable();
-        
+
         $this->columnaIdRol = $instanciaRol->getKeyName();
         $this->columnaIdPermiso = $instanciaPermiso->getKeyName();
     }
 
-    public function mostrar()
+    /**
+     * Listado, formulario de creación o edición.
+     */
+    public function mostrar(Request $request)
     {
-        try {
-            $objetos = $this->modelo::with($this->relacionPermisos)->get();
-            $permisos = $this->modeloPermiso::all();
+        $accion = $request->query('accion');
+        $id     = $request->query('id');
 
-            return view('gestionar.gestionarRoles', compact('objetos', 'permisos'));
-            
-        } catch (\Exception $e) {
-            Log::error('Error al mostrar roles: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return redirect()->back()
-                ->with('error', 'Error al cargar los roles: ' . $e->getMessage());
+        if ($accion === 'crear') {
+            $permisos = $this->modeloPermiso::all();
+            return view('gestionar.rol.formulario', compact('permisos'));
         }
+
+        if ($accion === 'editar' && $id) {
+            $rol = $this->modelo::with($this->relacionPermisos)->find($id);
+
+            if (!$rol) {
+                return redirect()
+                    ->route($this->rutaVista)
+                    ->with('error', 'El rol que intenta editar no existe');
+            }
+
+            $permisos = $this->modeloPermiso::all();
+            return view('gestionar.rol.formulario', compact('rol', 'permisos'));
+        }
+
+        $objetos = $this->modelo::with($this->relacionPermisos)->get();
+        return view('gestionar.rol.index', compact('objetos'));
     }
 
+    /**
+     * Agrega un nuevo rol.
+     */
     public function agregar(Request $request)
     {
+        $urlFormCrear = route($this->rutaVista, ['accion' => 'crear']);
+        $modoContinuar = $request->input('accion') === 'continuar';
+
+        $validator = Validator::make($request->all(), [
+            'rol' => [
+                'required', 'string', 'min:3', 'max:120',
+                'unique:' . $this->tablaRol . ',' . $this->columnaRol,
+            ],
+            'permisos' => 'nullable|array',
+            'permisos.*' => 'exists:' . $this->tablaPermiso . ',' . $this->columnaIdPermiso,
+        ], [
+            'rol.required' => 'El nombre del rol es obligatorio',
+            'rol.string' => 'El nombre del rol debe ser texto',
+            'rol.min' => 'El nombre del rol debe tener al menos 3 caracteres',
+            'rol.max' => 'El nombre del rol no puede exceder los 120 caracteres',
+            'rol.unique' => 'Este nombre de rol ya está registrado',
+            'permisos.array' => 'Los permisos deben ser un arreglo válido',
+            'permisos.*.exists' => 'Uno o más permisos seleccionados no existen',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect($urlFormCrear)->withErrors($validator)->withInput();
+        }
+
         DB::beginTransaction();
-        
         try {
-            $validator = Validator::make($request->all(), [
-                'rol' => [
-                    'required',
-                    'string',
-                    'min:3',
-                    'max:120',
-                    'unique:' . $this->tablaRol . ',' . $this->columnaRol
-                ],
-                'permisos' => 'nullable|array',
-                'permisos.*' => [
-                    'exists:' . $this->tablaPermiso . ',' . $this->columnaIdPermiso
-                ],
-            ], [
-                'rol.required' => 'El nombre del rol es obligatorio',
-                'rol.string' => 'El nombre del rol debe ser texto',
-                'rol.min' => 'El nombre del rol debe tener al menos 3 caracteres',
-                'rol.max' => 'El nombre del rol no puede exceder los 120 caracteres',
-                'rol.unique' => 'Este nombre de rol ya está registrado',
-                'permisos.array' => 'Los permisos deben ser un arreglo válido',
-                'permisos.*.exists' => 'Uno o más permisos seleccionados no existen',
-            ]);
-            
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
-            }
-            
             $obj = new $this->modelo();
             $obj->{$this->columnaRol} = $request->rol;
             $obj->save();
-            
-            // Asignar permisos
+
             if ($request->has('permisos') && is_array($request->permisos)) {
                 $obj->{$this->relacionPermisos}()->sync($request->permisos);
             }
-            
+
             DB::commit();
-            
-            Log::info('Rol creado exitosamente', [
-                'rol_id' => $obj->id,
-                'rol_nombre' => $obj->rol,
-                'permisos_asignados' => $request->permisos ?? []
-            ]);
-            
-            return redirect(route($this->rutaVista))
-                ->with('success', 'Rol agregado correctamente');
-            
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            DB::rollback();
-            throw $e;
-            
+
+            if ($modoContinuar) {
+                return redirect($urlFormCrear)
+                    ->with('success', 'Rol creado correctamente. Puede seguir agregando.');
+            }
+
+            return redirect()->route($this->rutaVista);
+
         } catch (\Exception $e) {
             DB::rollback();
-            
-            Log::error('Error al agregar rol: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'request_data' => $request->except('_token'),
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return redirect()->back()
+            Log::error('Error al agregar rol: ' . $e->getMessage());
+            return redirect($urlFormCrear)
                 ->with('error', 'Error al agregar el rol: ' . $e->getMessage())
                 ->withInput();
         }
     }
 
+    /**
+     * Elimina un rol por ID.
+     */
     public function eliminar(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:' . $this->tablaRol . ',' . $this->columnaIdRol,
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'El rol no existe o ya ha sido eliminado');
+        }
+
         DB::beginTransaction();
-        
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => [
-                    'required',
-                    'exists:' . $this->tablaRol . ',' . $this->columnaIdRol
-                ],
-            ], [
-                'id.required' => 'ID del rol es requerido',
-                'id.exists' => 'El rol no existe o ya ha sido eliminado',
-            ]);
-            
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->with('error', 'El rol no existe o ya ha sido eliminado');
+            $rol = $this->modelo::find($request->id);
+            if ($rol) {
+                $rol->{$this->relacionPermisos}()->detach();
+                $rol->delete();
             }
-            
-            $id = $request['id'];
-            $rol = $this->modelo::find($id);
-            
-            if (!$rol) {
-                return redirect()->back()
-                    ->with('error', 'El rol no existe');
-            }
-            
-            // Guardar información para logs
-            $rolData = $rol->toArray();
-            $permisosAsociados = $rol->permisos->pluck('id')->toArray();
-            
-            // Eliminar relaciones primero (si es necesario)
-            $rol->{$this->relacionPermisos}()->detach();
-            
-            // Eliminar el rol
-            $this->modelo::destroy($id);
-            
             DB::commit();
-            
-            Log::info('Rol eliminado exitosamente', [
-                'rol_id' => $id,
-                'rol_data' => $rolData,
-                'permisos_asociados' => $permisosAsociados
-            ]);
-            
-            return redirect(route($this->rutaVista))
-                ->with('success', 'Rol eliminado correctamente');
-            
+
+            return redirect()->route($this->rutaVista);
+
         } catch (\Exception $e) {
             DB::rollback();
-            
-            Log::error('Error al eliminar rol: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'request' => $request->all(),
-                'rol_id' => $request->id ?? null,
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return redirect()->back()
+            return redirect()
+                ->route($this->rutaVista)
                 ->with('error', 'Error al eliminar el rol: ' . $e->getMessage());
         }
     }
 
+    /**
+     * Elimina varios roles a la vez.
+     */
+    public function eliminarVarios(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (!is_array($ids) || count($ids) === 0) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'Debe seleccionar al menos un rol para eliminar');
+        }
+
+        $ids = array_filter(array_map('intval', $ids), fn($id) => $id > 0);
+
+        if (count($ids) === 0) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'Los IDs enviados no son válidos');
+        }
+
+        DB::beginTransaction();
+        try {
+            $roles = $this->modelo::whereIn($this->columnaIdRol, $ids)->get();
+            foreach ($roles as $rol) {
+                $rol->{$this->relacionPermisos}()->detach();
+                $rol->delete();
+            }
+            DB::commit();
+
+            return redirect()->route($this->rutaVista);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'Error al eliminar los roles: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Modifica un rol existente.
+     */
     public function modificar(Request $request)
     {
+        $urlFormEditar = route($this->rutaVista, [
+            'accion' => 'editar',
+            'id'     => $request->id,
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'id'  => 'required|exists:' . $this->tablaRol . ',' . $this->columnaIdRol,
+            'rol' => [
+                'required', 'string', 'min:3', 'max:120',
+                'unique:' . $this->tablaRol . ',' . $this->columnaRol . ',' . $request->id . ',' . $this->columnaIdRol,
+            ],
+            'permisos' => 'nullable|array',
+            'permisos.*' => 'exists:' . $this->tablaPermiso . ',' . $this->columnaIdPermiso,
+        ], [
+            'id.required' => 'ID del rol es requerido',
+            'id.exists' => 'El rol no existe',
+            'rol.required' => 'El nombre del rol es obligatorio',
+            'rol.string' => 'El nombre del rol debe ser texto',
+            'rol.min' => 'El nombre del rol debe tener al menos 3 caracteres',
+            'rol.max' => 'El nombre del rol no puede exceder los 120 caracteres',
+            'rol.unique' => 'Este nombre de rol ya está registrado',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect($urlFormEditar)->withErrors($validator)->withInput();
+        }
+
         DB::beginTransaction();
-        
         try {
-            $validator = Validator::make($request->all(), [
-                'id' => [
-                    'required',
-                    'exists:' . $this->tablaRol . ',' . $this->columnaIdRol
-                ],
-                'rol' => [
-                    'required',
-                    'string',
-                    'min:3',
-                    'max:120',
-                    'unique:' . $this->tablaRol . ',' . $this->columnaRol . ',' . $request->id . ',' . $this->columnaIdRol
-                ],
-                'permisos' => 'nullable|array',
-                'permisos.*' => [
-                    'exists:' . $this->tablaPermiso . ',' . $this->columnaIdPermiso
-                ],
-            ], [
-                'id.required' => 'ID del rol es requerido',
-                'id.exists' => 'El rol no existe',
-                'rol.required' => 'El nombre del rol es obligatorio',
-                'rol.string' => 'El nombre del rol debe ser texto',
-                'rol.min' => 'El nombre del rol debe tener al menos 3 caracteres',
-                'rol.max' => 'El nombre del rol no puede exceder los 120 caracteres',
-                'rol.unique' => 'Este nombre de rol ya está registrado',
-                'permisos.array' => 'Los permisos deben ser un arreglo válido',
-                'permisos.*.exists' => 'Uno o más permisos seleccionados no existen',
-            ]);
-            
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
-            }
-            
             $obj = $this->modelo::find($request->id);
-            
+
             if (!$obj) {
-                return redirect()->back()
-                    ->with('error', 'El rol no existe')
-                    ->withInput();
+                DB::rollback();
+                return redirect()
+                    ->route($this->rutaVista)
+                    ->with('error', 'El rol no existe');
             }
-            
-            // Guardar datos antiguos para log
-            $oldData = $obj->toArray();
-            $oldPermisos = $obj->permisos->pluck('id')->toArray();
-            
+
             $obj->{$this->columnaRol} = $request->rol;
             $obj->save();
-            
-            // Actualizar permisos
+
             if ($request->has('permisos') && is_array($request->permisos)) {
                 $obj->{$this->relacionPermisos}()->sync($request->permisos);
             } else {
-                // Si no se envían permisos, eliminar todos los existentes
                 $obj->{$this->relacionPermisos}()->detach();
             }
-            
+
             DB::commit();
-            
-            Log::info('Rol actualizado exitosamente', [
-                'rol_id' => $obj->id,
-                'old_data' => $oldData,
-                'new_data' => $obj->toArray(),
-                'old_permisos' => $oldPermisos,
-                'new_permisos' => $request->permisos ?? []
-            ]);
-            
-            return redirect(route($this->rutaVista))
-                ->with('success', 'Rol actualizado correctamente');
-            
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            DB::rollback();
-            throw $e;
-            
+
+            return redirect()->route($this->rutaVista);
+
         } catch (\Exception $e) {
             DB::rollback();
-            
-            Log::error('Error al modificar rol: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'request_data' => $request->except('_token'),
-                'rol_id' => $request->id ?? null,
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return redirect()->back()
+            return redirect($urlFormEditar)
                 ->with('error', 'Error al modificar el rol: ' . $e->getMessage())
                 ->withInput();
         }
     }
 
-    public function obtenerPermisosRol($id)
-    {
-        try {
-            $validator = Validator::make(['id' => $id], [
-                'id' => [
-                    'required',
-                    'exists:' . $this->tablaRol . ',' . $this->columnaIdRol
-                ],
-            ]);
-            
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'El rol no existe'
-                ], 404);
-            }
-            
-            $rol = $this->modelo::with($this->relacionPermisos)->find($id);
-            
-            if ($rol) {
-                return response()->json([
-                    'success' => true,
-                    'permisos' => $rol->{$this->relacionPermisos}->pluck('id')->toArray()
-                ]);
-            }
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Rol no encontrado'
-            ], 404);
-            
-        } catch (\Exception $e) {
-            Log::error('Error al obtener permisos del rol: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'rol_id' => $id,
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al obtener permisos del rol: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
+    /**
+     * Vacía la tabla de roles.
+     */
     public function vaciar()
     {
         DB::beginTransaction();
-        
         try {
-            // Obtener información antes de eliminar para logs
             $roles = $this->modelo::all();
-            $rolesData = $roles->map(function($rol) {
-                return [
-                    'id' => $rol->id,
-                    'nombre' => $rol->rol,
-                    'permisos' => $rol->permisos->pluck('id')->toArray()
-                ];
-            })->toArray();
-            
-            // Detachar permisos de todos los roles primero
             foreach ($roles as $rol) {
                 $rol->{$this->relacionPermisos}()->detach();
             }
-            
-            // Eliminar todos los roles
             $this->modelo::query()->delete();
-            
             DB::commit();
-            
-            Log::info('Todos los roles han sido eliminados', [
-                'method' => __METHOD__,
-                'roles_eliminados' => $rolesData,
-                'total_roles' => count($rolesData)
-            ]);
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Todos los roles han sido eliminados correctamente'
-            ]);
-            
+
+            return redirect()->route($this->rutaVista);
+
         } catch (\Exception $e) {
             DB::rollback();
-            
-            Log::error('Error al vaciar roles: ' . $e->getMessage(), [
-                'method' => __METHOD__,
-                'error_trace' => $e->getTraceAsString()
-            ]);
-            
-            return response()->json([
-                'success' => false,
-                'error' => 'Error al vaciar los roles: ' . $e->getMessage()
-            ], 500);
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'Error al vaciar los roles: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Exporta los roles a CSV (incluye permisos como texto).
+     */
+    public function exportarCsv()
+    {
+        $roles = $this->modelo::with($this->relacionPermisos)->orderBy($this->columnaRol)->get();
+
+        $nombreArchivo = 'roles_' . date('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $nombreArchivo . '"',
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
+
+        $callback = function () use ($roles) {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF");
+
+            fputcsv($out, ['Rol', 'Permisos'], ';');
+
+            foreach ($roles as $r) {
+                $permisosTexto = $r->{$this->relacionPermisos}
+                    ->pluck('permiso')
+                    ->implode(', ');
+
+                fputcsv($out, [
+                    $r->{$this->columnaRol},
+                    $permisosTexto,
+                ], ';');
+            }
+
+            fclose($out);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

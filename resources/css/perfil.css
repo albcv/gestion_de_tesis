@@ -1,106 +1,237 @@
+/* =====================================================
+   perfil.css — Vista de perfil de usuario
+   Paleta verde: #030 (oscuro), #0a3, fondo claro
+   ===================================================== */
+
+/* ---------- Reset local ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* =====================================================
+   Contenedor principal
+   ===================================================== */
 .perfil-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-  
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+    animation: fadeIn 0.5s ease-out;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================================
+   Título
+   ===================================================== */
+.perfil-container h1 {
+    color: #030;
+    font-size: 30px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 30px 0;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #030;
+    letter-spacing: 0.3px;
+}
+
+/* =====================================================
+   Tarjeta de información
+   ===================================================== */
 .perfil-info {
-    background: #f8f9fa;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 51, 0, 0.12);
+    border: 2px solid #030;
     padding: 30px;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 500px;
-    margin: 40px auto;
-    font-size: 18px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 22px;
 }
 
-.campo {
-    margin: 20px 0;
+/* =====================================================
+   Campos de información
+   ===================================================== */
+.perfil-info .campo {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, #f5fff5 0%, #e8f5e9 100%);
+    border-radius: 10px;
+    border-left: 4px solid #030;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.perfil-info .campo:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0, 51, 0, 0.12);
+}
+
+.perfil-info .campo label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #030;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 6px;
     display: flex;
     align-items: center;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eaeaea;
+    gap: 6px;
 }
 
-.campo:last-child {
-    border-bottom: none;
+.perfil-info .campo span {
+    font-size: 17px;
+    color: #1a1a1a;
+    font-weight: 500;
+    word-break: break-word;
+    line-height: 1.4;
 }
 
-.campo label {
-    font-weight: 600;
-    width: 180px;
-    color: #000;
-}
-
-.campo span {
-    color: #000;
-    flex: 1;
-}
-
+/* =====================================================
+   Acciones del perfil
+   ===================================================== */
 .acciones-perfil {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 2px solid #eaeaea;
-    text-align: center;
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    padding-top: 22px;
+    border-top: 2px solid #e8f5e9;
 }
 
 .btn-cambiar-contrasena {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 10px;
-    background: linear-gradient(135deg, #030 0%, #141 100%);
-    color: white;
-    padding: 12px 25px;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: #fff;
+    padding: 14px 32px;
+    border-radius: 10px;
     text-decoration: none;
-    font-weight: 600;
     font-size: 16px;
-    transition: all 0.3s ease;
-    border: 2px solid #030;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    box-shadow: 0 4px 15px rgba(0, 51, 0, 0.2);
 }
 
 .btn-cambiar-contrasena:hover {
-    background: linear-gradient(135deg, #141 0%, #030 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(3, 0, 0, 0.2);
-}
-
-.btn-cambiar-contrasena:active {
-    transform: translateY(0);
+    background: linear-gradient(135deg, #0a3 0%, #030 100%);
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0, 51, 0, 0.3);
 }
 
 .btn-cambiar-contrasena i {
-    font-size: 18px;
+    font-size: 17px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .perfil-info {
-        width: 90%;
-        padding: 20px;
+/* =====================================================
+   Responsive
+   ===================================================== */
+@media (max-width: 780px) {
+    .perfil-container {
         margin: 20px auto;
+        padding: 0 14px;
     }
-    
-    .campo {
-        flex-direction: column;
-        align-items: flex-start;
+
+    .perfil-container h1 {
+        font-size: 24px;
+        margin-bottom: 22px;
+        padding-bottom: 12px;
     }
-    
-    .campo label {
-        width: 100%;
-        margin-bottom: 5px;
+
+    .perfil-info {
+        padding: 20px;
+        gap: 16px;
     }
-    
-    .campo span {
-        width: 100%;
+
+    .perfil-info .campo {
+        padding: 14px 16px;
     }
-    
+
+    .perfil-info .campo span {
+        font-size: 15px;
+    }
+
     .btn-cambiar-contrasena {
         width: 100%;
-        padding: 15px;
+        justify-content: center;
+        padding: 13px 20px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .perfil-info {
+        padding: 16px;
+    }
+
+    .perfil-info .campo {
+        padding: 12px 14px;
+    }
+
+    .perfil-info .campo label {
+        font-size: 12px;
+    }
+
+    .perfil-info .campo span {
+        font-size: 14px;
+    }
+}
+
+
+/* =====================================================
+   Botón cerrar sesión
+   ===================================================== */
+.btn-cerrar-sesion {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #dc2626;
+    color: #fff;
+    padding: 14px 32px;
+    border-radius: 10px;
+    border: 2px solid #991b1b;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+}
+
+.btn-cerrar-sesion:hover {
+    background: #991b1b;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(220, 38, 38, 0.35);
+}
+
+.btn-cerrar-sesion:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+/* Ajuste: acciones del perfil con dos botones en fila */
+.acciones-perfil {
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 780px) {
+    .acciones-perfil {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-cerrar-sesion {
+        width: 100%;
+        justify-content: center;
+        padding: 13px 20px;
+        font-size: 15px;
     }
 }

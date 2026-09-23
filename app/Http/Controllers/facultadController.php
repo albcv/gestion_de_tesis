@@ -55,12 +55,15 @@ class facultadController extends Controller
         return view('gestionar.facultad.index', compact('facultades'));
     }
 
-    /**
+        /**
      * Agrega una nueva facultad.
+     * Si el botón pulsado es "continuar", vuelve al formulario de creación.
+     * Si es "guardar" (o no llega accion), redirige al listado.
      */
     public function agregar(Request $request)
     {
         $urlFormCrear = route($this->rutaVista, ['accion' => 'crear']);
+        $modoContinuar = $request->input('accion') === 'continuar';
 
         $validator = Validator::make($request->all(), [
             'nombre_facultad' => 'required|string|min:20|max:100',
@@ -82,6 +85,7 @@ class facultadController extends Controller
                 ->withInput();
         }
 
+        // Duplicados
         if ($this->modelo::where($this->columnaNombre, $request->nombre_facultad)->exists()) {
             return redirect($urlFormCrear)
                 ->with('error', 'Ya existe una facultad con ese nombre')
@@ -99,9 +103,15 @@ class facultadController extends Controller
         $facultad->{$this->columnaSiglas} = $request->siglas;
         $facultad->save();
 
+        // ---- Redirección según el botón pulsado ----
+        if ($modoContinuar) {
+            return redirect($urlFormCrear)
+                ->with('success', 'Facultad creada correctamente. Puede seguir agregando.');
+        }
+
         return redirect()->route($this->rutaVista);
     }
-
+    
     /**
      * Elimina una facultad por ID.
      */

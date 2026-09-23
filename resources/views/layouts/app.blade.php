@@ -7,7 +7,6 @@
     <title>Sistema de Gestión de Tesis</title>
     @vite(['resources/css/app.css'])
     @vite(['resources/css/sidebar.css'])
-  
 </head>
 <body>
     @php
@@ -110,9 +109,6 @@
                                 <span class="nav-icon">🚪</span>
                                 <span>Cerrar sesión</span>
                             </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form>
                         </li>
                     @endif
                 </ul>
@@ -124,6 +120,13 @@
                 @endif
             </div>
         </div>
+
+        <!-- Formulario único de logout (POST con CSRF) -->
+        @if($usuario)
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+        @endif
     </header>
 
     <!-- Overlay del sidebar -->
@@ -187,30 +190,84 @@
     <main class="main-content">
         <div class="content">
             @yield('content')
-
-            <script>
-                @if(session('success'))
-                    document.addEventListener('DOMContentLoaded', function() {
-                        alert('{{ session('success') }}');
-                    });
-                @endif
-
-                @if(session('error'))
-                    document.addEventListener('DOMContentLoaded', function() {
-                        alert('{{ session('error') }}');
-                    });
-                @endif
-
-                @if($errors->any())
-                    document.addEventListener('DOMContentLoaded', function() {
-                        @foreach($errors->all() as $error)
-                            alert('{{ $error }}');
-                        @endforeach
-                    });
-                @endif
-            </script>
         </div>
     </main>
+
+    <!-- ==============================
+         Notificaciones flotantes
+         ============================== -->
+    <div id="notificaciones-container" class="notificaciones-container"></div>
+
+    <script>
+        /**
+         * Muestra una notificación flotante en la esquina superior derecha.
+         * @param {string} mensaje - Texto a mostrar
+         * @param {string} tipo - 'success' | 'error' | 'info' | 'warning'
+         * @param {number} duracion - ms antes de desaparecer (por defecto 4000)
+         */
+        function mostrarNotificacion(mensaje, tipo = 'info', duracion = 4000) {
+            const contenedor = document.getElementById('notificaciones-container');
+            if (!contenedor) return;
+
+            const iconos = {
+                success: '✅',
+                error:   '❌',
+                info:    'ℹ️',
+                warning: '⚠️',
+            };
+
+            const noti = document.createElement('div');
+            noti.className = `notificacion notificacion-${tipo}`;
+            noti.innerHTML = `
+                <span class="notificacion-icono">${iconos[tipo] || 'ℹ️'}</span>
+                <span class="notificacion-mensaje">${mensaje}</span>
+                <button type="button" class="notificacion-cerrar" aria-label="Cerrar">×</button>
+            `;
+
+            contenedor.appendChild(noti);
+
+            // Forzar reflow para que la animación de entrada funcione
+            requestAnimationFrame(() => noti.classList.add('visible'));
+
+            // Botón cerrar
+            noti.querySelector('.notificacion-cerrar').addEventListener('click', () => {
+                noti.classList.remove('visible');
+                setTimeout(() => noti.remove(), 300);
+            });
+
+            // Auto-cierre
+            if (duracion > 0) {
+                setTimeout(() => {
+                    noti.classList.remove('visible');
+                    setTimeout(() => noti.remove(), 300);
+                }, duracion);
+            }
+        }
+
+        // ==============================
+        // Notificaciones desde Laravel
+        // ==============================
+        document.addEventListener('DOMContentLoaded', function () {
+
+            @if(session('success'))
+                mostrarNotificacion(@json(session('success')), 'success');
+            @endif
+
+            @if(session('error'))
+                mostrarNotificacion(@json(session('error')), 'error');
+            @endif
+
+            @if(session('status'))
+                mostrarNotificacion(@json(session('status')), 'info');
+            @endif
+
+            @if($errors->any())
+                @foreach($errors->all() as $error)
+                    mostrarNotificacion(@json($error), 'error', 6000);
+                @endforeach
+            @endif
+        });
+    </script>
 
     <!-- ==============================
          JS: toggle del sidebar

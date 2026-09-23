@@ -45,27 +45,30 @@ Route::get('/', function(){
 Route::get('/registrar-admin', [UserController::class, 'showAdminRegistrationForm'])->name('registrarAdmin');
 Route::post('/registrar-admin', [UserController::class, 'registerFirstAdmin'])->name('registrarAdmin.post');
 
-// Rutas de autenticación de usuario
+// Autenticación de usuario
 Route::view('/login', 'login')->name('login');
 Route::view('/inicio', 'inicio')->name('inicio');
 Route::post('/inicioSesion', [loginController::class, 'login'])->name('inicioSesion');
-Route::get('/logout', [loginController::class, 'logout'])->name('logout');
+Route::post('/logout', [loginController::class, 'logout'])->name('logout');
 
 
-//Gestionar usuarios
-Route::get('/gestionarUsuarios', [UserController::class, 'mostrar'])->name('gestionarUsuarios');
-Route::get('/crearUsuario', [UserController::class, 'crearUsuario'])->name('crearUsuario');
-Route::get('/verUsuario/{id}', [UserController::class, 'ver'])->name('verUsuario');
-Route::post('/agregarUsuario', [UserController::class, 'agregar'])->name('agregarUsuario');
-Route::get('/editarUsuario/{id}', [UserController::class, 'editar'])->name('editarUsuario');
-Route::post('/actualizarUsuario', [UserController::class, 'actualizar'])->name('actualizarUsuario');
-Route::post('/eliminarUsuario', [UserController::class, 'eliminar']);
-Route::post('/vaciarUsuarios', [UserController::class, 'vaciar']);
+// Gestionar Usuarios
+Route::get('/gestionarUsuarios',            [UserController::class, 'mostrar'])->name('gestionarUsuarios');
+Route::get('/crearUsuario',                 [UserController::class, 'crearUsuario'])->name('crearUsuario');
+Route::post('/agregarUsuario',              [UserController::class, 'agregar'])->name('agregarUsuario');
+Route::get('/editarUsuario/{id}',           [UserController::class, 'editar'])->name('editarUsuario');
+Route::post('/actualizarUsuario',           [UserController::class, 'actualizar'])->name('actualizarUsuario');
+Route::get('/verUsuario/{id}',              [UserController::class, 'ver'])->name('verUsuario');
+Route::post('/eliminarUsuario',             [UserController::class, 'eliminar'])->name('eliminarUsuario');
+Route::post('/eliminarVariosUsuarios',      [UserController::class, 'eliminarVarios'])->name('eliminarVariosUsuarios');
+Route::get('/exportarUsuariosCsv',          [UserController::class, 'exportarCsv'])->name('exportarUsuariosCsv');
+
 
 
 Route::view('/gestionar', 'gestionar.gestionar')->name('gestionar');
 
 
+//Facultad
 Route::get('/gestionarFacultad', [facultadController::class, 'mostrar'])->name('gestionarFacultad');
 Route::post('/agregarFacultad', [facultadController::class, 'agregar'])->name('agregarFacultad');
 Route::post('/eliminarFacultad', [facultadController::class, 'eliminar'])->name('eliminarFacultad');
@@ -73,34 +76,40 @@ Route::post('/eliminarVariasFacultades', [facultadController::class, 'eliminarVa
 Route::post('/modificarFacultad', [facultadController::class, 'modificar'])->name('modificarFacultad');
 Route::post('/vaciarFacultad', [facultadController::class, 'vaciar'])->name('vaciarFacultad');
 Route::get('/exportarFacultadesCsv',     [facultadController::class, 'exportarCsv'])->name('exportarFacultadesCsv');
-Route::get('/exportarFacultadesPdf',     [facultadController::class, 'exportarPdf'])->name('exportarFacultadesPdf');
 
 
-// Rutas para gestión de carreras
-Route::get('/gestionarCarrera', [carreraController::class, 'mostrar'])->name('gestionarCarrera');
-Route::get('/carreras/agregar', [carreraController::class, 'mostrarAgregar'])->name('agregarCarrera');
-Route::get('/editarCarrera/{id}', [carreraController::class, 'mostrarEditar'])->name('editarCarrera');
-Route::get('/verCarrera/{id}', [carreraController::class, 'mostrarDetalles'])->name('verCarrera');
-Route::post('/agregarCarrera', [carreraController::class, 'agregar'])->name('agregarCarrera_post');
-Route::post('/eliminarCarrera', [carreraController::class, 'eliminar'])->name('eliminarCarrera');
-Route::post('/modificarCarrera', [carreraController::class, 'modificar'])->name('modificarCarrera');
+// Carrera
+Route::get('/gestionarCarrera',         [carreraController::class, 'mostrar'])->name('gestionarCarrera');
+Route::get('/agregarCarrera',           [carreraController::class, 'mostrarAgregar'])->name('agregarCarrera');
+Route::post('/agregarCarrera',          [carreraController::class, 'agregar'])->name('agregarCarrera_post');
+Route::get('/editarCarrera/{id}',       [carreraController::class, 'mostrarEditar'])->name('editarCarrera');
+Route::post('/modificarCarrera',        [carreraController::class, 'modificar'])->name('modificarCarrera');
+Route::get('/verCarrera/{id}',          [carreraController::class, 'mostrarDetalles'])->name('verCarrera');
+Route::post('/eliminarCarrera',         [carreraController::class, 'eliminar'])->name('eliminarCarrera');
+Route::post('/eliminarVariasCarreras',  [carreraController::class, 'eliminarVarios'])->name('eliminarVariasCarreras');
+Route::get('/exportarCarrerasCsv',      [carreraController::class, 'exportarCsv'])->name('exportarCarrerasCsv');
 
 
+// Modalidad
+Route::get('/gestionarModalidad',       [modalidadController::class, 'mostrar'])->name('gestionarModalidad');
+Route::post('/agregarModalidad',        [modalidadController::class, 'agregar'])->name('agregarModalidad');
+Route::post('/eliminarModalidad',       [modalidadController::class, 'eliminar'])->name('eliminarModalidad');
+Route::post('/eliminarVariasModalidades', [modalidadController::class, 'eliminarVarios'])->name('eliminarVariasModalidades');
+Route::post('/modificarModalidad',      [modalidadController::class, 'modificar'])->name('modificarModalidad');
+Route::post('/vaciarModalidad',         [modalidadController::class, 'vaciar'])->name('vaciarModalidad');
+Route::get('/exportarModalidadesCsv',   [modalidadController::class, 'exportarCsv'])->name('exportarModalidadesCsv');
 
-Route::get('/gestionarModalidad', [modalidadController::class, 'mostrar'])->name('gestionarModalidad');
-Route::post('/agregarModalidad', [modalidadController::class, 'agregar']);
-Route::post('/eliminarModalidad', [modalidadController::class, 'eliminar']);
-Route::post('/modificarModalidad', [modalidadController::class, 'modificar']);
-Route::post('/vaciarModalidad', [modalidadController::class, 'vaciar']);
+//Grupo
+Route::get('/gestionarGrupos',         [gruposController::class, 'mostrar'])->name('gestionarGrupos');
+Route::post('/agregarGrupo',           [gruposController::class, 'agregar'])->name('agregarGrupo');
+Route::post('/eliminarGrupo',          [gruposController::class, 'eliminar'])->name('eliminarGrupo');
+Route::post('/eliminarVariosGrupos',   [gruposController::class, 'eliminarVarios'])->name('eliminarVariosGrupos');
+Route::post('/modificarGrupo',         [gruposController::class, 'modificar'])->name('modificarGrupo');
+Route::post('/vaciarGrupo',            [gruposController::class, 'vaciar'])->name('vaciarGrupo');
+Route::get('/exportarGruposCsv',       [gruposController::class, 'exportarCsv'])->name('exportarGruposCsv');
 
 
-Route::get('/gestionarGrupos', [gruposController::class, 'mostrar'])->name('gestionarGrupos');
-Route::post('/agregarGrupo', [gruposController::class, 'agregar']);
-Route::post('/eliminarGrupo', [gruposController::class, 'eliminar']);
-Route::post('/modificarGrupo', [gruposController::class, 'modificar']);
-Route::post('/vaciarGrupos', [gruposController::class, 'vaciar']);
-
-
+//Estudiante
 Route::get('/gestionarEstudiante', [estudianteController::class, 'mostrar'])->name('gestionarEstudiante');
 Route::post('/agregarEstudiante', [estudianteController::class, 'agregar']);
 Route::post('/eliminarEstudiante', [estudianteController::class, 'eliminar']);
@@ -108,34 +117,38 @@ Route::post('/modificarEstudiante', [estudianteController::class, 'modificar']);
 Route::post('/vaciarEstudiante', [estudianteController::class, 'vaciar']);
 
 
-// Rutas para gestionar tesis
-Route::get('/gestionarTesis', [TesisController::class, 'mostrar'])->name('gestionarTesis');
-Route::get('/crearTesis', [TesisController::class, 'crearTesis'])->name('crearTesis');
-Route::post('/agregarTesis', [TesisController::class, 'agregar'])->name('agregarTesis');
-Route::get('/verTesis/{id}', [TesisController::class, 'ver'])->name('verTesis');
-Route::get('/editarTesis/{id}', [TesisController::class, 'editar'])->name('editarTesis');
-Route::post('/modificarTesis', [TesisController::class, 'modificar'])->name('modificarTesis');
-Route::post('/eliminarTesis', [TesisController::class, 'eliminar'])->name('eliminarTesis');
-Route::post('/vaciarTesis', [TesisController::class, 'vaciar'])->name('vaciarTesis');
-
-// Rutas para gestionar cortes
-Route::get('/gestionarCortes', [cortesController::class, 'mostrar'])->name('gestionarCortes');
-Route::get('/crearCorte', [cortesController::class, 'crear'])->name('crearCorte');
-Route::post('/agregarCorte', [cortesController::class, 'agregar'])->name('agregarCorte');
-Route::get('/cortes/ver/{id}', [cortesController::class, 'ver'])->name('verCorte');
-Route::get('/editarCorte/{id}', [cortesController::class, 'editar'])->name('editarCorte');
-Route::post('/eliminarCorte', [cortesController::class, 'eliminar'])->name('eliminarCorte');
-Route::post('/modificarCorte', [cortesController::class, 'modificar'])->name('modificarCorte');
-Route::post('/vaciarCortes', [cortesController::class, 'vaciar'])->name('vaciarCortes');
-Route::post('/aprobarCorte', [cortesController::class, 'aprobarCorte'])->name('aprobarCorte');
-Route::post('/desaprobarCorte', [cortesController::class, 'desaprobarCorte'])->name('desaprobarCorte');
-Route::post('/revertirCorte', [cortesController::class, 'revertirCorte'])->name('revertirCorte');
-
-// Rutas para versiones de corte
-Route::delete('/version-corte/{id}', [cortesController::class, 'eliminarVersion'])->name('eliminar-version-corte');
-Route::get('/version-corte/{id}/descargar', [cortesController::class, 'verDocumentoVersion'])->name('ver-documento-version-corte');
+// Tesis
+Route::get('/gestionarTesis',           [TesisController::class, 'mostrar'])->name('gestionarTesis');
+Route::get('/crearTesis',               [TesisController::class, 'crearTesis'])->name('crearTesis');
+Route::post('/agregarTesis',            [TesisController::class, 'agregar'])->name('agregarTesis');
+Route::get('/editarTesis/{id}',         [TesisController::class, 'editar'])->name('editarTesis');
+Route::post('/modificarTesis',          [TesisController::class, 'modificar'])->name('modificarTesis');
+Route::get('/verTesis/{id}',            [TesisController::class, 'ver'])->name('verTesis');
+Route::post('/eliminarTesis',           [TesisController::class, 'eliminar'])->name('eliminarTesis');
+Route::post('/eliminarVariasTesis',     [TesisController::class, 'eliminarVarios'])->name('eliminarVariasTesis');
+Route::get('/exportarTesisCsv',         [TesisController::class, 'exportarCsv'])->name('exportarTesisCsv');
 
 
+// Cortes
+Route::get('/gestionarCortes',              [cortesController::class, 'mostrar'])->name('gestionarCortes');
+Route::get('/crearCorte',                   [cortesController::class, 'crear'])->name('crearCorte');
+Route::post('/agregarCorte',                [cortesController::class, 'agregar'])->name('agregarCorte');
+Route::get('/editarCorte/{id}',             [cortesController::class, 'editar'])->name('editarCorte');
+Route::post('/modificarCorte',              [cortesController::class, 'modificar'])->name('modificarCorte');
+Route::get('/cortes/ver/{id}',              [cortesController::class, 'ver'])->name('verCorte');
+Route::post('/eliminarCorte',               [cortesController::class, 'eliminar'])->name('eliminarCorte');
+Route::post('/eliminarVariosCortes',        [cortesController::class, 'eliminarVarios'])->name('eliminarVariosCortes');
+Route::delete('/eliminar-version-corte/{id}',[cortesController::class, 'eliminarVersion'])->name('eliminar-version-corte');
+Route::get('/exportarCortesCsv',            [cortesController::class, 'exportarCsv'])->name('exportarCortesCsv');
+Route::post('/aprobarCorte',                [cortesController::class, 'aprobarCorte'])->name('aprobarCorte');
+Route::post('/desaprobarCorte',             [cortesController::class, 'desaprobarCorte'])->name('desaprobarCorte');
+Route::post('/revertirCorte',               [cortesController::class, 'revertirCorte'])->name('revertirCorte');
+Route::get('/ver-documento-corte/{id}',     [cortesController::class, 'verDocumento'])->name('ver-documento');
+Route::get('/ver-documento-version-corte/{id}', [cortesController::class, 'verDocumentoVersion'])->name('ver-documento-version-corte');
+
+
+
+//Cortes aprobados
 Route::get('/gestionarCortesAprobados', [cortesAprobadosController::class, 'mostrar'])->name('gestionarCortesAprobados');
 Route::post('/agregarCorteAprobado', [cortesAprobadosController::class, 'agregar']);
 Route::post('/eliminarCorteAprobado', [cortesAprobadosController::class, 'eliminar']);
@@ -143,15 +156,17 @@ Route::post('/modificarCorteAprobado', [cortesAprobadosController::class, 'modif
 Route::post('/vaciarCortesAprobados', [cortesAprobadosController::class, 'vaciar']);
 
 
+// No Conformidades
+Route::get('/gestionarNoConformidades',         [NoConformidadesController::class, 'mostrar'])->name('gestionarNoConformidades');
+Route::post('/agregarNoConformidades',          [NoConformidadesController::class, 'agregar'])->name('agregarNoConformidades');
+Route::post('/eliminarNoConformidades',         [NoConformidadesController::class, 'eliminar'])->name('eliminarNoConformidades');
+Route::post('/eliminarVariasNoConformidades',   [NoConformidadesController::class, 'eliminarVarios'])->name('eliminarVariasNoConformidades');
+Route::post('/modificarNoConformidades',        [NoConformidadesController::class, 'modificar'])->name('modificarNoConformidades');
+Route::post('/vaciarNoConformidades',           [NoConformidadesController::class, 'vaciar'])->name('vaciarNoConformidades');
+Route::get('/exportarNoConformidadesCsv',       [NoConformidadesController::class, 'exportarCsv'])->name('exportarNoConformidadesCsv');
 
-Route::get('/gestionarNoConformidades', [NoConformidadesController::class, 'mostrar'])->name('gestionarNoConformidades');
-Route::post('/agregarNoConformidades', [NoConformidadesController::class, 'agregar']);
-Route::post('/eliminarNoConformidades', [NoConformidadesController::class, 'eliminar']);
-Route::post('/modificarNoConformidades', [NoConformidadesController::class, 'modificar']);
-Route::post('/vaciarNoConformidades', [NoConformidadesController::class, 'vaciar']);
 
-
-
+// NoConformidadesCorte
 Route::get('/agregarNoConformidadCorte/{id_corte}', [cortesNoConformidadesController::class, 'crear'])->name('agregarNoConformidadCorte');
 Route::post('/agregarNoConformidadCorteExistente', [cortesNoConformidadesController::class, 'agregarExistente'])->name('agregarNoConformidadCorteExistente');
 Route::post('/crearYVincularNoConformidadCorte', [cortesNoConformidadesController::class, 'crearYVincular'])->name('crearYVincularNoConformidadCorte');
@@ -160,7 +175,7 @@ Route::post('/actualizarNoConformidadCorte', [cortesNoConformidadesController::c
 Route::post('/desvincularNoConformidadCorte', [cortesNoConformidadesController::class, 'desvincular'])->name('desvincularNoConformidadCorte');
 
 
-
+// Profesor
 Route::get('/gestionarProfesor', [profesorController::class, 'mostrar'])->name('gestionarProfesor');
 Route::post('/agregarProfesor', [profesorController::class, 'agregar']);
 Route::post('/eliminarProfesor', [profesorController::class, 'eliminar']);
@@ -169,19 +184,20 @@ Route::post('/vaciarProfesor', [profesorController::class, 'vaciar']);
 
 
 
-// Rutas para gestión de tutores-estudiantes
+// Tutores-estudiantes
 Route::get('/asignarTutor/{id_estudiante}', [tutorEstudianteController::class, 'mostrarAsignarTutor'])->name('asignarTutor');
 Route::post('/agregarTutorEstudiante', [tutorEstudianteController::class, 'agregar'])->name('agregarTutorEstudiante');
 Route::post('/eliminarTutorEstudiante', [tutorEstudianteController::class, 'eliminar'])->name('eliminarTutorEstudiante');
 
 
-
-
-Route::get('/gestionarDepartamento', [departamentoController::class, 'mostrar'])->name('gestionarDepartamento');
-Route::post('/agregarDepartamento', [departamentoController::class, 'agregar']);
-Route::post('/eliminarDepartamento', [departamentoController::class, 'eliminar']);
-Route::post('/modificarDepartamento', [departamentoController::class, 'modificar']);
-Route::post('/vaciarDepartamento', [departamentoController::class, 'vaciar']);
+// Departamento
+Route::get('/gestionarDepartamento',       [departamentoController::class, 'mostrar'])->name('gestionarDepartamento');
+Route::post('/agregarDepartamento',        [departamentoController::class, 'agregar'])->name('agregarDepartamento');
+Route::post('/eliminarDepartamento',       [departamentoController::class, 'eliminar'])->name('eliminarDepartamento');
+Route::post('/eliminarVariosDepartamentos',[departamentoController::class, 'eliminarVarios'])->name('eliminarVariosDepartamentos');
+Route::post('/modificarDepartamento',      [departamentoController::class, 'modificar'])->name('modificarDepartamento');
+Route::post('/vaciarDepartamento',         [departamentoController::class, 'vaciar'])->name('vaciarDepartamento');
+Route::get('/exportarDepartamentosCsv',    [departamentoController::class, 'exportarCsv'])->name('exportarDepartamentosCsv');
 
 
 
@@ -193,24 +209,26 @@ Route::post('/desvincularProfesorCorte', [cortesProfesorController::class, 'desv
 
 
 
-// Rutas para Fundamentación
-Route::get('/gestionarFundamentaciones', [fundamentacionesController::class, 'mostrar'])->name('gestionarFundamentaciones');
-Route::get('/crearFundamentación', [fundamentacionesController::class, 'crear'])->name('crearFundamentación');
-Route::get('/verFundamentación/{id}', [fundamentacionesController::class, 'ver'])->name('verFundamentación');
-Route::get('/editarFundamentación/{id}', [fundamentacionesController::class, 'editar'])->name('editarFundamentación');
-Route::post('/agregarFundamentación', [fundamentacionesController::class, 'agregar'])->name('agregarFundamentación');
-Route::post('/eliminarFundamentación', [fundamentacionesController::class, 'eliminar'])->name('eliminarFundamentación');
-Route::post('/modificarFundamentación', [fundamentacionesController::class, 'modificar'])->name('modificarFundamentación');
-Route::post('/vaciarFundamentaciones', [fundamentacionesController::class, 'vaciar']);
-Route::post('/aprobarFundamentación', [fundamentacionesController::class, 'aprobar'])->name('aprobarFundamentación');
-Route::post('/desaprobarFundamentación', [fundamentacionesController::class, 'desaprobar'])->name('desaprobarFundamentación');
-Route::post('/revertirFundamentación', [fundamentacionesController::class, 'revertir'])->name('revertirFundamentación');
+// Fundamentación
+Route::get('/gestionarFundamentaciones',              [fundamentacionesController::class, 'mostrar'])->name('gestionarFundamentaciones');
+Route::get('/crearFundamentación',                    [fundamentacionesController::class, 'crear'])->name('crearFundamentación');
+Route::post('/agregarFundamentación',                 [fundamentacionesController::class, 'agregar'])->name('agregarFundamentación');
+Route::get('/editarFundamentación/{id}',              [fundamentacionesController::class, 'editar'])->name('editarFundamentación');
+Route::post('/modificarFundamentación',               [fundamentacionesController::class, 'modificar'])->name('modificarFundamentación');
+Route::get('/verFundamentación/{id}',                 [fundamentacionesController::class, 'ver'])->name('verFundamentación');
+Route::post('/eliminarFundamentación',                [fundamentacionesController::class, 'eliminar'])->name('eliminarFundamentación');
+Route::post('/eliminarVariasFundamentaciones',        [fundamentacionesController::class, 'eliminarVarios'])->name('eliminarVariasFundamentaciones');
+Route::delete('/eliminar-version-fundamentacion/{id}',[fundamentacionesController::class, 'eliminarVersion'])->name('eliminar-version-fundamentacion');
+Route::get('/exportarFundamentacionesCsv',            [fundamentacionesController::class, 'exportarCsv'])->name('exportarFundamentacionesCsv');
+Route::post('/aprobarFundamentación',                 [fundamentacionesController::class, 'aprobar'])->name('aprobarFundamentación');
+Route::post('/desaprobarFundamentación',              [fundamentacionesController::class, 'desaprobar'])->name('desaprobarFundamentación');
+Route::post('/revertirFundamentación',                [fundamentacionesController::class, 'revertir'])->name('revertirFundamentación');
+Route::get('/ver-documento/{id}',                     [fundamentacionesController::class, 'verDocumento'])->name('ver-documento');
+Route::get('/ver-documento-version/{id}',             [fundamentacionesController::class, 'verDocumentoVersion'])->name('ver-documento-version');
+Route::get('/fundamentaciones-aprobadas',             [fundamentacionesController::class, 'fundamentacionesAprobadas'])->name('fundamentacionesAprobadas');
 
-// Rutas para versiones de fundamentación
-Route::delete('/version-fundamentacion/{id}', [fundamentacionesController::class, 'eliminarVersion'])->name('eliminar-version-fundamentacion');
-Route::get('/version-fundamentacion/{id}/descargar', [fundamentacionesController::class, 'verDocumentoVersion'])->name('ver-documento-version');
 
-
+// Fundamentaciones aprobadas
 Route::get('/gestionarFundamentacionesAprobadas', [fundamentacionesAprobadasController::class, 'mostrar'])->name('gestionarFundamentacionesAprobadas');
 Route::post('/agregarFundamentaciónAprobada', [fundamentacionesAprobadasController::class, 'agregar']);
 Route::post('/eliminarFundamentaciónAprobada', [fundamentacionesAprobadasController::class, 'eliminar']);
@@ -234,20 +252,25 @@ Route::post('/desvincularProfesorFundamentación', [ProfesorFundamentaciónContr
     
 
 
-
-Route::get('/gestionarRoles', [rolesController::class, 'mostrar'])->name('gestionarRoles');
-Route::post('/agregarRol', [rolesController::class, 'agregar']);
-Route::post('/eliminarRol', [rolesController::class, 'eliminar']);
-Route::post('/modificarRol', [rolesController::class, 'modificar']);
-Route::post('/vaciarRoles', [rolesController::class, 'vaciar']);
+// Roles
+Route::get('/gestionarRoles',          [rolesController::class, 'mostrar'])->name('gestionarRoles');
+Route::post('/agregarRol',             [rolesController::class, 'agregar'])->name('agregarRol');
+Route::post('/eliminarRol',            [rolesController::class, 'eliminar'])->name('eliminarRol');
+Route::post('/eliminarVariosRoles',    [rolesController::class, 'eliminarVarios'])->name('eliminarVariosRoles');
+Route::post('/modificarRol',           [rolesController::class, 'modificar'])->name('modificarRol');
+Route::post('/vaciarRol',              [rolesController::class, 'vaciar'])->name('vaciarRol');
+Route::get('/exportarRolesCsv',        [rolesController::class, 'exportarCsv'])->name('exportarRolesCsv');
 Route::get('/obtenerPermisosRol/{id}', [rolesController::class, 'obtenerPermisosRol'])->name('obtenerPermisosRol');
 
 
-Route::get('/gestionarPermisos', [permisosController::class, 'mostrar'])->name('gestionarPermisos');
-Route::post('/agregarPermiso', [permisosController::class, 'agregar']);
-Route::post('/eliminarPermiso', [permisosController::class, 'eliminar']);
-Route::post('/modificarPermiso', [permisosController::class, 'modificar']);
-Route::post('/vaciarPermisos', [permisosController::class, 'vaciar']);
+// Permisos
+Route::get('/gestionarPermisos',         [permisosController::class, 'mostrar'])->name('gestionarPermisos');
+Route::post('/agregarPermiso',           [permisosController::class, 'agregar'])->name('agregarPermiso');
+Route::post('/eliminarPermiso',          [permisosController::class, 'eliminar'])->name('eliminarPermiso');
+Route::post('/eliminarVariosPermisos',   [permisosController::class, 'eliminarVarios'])->name('eliminarVariosPermisos');
+Route::post('/modificarPermiso',         [permisosController::class, 'modificar'])->name('modificarPermiso');
+Route::post('/vaciarPermiso',            [permisosController::class, 'vaciar'])->name('vaciarPermiso');
+Route::get('/exportarPermisosCsv',       [permisosController::class, 'exportarCsv'])->name('exportarPermisosCsv');
 
 
 
@@ -269,7 +292,7 @@ Route::post('/cambiarContraseñaProcesar', [CambiarContraseñaController::class,
 // Consultas
 Route::view('/consultas', 'consultas.consultas')->name('consultas');
 
-//Estudiantes
+//Estudiantes 
 Route::view('/estudiantes', 'consultas.estudiantes')->name('estudiantes');
 
 Route::view('/buscarEstudiante', 'consultas.estudiantes.buscarEstudiante')->name('buscarEstudiante');

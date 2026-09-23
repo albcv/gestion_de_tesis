@@ -1,98 +1,133 @@
-/* cambiar-contrasena.css */
-:root {
-    --verde-principal: #030;
-    --verde-oscuro: #020;
-    --verde-claro: #050;
-    --verde-hover: #141;
-    --texto-claro: #fff;
-    --fondo-card: #fff;
-    --borde: #ddd;
-    --sombra: rgba(3, 0, 0, 0.1);
-    --error: #e74c3c;
-    --exito: #2ecc71;
+/* =====================================================
+   cambiarContraseña.css — Formulario de cambio de contraseña
+   Paleta verde: #030 (oscuro), #0a3, fondo claro
+   ===================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
+/* =====================================================
+   Contenedor principal
+   ===================================================== */
 .cambiar-contrasena-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 120px); 
-    padding: 20px;
-
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 0 20px;
+    animation: fadeIn 0.5s ease-out;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================================
+   Tarjeta del formulario
+   ===================================================== */
 .cambiar-contrasena-card {
-    background: var(--fondo-card);
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px var(--sombra);
-    width: 100%;
-    max-width: 500px;
-    border: 1px solid var(--borde);
-    transition: transform 0.3s ease;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 51, 0, 0.12);
+    border: 2px solid #030;
+    padding: 35px 32px;
 }
 
-.cambiar-contrasena-card:hover {
-    transform: translateY(-5px);
-}
-
+/* =====================================================
+   Título
+   ===================================================== */
 .cambiar-contrasena-card h1 {
-    color: var(--verde-principal);
+    color: #030;
+    font-size: 26px;
+    font-weight: 700;
     text-align: center;
-    margin-bottom: 30px;
-    font-size: 28px;
+    margin: 0 0 25px 0;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #030;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 12px;
+    letter-spacing: 0.3px;
 }
 
 .cambiar-contrasena-card h1 i {
     font-size: 24px;
+    color: #030;
 }
 
-/* Alertas */
+/* =====================================================
+   Alertas (éxito / error)
+   ===================================================== */
 .alert {
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 22px;
+    font-size: 15px;
+    font-weight: 500;
     display: flex;
     align-items: center;
     gap: 10px;
-    font-weight: 500;
+    border-left: 5px solid;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.alert i {
+    font-size: 18px;
+    flex-shrink: 0;
 }
 
 .alert-success {
-    background: rgba(46, 204, 113, 0.1);
-    color: var(--exito);
-    border: 1px solid rgba(46, 204, 113, 0.3);
+    background: #d4edda;
+    color: #155724;
+    border-left-color: #28a745;
 }
 
 .alert-error {
-    background: rgba(231, 76, 60, 0.1);
-    color: var(--error);
-    border: 1px solid rgba(231, 76, 60, 0.3);
+    background: #f8d7da;
+    color: #721c24;
+    border-left-color: #dc3545;
 }
 
-/* Formulario */
+/* =====================================================
+   Formulario
+   ===================================================== */
 .contrasena-form {
-    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
 }
 
+/* ---------- Grupo de campo ---------- */
 .form-group {
-    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
 }
 
 .form-group label {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 8px;
-    color: var(--verde-principal);
+    margin-bottom: 10px;
+    font-size: 15px;
     font-weight: 600;
-    font-size: 16px;
+    color: #030;
 }
 
+.form-group label i {
+    font-size: 15px;
+    color: #030;
+    opacity: 0.85;
+}
+
+/* ---------- Input con icono ojo ---------- */
 .input-with-icon {
     position: relative;
     display: flex;
@@ -101,181 +136,208 @@
 
 .form-control {
     width: 100%;
-    padding: 12px 45px 12px 15px;
-    border: 2px solid var(--borde);
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    background: #f9f9f9;
+    padding: 13px 48px 13px 16px;
+    border: 2px solid #4caf50;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #222;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+}
+
+.form-control::placeholder {
+    color: #9e9e9e;
 }
 
 .form-control:focus {
-    outline: none;
-    border-color: var(--verde-principal);
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(3, 0, 0, 0.1);
+    border-color: #030;
+    background: #f5fff5;
+    box-shadow: 0 0 0 4px rgba(0, 51, 0, 0.15);
 }
 
+/* Estado de error */
 .form-control.is-invalid {
-    border-color: var(--error);
+    border-color: #dc3545;
+    background: #fff5f5;
 }
 
+.form-control.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.18);
+}
+
+/* ---------- Botón mostrar/ocultar contraseña ---------- */
 .toggle-password {
     position: absolute;
-    right: 10px;
-    background: none;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
     border: none;
+    border-radius: 50%;
     cursor: pointer;
-    color: var(--verde-principal);
-    font-size: 18px;
-    padding: 5px;
-    transition: color 0.3s ease;
+    color: #030;
+    font-size: 16px;
+    transition: background 0.2s, transform 0.15s, color 0.2s;
 }
 
 .toggle-password:hover {
-    color: var(--verde-hover);
+    background: rgba(0, 51, 0, 0.1);
+    color: #052;
+    transform: translateY(-50%) scale(1.08);
 }
 
-/* Mensajes de error */
+.toggle-password:focus {
+    outline: none;
+    background: rgba(0, 51, 0, 0.15);
+}
+
+.toggle-password i {
+    line-height: 1;
+    user-select: none;
+}
+
+/* ---------- Mensaje de error de validación ---------- */
 .error-message {
-    color: var(--error);
-    font-size: 14px;
-    margin-top: 5px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    display: inline-block;
+    margin-top: 8px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #721c24;
+    background: #f8d7da;
+    border-left: 3px solid #dc3545;
+    border-radius: 6px;
 }
 
-/* Requisitos de contraseña */
-.requisitos-contrasena {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    margin: 25px 0;
-    border-left: 4px solid var(--verde-principal);
-}
-
-.requisitos-contrasena h3 {
-    color: var(--verde-principal);
-    margin-bottom: 10px;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.requisitos-contrasena ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-}
-
-.requisitos-contrasena li {
-    margin: 8px 0;
-    color: #555;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-}
-
-.requisitos-contrasena li i {
-    color: var(--exito);
-}
-
-/* Acciones del formulario */
+/* =====================================================
+   Acciones (botones)
+   ===================================================== */
 .form-actions {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 15px;
-    margin-top: 30px;
+    margin-top: 12px;
+    padding-top: 24px;
+    border-top: 2px solid #e8f5e9;
+    flex-wrap: wrap;
 }
 
 .btn-cancelar,
 .btn-guardar {
-    flex: 1;
-    padding: 14px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
+    padding: 13px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px;
     text-decoration: none;
-    border: 2px solid;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+    min-width: 170px;
 }
 
 .btn-cancelar {
-    background: #f00;
+    background: #6c757d;
     color: #fff;
-    border-color: #ddd;
 }
 
 .btn-cancelar:hover {
-    background: #f00;
-    transform: translateY(-2px);
-
+    background: #5a6268;
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(108, 117, 125, 0.35);
 }
 
 .btn-guardar {
-    background: linear-gradient(135deg, var(--verde-principal) 0%, var(--verde-claro) 100%);
-    color: var(--texto-claro);
-    border-color: var(--verde-principal);
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 51, 0, 0.2);
 }
 
 .btn-guardar:hover {
-    background: linear-gradient(135deg, var(--verde-hover) 0%, var(--verde-principal) 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(3, 0, 0, 0.2);
+    background: linear-gradient(135deg, #0a3 0%, #030 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0, 51, 0, 0.3);
 }
 
-.btn-guardar:active {
-    transform: translateY(0);
+.btn-cancelar i,
+.btn-guardar i {
+    font-size: 15px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-
-    .btn-cambiar-contrasena{
-        width: 420px;
-    }
-
+/* =====================================================
+   Responsive
+   ===================================================== */
+@media (max-width: 780px) {
     .cambiar-contrasena-container {
-        padding: 15px;
-        min-height: calc(100vh - 100px);
+        margin: 20px auto;
+        padding: 0 14px;
     }
-    
+
     .cambiar-contrasena-card {
-        padding: 25px;
-        margin: 10px;
+        padding: 25px 20px;
+        border-radius: 12px;
     }
-    
+
     .cambiar-contrasena-card h1 {
-        font-size: 24px;
+        font-size: 22px;
+        gap: 8px;
+        margin-bottom: 20px;
     }
-    
+
+    .cambiar-contrasena-card h1 i {
+        font-size: 20px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+    }
+
+    .form-control {
+        font-size: 16px; /* evita zoom automático en iOS */
+        padding: 12px 46px 12px 14px;
+    }
+
     .form-actions {
-        flex-direction: column;
+        flex-direction: column-reverse;
+        gap: 12px;
     }
-    
-    
+
+    .btn-cancelar,
     .btn-guardar {
         width: 100%;
-    }
-
-    .btn-cancelar{
-        width: 94%;
+        min-width: unset;
+        padding: 13px 20px;
     }
 }
 
 @media (max-width: 480px) {
     .cambiar-contrasena-card {
-        padding: 20px;
+        padding: 20px 16px;
     }
-    
+
+    .cambiar-contrasena-card h1 {
+        font-size: 20px;
+    }
+
     .form-control {
-        padding: 10px 40px 10px 12px;
+        padding: 11px 42px 11px 12px;
+    }
+
+    .toggle-password {
+        width: 32px;
+        height: 32px;
+        font-size: 15px;
     }
 }
