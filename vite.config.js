@@ -18,12 +18,9 @@ export default defineConfig({
                 
 
                 //css profesor
-                'resources/css/profesor/listaCortes.css',
-                'resources/css/profesor/listaEstudiantesTutorados.css',
-                'resources/css/profesor/listaFundamentaciones.css',
-                'resources/css/profesor/revisarCorte.css',
-                'resources/css/profesor/revisarEstudianteTutorado.css',
-                'resources/css/profesor/revisarFundamentación.css',
+                'resources/css/profesor/listado.css',
+                'resources/css/profesor/revisar.css',
+
 
                 //css estudiante
                 'resources/css/estudiante/subirCorte.css',

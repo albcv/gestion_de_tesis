@@ -1,0 +1,499 @@
+/* =====================================================
+   listado.css — Listados del profesor
+   (Fundamentaciones, Estudiantes Tutorados, Cortes)
+   Paleta verde consistente con el resto del sistema
+   ===================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* =====================================================
+   Contenedor principal
+   ===================================================== */
+.container-fluid {
+    padding: 30px 20px 50px;
+    min-height: calc(100vh - 70px);
+    animation: listadoFadeIn 0.5s ease-out;
+}
+
+@keyframes listadoFadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =====================================================
+   Título
+   ===================================================== */
+h2.mb-4,
+h2 {
+    color: #030;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 30px;
+    padding-bottom: 16px;
+    position: relative;
+    letter-spacing: 0.3px;
+}
+
+h2.mb-4::after,
+h2:not([class*="card"])::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 4px;
+    background: linear-gradient(90deg, #030, #0a3);
+    border-radius: 2px;
+}
+
+/* =====================================================
+   Alertas
+   ===================================================== */
+.alert {
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border-left: 5px solid;
+    animation: listadoFadeIn 0.4s ease-out;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.alert .icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.5;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border-left-color: #16a34a;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+    border-left-color: #dc2626;
+}
+
+.alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border-left-color: #0891b2;
+}
+
+/* Botón cerrar */
+.btn-close {
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    padding: 0 4px;
+    line-height: 1;
+    transition: opacity 0.2s, transform 0.15s;
+    flex-shrink: 0;
+}
+
+.btn-close::before {
+    content: '×';
+}
+
+.btn-close:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+/* Alerta informativa centrada (estado vacío) */
+.alert-info.alert-text-center {
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    padding: 40px 30px;
+    background: #fff;
+    color: #555;
+    border: 2px dashed #c8e6c9;
+    border-left: 2px dashed #c8e6c9;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 51, 0, 0.06);
+}
+
+.alert-info.alert-text-center i {
+    color: #0a3;
+    font-size: 48px;
+    margin-bottom: 14px;
+    opacity: 0.6;
+}
+
+.alert-info.alert-text-center h4 {
+    margin: 0;
+    color: #030;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* =====================================================
+   Tabla
+   ===================================================== */
+.table-container {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 51, 0, 0.12);
+    border: 2px solid #030;
+    overflow: hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    background: #fff;
+    min-width: 900px;
+}
+
+.table-header {
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+}
+
+.table-header th {
+    padding: 16px 18px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    border: none;
+}
+
+.table-header th .icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.table-header th .icon i {
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+.table-body td {
+    padding: 14px 18px;
+    color: #222;
+    font-size: 14px;
+    border-bottom: 1px solid #e8f5e9;
+    vertical-align: middle;
+    word-break: break-word;
+    line-height: 1.5;
+}
+
+.table-body tr {
+    transition: background 0.2s;
+}
+
+.table-body tr:nth-child(even) {
+    background: #f9fdf9;
+}
+
+.table-body tr:hover {
+    background: #f0fff0;
+}
+
+.table-body tr:last-child td {
+    border-bottom: none;
+}
+
+/* Texto de tesis (puede ser largo) */
+.tema-tesis-texto {
+    max-width: 320px;
+    line-height: 1.5;
+    color: #030;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+/* =====================================================
+   Badges
+   ===================================================== */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: #fff;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.badge-success {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+.badge-danger {
+    background: linear-gradient(135deg, #dc2626, #991b1b);
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.badge-info {
+    background: linear-gradient(135deg, #0891b2, #0e7490);
+}
+
+.badge-primary {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+.badge-secondary {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
+.badge-sm {
+    padding: 3px 9px;
+    font-size: 11px;
+}
+
+/* =====================================================
+   Cortes info (columna con varios cortes)
+   ===================================================== */
+.cortes-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.corte-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background: #f5fff5;
+    border-radius: 6px;
+    border-left: 3px solid #0a3;
+    font-size: 13px;
+}
+
+.corte-numero {
+    font-weight: 600;
+    color: #030;
+    min-width: 60px;
+}
+
+/* =====================================================
+   Botones
+   ===================================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+    white-space: nowrap;
+}
+
+.btn.btn-sm {
+    padding: 8px 14px;
+    font-size: 12px;
+}
+
+.btn.btn-primary {
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(0, 51, 0, 0.2);
+}
+
+.btn.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 51, 0, 0.3);
+    color: #fff;
+}
+
+.btn.btn-primary .icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* =====================================================
+   Utilidades
+   ===================================================== */
+.text-muted {
+    color: #6b7280;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.align-middle {
+    vertical-align: middle;
+}
+
+.mb-3 {
+    margin-bottom: 16px;
+}
+
+.mb-4 {
+    margin-bottom: 24px;
+}
+
+/* =====================================================
+   Responsive — Tablet
+   ===================================================== */
+@media (max-width: 1024px) {
+    .container-fluid {
+        padding: 20px 15px 40px;
+    }
+
+    h2.mb-4 {
+        font-size: 24px;
+    }
+
+    table.table {
+        min-width: 800px;
+    }
+
+    .table-header th,
+    .table-body td {
+        padding: 12px 14px;
+        font-size: 13px;
+    }
+
+    .tema-tesis-texto {
+        max-width: 240px;
+    }
+}
+
+/* =====================================================
+   Responsive — Móvil
+   ===================================================== */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 15px 10px 30px;
+    }
+
+    h2.mb-4 {
+        font-size: 20px;
+        margin-bottom: 22px;
+        padding-bottom: 12px;
+    }
+
+    h2.mb-4::after {
+        width: 80px;
+        height: 3px;
+    }
+
+    .alert {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+
+    .alert-info.alert-text-center {
+        padding: 30px 20px;
+    }
+
+    .alert-info.alert-text-center i {
+        font-size: 40px;
+    }
+
+    .alert-info.alert-text-center h4 {
+        font-size: 16px;
+    }
+
+    /* Tabla con scroll horizontal y min-width reducido */
+    .table-container {
+        border-radius: 12px;
+    }
+
+    table.table {
+        min-width: 720px;
+    }
+
+    .table-header th {
+        padding: 12px 10px;
+        font-size: 11px;
+        letter-spacing: 0.3px;
+    }
+
+    .table-body td {
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .tema-tesis-texto {
+        max-width: 180px;
+        font-size: 12px;
+    }
+
+    .badge {
+        padding: 4px 9px;
+        font-size: 10px;
+    }
+
+    .badge-sm {
+        padding: 3px 7px;
+        font-size: 9px;
+    }
+
+    .corte-item {
+        padding: 3px 6px;
+        font-size: 11px;
+        gap: 5px;
+    }
+
+    .corte-numero {
+        min-width: 50px;
+    }
+
+    .btn.btn-sm {
+        padding: 7px 10px;
+        font-size: 11px;
+    }
+
+    .btn.btn-sm .icon i {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    h2.mb-4 {
+        font-size: 18px;
+    }
+
+    .btn.btn-sm {
+        padding: 6px 8px;
+        font-size: 10px;
+    }
+
+    .btn.btn-sm .icon {
+        gap: 4px;
+    }
+}

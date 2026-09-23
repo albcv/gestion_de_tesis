@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
-@vite(['resources/css/profesor/listaCortes.css'])
-
+@vite(['resources/css/profesor/listado.css'])
 
 @section('content')
 <div class="container-fluid">
@@ -12,8 +11,7 @@
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible">
                     <div class="icon">
-                        <i class="fas fa-check-circle"></i>
-                        {{ session('success') }}
+                        ✅ {{ session('success') }}
                     </div>
                     <button type="button" class="btn-close" aria-label="Close"></button>
                 </div>
@@ -22,8 +20,7 @@
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible">
                     <div class="icon">
-                        <i class="fas fa-exclamation-circle"></i>
-                        {{ session('error') }}
+                        ❌ {{ session('error') }}
                     </div>
                     <button type="button" class="btn-close" aria-label="Close"></button>
                 </div>
@@ -34,13 +31,13 @@
                     <table class="table">
                         <thead class="table-header">
                             <tr>
-                                <th><span class="icon"><i class="fas fa-user-graduate"></i> Estudiante</span></th>
-                                <th><span class="icon"><i class="fas fa-hashtag"></i> Corte</span></th>
-                                <th><span class="icon"><i class="fas fa-file-alt"></i> Tesis</span></th>
-                                <th><span class="icon"><i class="fas fa-code-branch"></i> Versiones</span></th>
-                                <th><span class="icon"><i class="fas fa-tag"></i> Estado</span></th>
-                                <th><span class="icon"><i class="fas fa-calendar"></i> Fecha Creación</span></th>
-                                <th><span class="icon"><i class="fas fa-cogs"></i> Acciones</span></th>
+                                <th><span class="icon">🎓 Estudiante</span></th>
+                                <th><span class="icon"># Corte</span></th>
+                                <th><span class="icon">📄 Tesis</span></th>
+                                <th><span class="icon">🔀 Versiones</span></th>
+                                <th><span class="icon">🏷️ Estado</span></th>
+                                <th><span class="icon">📅 Fecha Creación</span></th>
+                                <th><span class="icon">⚙️ Acciones</span></th>
                             </tr>
                         </thead>
                         <tbody class="table-body">
@@ -84,7 +81,7 @@
                                     <td class="align-middle" data-label="Acciones">
                                         <a href="{{ route('revisarCorteEstudiante', $corte->idCortes_de_tesis) }}" 
                                            class="btn btn-primary btn-sm">
-                                            <span class="icon"><i class="fas fa-eye"></i> Revisar</span>
+                                            <span class="icon">👁️ Revisar</span>
                                         </a>
                                     </td>
                                 </tr>
@@ -94,7 +91,7 @@
                 </div>
             @else
                 <div class="alert alert-info alert-text-center">
-                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                    <div style="font-size:48px; margin-bottom:14px;">📥</div>
                     <h4>No hay cortes asignados</h4>
                 </div>
             @endif
@@ -106,7 +103,6 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Auto-ocultar alertas después de 5 segundos
         setTimeout(function() {
             document.querySelectorAll('.alert:not(.alert-info)').forEach(function(alert) {
                 alert.style.opacity = '0';
@@ -117,7 +113,6 @@
             });
         }, 5000);
 
-        // Botón para cerrar alertas
         document.querySelectorAll('.btn-close').forEach(function(button) {
             button.addEventListener('click', function() {
                 const alert = this.closest('.alert');

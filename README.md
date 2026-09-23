@@ -38,73 +38,6 @@ El desarrollo siguió la metodología ágil **Extreme Programming (XP)**, permit
 | Base de datos | MySQL 15.1                                       |
 | Herramientas  | Visual Studio Code, DBDesigner (diagramas ER)    |
 
-### Frameworks y librerías destacadas
-- **Laravel 12**: Framework PHP con patrón MVC, Eloquent ORM, migraciones, seeders, autenticación integrada.
-- **Eloquent ORM**: Interacción fluida y segura con MySQL.
-
-
-## 🔧 Metodología de desarrollo
-
-Se empleó **Extreme Programming (XP)** por su flexibilidad, iteraciones cortas, colaboración continua con el cliente y capacidad de respuesta ante requisitos cambiantes. Se pudo entregar resultados funcionales de manera rápida y adaptarse a las necesidades institucionales.
-
-## 📋 Requisitos del sistema
-
-- PHP >= 8.1
-- Composer
-- MySQL >= 5.7
-- Node.js & NPM (para assets)
-- Servidor web (Apache/Nginx) 
-
-## 🚀 Instalación y configuración
-
-
-```bash
-
-# 1. Instalar dependencias de PHP
-
-composer install
-
-#2. Instalar dependencias de Node.js y compilar assets
-
-npm install
-npm run build   # o npm run dev para desarrollo
-
-#3. Edita .env con los datos de tu base de datos MySQL:
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=nombre_bd
-DB_USERNAME=usuario
-DB_PASSWORD=contraseña
-
-#4. Ejecutar migraciones y seeders
-
-php artisan migrate --seed
-
-
-#5. Iniciar el servidor de desarrollo
-
-php artisan serve
-
-```
-
-```
-Estructura del proyecto (principales directorios)
-text
-
-app/
-├── Http/Controllers/     # Controladores (Admin, Estudiante, Profesor)
-├── Models/               # Modelos Eloquent
-database/
-├── migrations/           # Migraciones de la BD
-├── seeders/              # Datos iniciales
-resources/
-├── views/                # Vistas Blade
-routes/
-├── web.php               # Rutas principales
-
-```
 
 ## Imágenes
 
@@ -114,17 +47,29 @@ routes/
 **Inicio**  
 <img src="img/inicio.png" alt="Vista de inicio">
 
+**Navegación**  
+<img src="img/sidebar.png" alt="Vista de inicio">
+
 **Perfil de usuario**  
 <img src="img/perfil.png" alt="Vista de perfil de usuario">
 
 **Gestionar usuarios**  
 <img src="img/gestionar_usuarios.png" alt="Vista de gestión de usuarios">
 
+**Gestionar facultad**  
+<img src="img/gestionar_facultad.png" alt="Vista de gestión de carreras">
+
 **Gestionar carreras**  
 <img src="img/gestionar_carreras.png" alt="Vista de gestión de carreras">
 
 **Gestionar Tesis**  
 <img src="img/gestionar_tesis.png" alt="Vista de gestión de tesis">
+
+**Detalles de una Tesis**  
+<img src="img/detalles_tesis.png" alt="Vista de gestión de tesis">
+
+**Gestionar Fechas de Entrega**  
+<img src="img/fechas_entrega.png" alt="Vista de gestión de tesis">
 
 **Modelo lógico**  
 <img src="img/modelo_lógico.png" alt="Diagrama del modelo lógico de la aplicación">
