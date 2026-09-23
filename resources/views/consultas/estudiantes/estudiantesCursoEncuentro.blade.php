@@ -2,9 +2,7 @@
 
 @section('content')
 
-@vite(['resources/css/formulario.css'])
-@vite(['resources/css/consultas/estudiantesAtrasadosFundamentación.css'])
-@vite(['resources/css/consultas/estudiantes.css'])
+@vite(['resources/css/consultas/ejecutar_consultas.css'])
 
 <form action="/estudiantesCursoEncuentro" id="formulario_estudiantes_curso_encuentro" method="get">
     @csrf

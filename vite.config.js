@@ -14,8 +14,9 @@ export default defineConfig({
                 'resources/css/perfil.css',
                 'resources/css/sidebar.css',
                 'resources/css/stats.css',
-
+              
                 
+
                 //css profesor
                 'resources/css/profesor/listaCortes.css',
                 'resources/css/profesor/listaEstudiantesTutorados.css',
@@ -29,15 +30,9 @@ export default defineConfig({
                 'resources/css/estudiante/subirFundamentación.css',
 
                 //css consultas
-                'resources/css/consultas/buscarEstudiante.css',
-                'resources/css/consultas/consultas.css',
-                'resources/css/consultas/consultas2.css',
-                'resources/css/consultas/estudiantes.css',
-                'resources/css/consultas/estudiantesAtrasadosFundamentación.css',
-                'resources/css/consultas/estudiantesFacultad.css',
-                'resources/css/consultas/estudiantesSinTutor.css',
-                'resources/css/consultas/fundamentacionesAprobadas.css',
-                'resources/css/consultas/profesoresDepartamento.css',
+                  'resources/css/consultas/consultas.css',
+                  'resources/css/consultas/ejecutar_consultas.css',
+                
 
                 //css gestionar
                 'resources/css/gestionar/fechaEntrega.css',

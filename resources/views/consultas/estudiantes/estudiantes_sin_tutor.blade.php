@@ -3,9 +3,7 @@
 @section('content')
 
 
-@vite(['resources/css/consultas/estudiantesSinTutor.css'])
-
-
+@vite(['resources/css/consultas/ejecutar_consultas.css'])
 
 <form action="/estudiantes_sin_tutor" id="formulario_estudiantes_sin_tutor" method="get">
     @csrf

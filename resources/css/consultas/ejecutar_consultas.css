@@ -1,0 +1,549 @@
+/* =====================================================
+   ejecutar_consultas.css — Vistas de consultas
+   (Estudiantes, Profesores y sus búsquedas)
+   Paleta verde consistente con el resto del sistema
+   ===================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* =====================================================
+   Contenedor implícito (usamos el body de .content del layout)
+   ===================================================== */
+
+/* =====================================================
+   Formulario de búsqueda / filtros
+   ===================================================== */
+form {
+    max-width: 700px;
+    margin: 30px auto 30px;
+    padding: 28px 30px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 51, 0, 0.12);
+    border: 2px solid #030;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+form .campo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #030;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+form .atributo,
+form input[type="text"],
+form input[type="email"],
+form input[type="number"],
+form select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #4caf50;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #222;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="number"]:focus,
+form select:focus,
+form .atributo:focus {
+    border-color: #030;
+    background: #f5fff5;
+    box-shadow: 0 0 0 4px rgba(0, 51, 0, 0.15);
+}
+
+form input[type="text"]::placeholder {
+    color: #999;
+}
+
+/* Botón Aceptar / Buscar */
+#aceptar,
+form input[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 14px 30px;
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+    margin-top: 10px;
+}
+
+#aceptar:hover,
+form input[type="submit"]:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(0, 51, 0, 0.3);
+    background: linear-gradient(135deg, #0a3 0%, #030 100%);
+}
+
+#aceptar:active,
+form input[type="submit"]:active {
+    transform: translateY(0);
+}
+
+/* Botón Limpiar filtros */
+.btn-limpiar {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 10px 20px;
+    background: #f59e0b;
+    color: #030;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.btn-limpiar:hover {
+    background: #d97706;
+    color: #030;
+    transform: translateY(-2px);
+}
+
+/* =====================================================
+   Info de resultados
+   ===================================================== */
+.resultado-info {
+    max-width: 1300px;
+    margin: 0 auto 20px;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, #f5fff5 0%, #e8f5e9 100%);
+    border-radius: 12px;
+    border-left: 5px solid #030;
+    box-shadow: 0 4px 12px rgba(0, 51, 0, 0.08);
+}
+
+.resultado-info h3 {
+    margin: 0 0 8px;
+    color: #030;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.resultado-info p {
+    margin: 4px 0;
+    color: #222;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.resultado-info strong {
+    color: #030;
+    font-weight: 700;
+}
+
+.resultado-info .estadisticas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 6px;
+}
+
+/* Total registros */
+.total-registros {
+    margin-bottom: 12px;
+    color: #555;
+    font-size: 14px;
+    font-style: italic;
+}
+
+/* =====================================================
+   Tabla de resultados
+   ===================================================== */
+table {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto 30px;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 51, 0, 0.1);
+    animation: fadeInUp 0.4s ease-out;
+}
+
+table thead {
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+}
+
+table th {
+    padding: 14px 12px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+table td {
+    padding: 12px;
+    color: #222;
+    font-size: 14px;
+    border-bottom: 1px solid #e8f5e9;
+    vertical-align: middle;
+    word-break: break-word;
+}
+
+table tbody tr {
+    transition: background 0.2s;
+}
+
+table tbody tr:nth-child(even) {
+    background: #f9fdf9;
+}
+
+table tbody tr:hover {
+    background: #f0fff0;
+}
+
+table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Tabla dentro de contenedor con scroll */
+.table-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+}
+
+.table-container table {
+    margin-bottom: 0;
+}
+
+/* Texto genérico "no encontrado" */
+.no-data,
+table td span[style*="color"] {
+    color: #999;
+    font-style: italic;
+    font-size: 13px;
+}
+
+/* =====================================================
+   Badge de año académico
+   ===================================================== */
+.badge-ano {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 10px;
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: #fff;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 3px 8px rgba(0, 51, 0, 0.2);
+}
+
+/* =====================================================
+   Columna de acciones (botón "Asignar Tutor")
+   ===================================================== */
+.acciones-col {
+    text-align: center;
+}
+
+.acciones-cell {
+    text-align: center;
+}
+
+.acciones-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-asignar-tutor {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.25s, box-shadow 0.25s;
+    box-shadow: 0 3px 10px rgba(0, 51, 0, 0.2);
+}
+
+.btn-asignar-tutor:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 51, 0, 0.3);
+    color: #fff;
+}
+
+.btn-asignar-tutor .btn-icon {
+    font-size: 15px;
+}
+
+.btn-asignar-tutor .btn-text {
+    line-height: 1;
+}
+
+/* =====================================================
+   Botón "Nueva Búsqueda"
+   ===================================================== */
+#nueva_búsqueda,
+#nueva_busqueda {
+    display: inline-block;
+    padding: 14px 30px;
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: #fff !important;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 51, 0, 0.25);
+    transition: transform 0.25s, box-shadow 0.25s;
+    letter-spacing: 0.3px;
+}
+
+#nueva_búsqueda:hover,
+#nueva_busqueda:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0, 51, 0, 0.35);
+    color: #fff !important;
+}
+
+/* El div que envuelve el botón tiene posicionamiento inline.
+   Lo neutralizamos para que no se superponga con la tabla. */
+div[style*="position: absolute"] {
+    position: static !important;
+    margin-top: 24px !important;
+    top: auto !important;
+    left: auto !important;
+    text-align: center;
+}
+
+/* =====================================================
+   Estados: instrucciones, sin resultados
+   ===================================================== */
+.instrucciones,
+.no-resultados {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 40px 30px;
+    background: #fff;
+    border: 2px dashed #c8e6c9;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0, 51, 0, 0.06);
+}
+
+.instrucciones h3,
+.no-resultados h3 {
+    margin: 0 0 12px;
+    color: #030;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.instrucciones p,
+.no-resultados p {
+    margin: 6px 0;
+    color: #555;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.no-resultados-icon {
+    font-size: 60px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+}
+
+/* =====================================================
+   Mensaje informativo (alert-style)
+   ===================================================== */
+.mensaje-info {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 14px 20px;
+    background: #d1ecf1;
+    color: #0c5460;
+    border-left: 5px solid #0891b2;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+/* =====================================================
+   Responsive — Tablet
+   ===================================================== */
+@media (max-width: 1024px) {
+    form {
+        max-width: 100%;
+        margin: 20px auto;
+        padding: 22px 20px;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    table th,
+    table td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+}
+
+/* =====================================================
+   Responsive — Móvil
+   ===================================================== */
+@media (max-width: 768px) {
+    form {
+        padding: 20px 16px;
+        border-radius: 12px;
+    }
+
+    form label {
+        font-size: 14px;
+    }
+
+    form input[type="text"],
+    form input[type="email"],
+    form input[type="number"],
+    form select,
+    form .atributo {
+        font-size: 16px; /* evita zoom en iOS */
+        padding: 11px 13px;
+    }
+
+    #aceptar,
+    form input[type="submit"] {
+        padding: 13px 20px;
+        font-size: 15px;
+    }
+
+    /* Tabla responsive: scroll horizontal */
+    .table-container {
+        overflow-x: auto;
+        border-radius: 10px;
+    }
+
+    table {
+        min-width: 700px;
+        font-size: 13px;
+        border-radius: 10px;
+    }
+
+    table th,
+    table td {
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    /* Botón Nueva Búsqueda a ancho completo */
+    #nueva_búsqueda,
+    #nueva_busqueda {
+        display: block;
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    /* Instrucciones y no-resultados más compactos */
+    .instrucciones,
+    .no-resultados {
+        padding: 28px 20px;
+    }
+
+    .instrucciones h3,
+    .no-resultados h3 {
+        font-size: 17px;
+    }
+
+    .instrucciones p,
+    .no-resultados p {
+        font-size: 14px;
+    }
+
+    .no-resultados-icon {
+        font-size: 48px;
+    }
+
+    /* Botón asignar tutor */
+    .btn-asignar-tutor {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .btn-asignar-tutor .btn-text {
+        display: none; /* en móvil solo icono */
+    }
+
+    .btn-asignar-tutor .btn-icon {
+        font-size: 18px;
+    }
+}
+
+/* =====================================================
+   Móvil muy pequeño
+   ===================================================== */
+@media (max-width: 480px) {
+    form {
+        padding: 16px 12px;
+    }
+
+    .resultado-info {
+        padding: 14px 16px;
+    }
+
+    .resultado-info h3 {
+        font-size: 16px;
+    }
+
+    .resultado-info p {
+        font-size: 13px;
+    }
+
+    table {
+        min-width: 600px;
+    }
+
+    .badge-ano {
+        min-width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+}

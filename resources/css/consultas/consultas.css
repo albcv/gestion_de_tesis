@@ -1,40 +1,270 @@
-.entidades{
+/* =====================================================
+   consultas.css — Vistas de consultas (Estudiantes/Profesores)
+   Paleta verde consistente con el resto del sistema
+   ===================================================== */
 
-    margin-left: 550px;
-    
- 
-}
-
-
-
-
-
-h1{
+/* =====================================================
+   Título principal
+   ===================================================== */
+h1 {
+    color: #030;
     text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 30px auto 40px;
+    padding-bottom: 18px;
+    position: relative;
+    letter-spacing: 0.3px;
+    max-width: 800px;
 }
 
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 4px;
+    background: linear-gradient(90deg, #030, #0a3);
+    border-radius: 2px;
+}
 
-@media(max-width: 780px){
-    .entidades{
-        margin-top: 100px;
-        margin-left: 460px;
+/* =====================================================
+   Imágenes decorativas
+   ===================================================== */
+
+/* UNICA — arriba derecha */
+#i1 {
+    position: absolute;
+    top: 100px;
+    right: 20px;
+    width: clamp(120px, 18vw, 260px);
+    height: auto;
+    max-height: 260px;
+    object-fit: contain;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.9;
+}
+
+/* Ícono de tesis — abajo derecha */
+#i4 {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    width: clamp(100px, 14vw, 220px);
+    height: auto;
+    max-height: 220px;
+    object-fit: contain;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.9;
+}
+
+/* =====================================================
+   Lista de entidades (opciones)
+   ===================================================== */
+.entidades {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+    z-index: 1;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Cada item */
+.entidades li {
+    display: block;
+    margin: 0;
+    list-style: none;
+}
+
+/* Enlaces como tarjetas */
+.entidades a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 24px;
+    background: #fff;
+    border: 2px solid #e8f5e9;
+    border-left: 5px solid #030;
+    border-radius: 12px;
+    color: #030;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 51, 0, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease,
+                background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Flecha decorativa a la derecha */
+.entidades a::after {
+    content: '→';
+    margin-left: auto;
+    font-size: 20px;
+    font-weight: 700;
+    color: #0a3;
+    transition: transform 0.25s ease, color 0.25s ease;
+    flex-shrink: 0;
+}
+
+/* Punto verde decorativo a la izquierda */
+.entidades a::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #030, #0a3);
+    box-shadow: 0 0 0 3px rgba(0, 51, 0, 0.12);
+    flex-shrink: 0;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Hover */
+.entidades a:hover {
+    background: linear-gradient(135deg, #f5fff5 0%, #e8f5e9 100%);
+    border-color: #030;
+    border-left-color: #0a3;
+    color: #030;
+    transform: translateX(6px);
+    box-shadow: 0 8px 22px rgba(0, 51, 0, 0.15);
+}
+
+.entidades a:hover::after {
+    transform: translateX(4px);
+    color: #030;
+}
+
+.entidades a:hover::before {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 5px rgba(0, 51, 0, 0.18);
+}
+
+/* Focus (accesibilidad) */
+.entidades a:focus-visible {
+    outline: 3px solid #030;
+    outline-offset: 3px;
+}
+
+/* Active */
+.entidades a:active {
+    transform: translateX(4px) scale(0.99);
+}
+
+/* =====================================================
+   Responsive — Tablet
+   ===================================================== */
+@media (max-width: 900px) {
+    h1 {
+        font-size: 28px;
+        margin: 25px auto 30px;
     }
 
-    .entidades li{
-    display: block;
-    margin-left: -170px;
-    
+    #i1 {
+        width: clamp(100px, 16vw, 180px);
+        top: 85px;
+        right: 15px;
+    }
+
+    #i4 {
+        width: clamp(80px, 12vw, 150px);
+        right: 15px;
+        bottom: 15px;
+    }
+
+    .entidades {
+        max-width: 600px;
+    }
+
+    .entidades a {
+        padding: 16px 20px;
+        font-size: 15px;
+    }
 }
 
-#i4{
-    top: 720px;
+/* =====================================================
+   Responsive — Móvil
+   ===================================================== */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 24px;
+        margin: 20px auto 25px;
+        padding-bottom: 12px;
+    }
+
+    h1::after {
+        width: 80px;
+        height: 3px;
+    }
+
+    /* Las imágenes decorativas pasan a flujo normal y se centran */
+    #i1,
+    #i4 {
+        position: static;
+        display: block;
+        width: 120px;
+        max-width: 40%;
+        height: auto;
+        margin: 12px auto;
+        top: auto;
+        right: auto;
+        bottom: auto;
+    }
+
+    .entidades {
+        max-width: 100%;
+        padding: 0 12px;
+        gap: 10px;
+    }
+
+    .entidades a {
+        padding: 14px 16px;
+        font-size: 14px;
+        border-radius: 10px;
+        gap: 10px;
+    }
+
+    .entidades a::after {
+        font-size: 18px;
+    }
+
+    .entidades a::before {
+        width: 8px;
+        height: 8px;
+    }
 }
 
-h1{
-    margin-left: -250px;
-}
+/* =====================================================
+   Móvil muy pequeño
+   ===================================================== */
+@media (max-width: 400px) {
+    h1 {
+        font-size: 21px;
+    }
 
+    #i1,
+    #i4 {
+        width: 90px;
+    }
 
-
-
+    .entidades a {
+        padding: 12px 14px;
+        font-size: 13px;
+    }
 }

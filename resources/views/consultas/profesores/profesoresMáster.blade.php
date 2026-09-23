@@ -2,10 +2,7 @@
 
 @section('content')
 
-@vite(['resources/css/formulario.css'])
-@vite(['resources/css/consultas/estudiantesAtrasadosFundamentación.css'])
-@vite(['resources/css/consultas/estudiantesFacultad.css'])
-@vite(['resources/css/consultas/profesoresDepartamento.css'])
+@vite(['resources/css/consultas/ejecutar_consultas.css'])
 
 <form action="{{ route('profesoresMáster') }}" method="GET">
     @csrf

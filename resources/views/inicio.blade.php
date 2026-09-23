@@ -25,10 +25,7 @@
                 $allowedRoles = ['administrador', 'profesor', 'estudiante'];
                 $hasRoleAccess = in_array($rolNombre, $allowedRoles);
                 
-                // Mostrar ícono solo para roles específicos
-                if ($rolNombre === 'profesor' || $rolNombre === 'estudiante') {
-                    echo '<img src="' . asset('img/tesis2.png') . '" alt="Ícono de tesis" id="i4">';
-                }
+               
             }
         }
     @endphp
