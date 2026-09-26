@@ -740,4 +740,67 @@ class fundamentacionesController extends Controller
                 ->with('error', 'Error al cargar las fundamentaciones aprobadas: ' . $e->getMessage());
         }
     }
+
+
+        /**
+     * Búsqueda de tesis para el datalist (AJAX).
+     * Solo devuelve tesis SIN fundamentación,
+     * más la tesis actual si estamos editando.
+     */
+    public function buscarTesis(Request $request)
+    {
+        $termino = trim($request->input('q', ''));
+        $idActual = $request->input('id_actual'); // id de la tesis actual en modo edición
+
+        try {
+            $query = $this->modeloTesis::with(['estudiante'])
+                ->where(function ($q) use ($idActual) {
+                    // Tesis sin fundamentación
+                    $q->whereDoesntHave('fundamentacion');
+                    // O la tesis actual (si estamos editando)
+                    if ($idActual) {
+                        $q->orWhere('id', $idActual);
+                    }
+                });
+
+            if ($termino !== '') {
+                $query->where(function ($q) use ($termino) {
+                    $q->where('Nombre_trabajo', 'LIKE', "%{$termino}%")
+                      ->orWhereHas('estudiante', function ($q) use ($termino) {
+                          $q->where('Nombre_estudiante', 'LIKE', "%{$termino}%")
+                            ->orWhere('Apellido1', 'LIKE', "%{$termino}%")
+                            ->orWhere('Apellido2', 'LIKE', "%{$termino}%")
+                            ->orWhere('CI_estudiante', 'LIKE', "%{$termino}%");
+                      });
+                });
+            }
+
+            $tesis = $query->orderBy('Nombre_trabajo')
+                ->limit(30)
+                ->get();
+
+            $resultados = $tesis->map(function ($t) {
+                $est = $t->estudiante;
+                $nombreEst = $est
+                    ? trim($est->Nombre_estudiante . ' ' . $est->Apellido1)
+                    : 'Sin estudiante';
+
+                $label = $t->Nombre_trabajo . ' - ' . $nombreEst;
+
+                return [
+                    'id'         => $t->id,
+                    'label'      => $label,
+                    'nombre'     => $t->Nombre_trabajo,
+                    'estudiante' => $nombreEst,
+                ];
+            });
+
+            return response()->json($resultados);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al buscar tesis: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

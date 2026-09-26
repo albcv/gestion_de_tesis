@@ -28,6 +28,14 @@
     @if (count($estudiantes) != 0)
         <div class="resultado-info">
             <p style="text-align: center;">Total de estudiantes encontrados: {{ count($estudiantes) }}</p>
+
+            {{-- Botón Exportar CSV --}}
+            <div class="acciones-exportar">
+                <a href="{{ route('exportarConsultaCsv', array_merge(request()->query(), ['tipo' => 'atrasados_fundamentacion'])) }}"
+                   class="btn-exportar-consulta">
+                    📄 Exportar a CSV
+                </a>
+            </div>
         </div>
         
         <table>
@@ -76,14 +84,11 @@
         </table>
     @else
         <script>
-        
             @if(isset($carreraParam) && $carreraParam)
                 alert('No hay estudiantes atrasados en la fundamentación de la tesis en esa carrera');
             @endif
         </script>
-
     @endif
-
 @endif
 
 

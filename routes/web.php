@@ -26,6 +26,7 @@ use App\Http\Controllers\estadisticasController;
 use App\Http\Controllers\CambiarContraseñaController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
+ use App\Http\Controllers\TesisHistoricoController;
 
 
 Route::get('/', function(){
@@ -127,7 +128,8 @@ Route::get('/verTesis/{id}',            [TesisController::class, 'ver'])->name('
 Route::post('/eliminarTesis',           [TesisController::class, 'eliminar'])->name('eliminarTesis');
 Route::post('/eliminarVariasTesis',     [TesisController::class, 'eliminarVarios'])->name('eliminarVariasTesis');
 Route::get('/exportarTesisCsv',         [TesisController::class, 'exportarCsv'])->name('exportarTesisCsv');
-
+Route::post('/moverTesisAHistorico',    [TesisController::class, 'moverAHistorico'])->name('moverTesisAHistorico');
+Route::get('/buscarEstudiantes', [TesisController::class, 'buscarEstudiantes'])->name('buscarEstudiantes');
 
 // Cortes
 Route::get('/gestionarCortes',              [cortesController::class, 'mostrar'])->name('gestionarCortes');
@@ -145,7 +147,7 @@ Route::post('/desaprobarCorte',             [cortesController::class, 'desaproba
 Route::post('/revertirCorte',               [cortesController::class, 'revertirCorte'])->name('revertirCorte');
 Route::get('/ver-documento-corte/{id}',     [cortesController::class, 'verDocumento'])->name('ver-documento');
 Route::get('/ver-documento-version-corte/{id}', [cortesController::class, 'verDocumentoVersion'])->name('ver-documento-version-corte');
-
+Route::get('/buscarTesis', [cortesController::class, 'buscarTesis'])->name('buscarTesis');
 
 
 //Cortes aprobados
@@ -226,6 +228,7 @@ Route::post('/revertirFundamentación',                [fundamentacionesControll
 Route::get('/ver-documento/{id}',                     [fundamentacionesController::class, 'verDocumento'])->name('ver-documento');
 Route::get('/ver-documento-version/{id}',             [fundamentacionesController::class, 'verDocumentoVersion'])->name('ver-documento-version');
 Route::get('/fundamentaciones-aprobadas',             [fundamentacionesController::class, 'fundamentacionesAprobadas'])->name('fundamentacionesAprobadas');
+Route::get('/buscarTesisFundamentacion', [fundamentacionesController::class, 'buscarTesis'])->name('buscarTesisFundamentacion');
 
 
 // Fundamentaciones aprobadas
@@ -308,6 +311,8 @@ Route::get('/estudiantes_sin_tutor', [estudianteController::class, 'estudiantes_
 
 Route::get('/estudiantesAtrasadosFundamentación', [estudianteController::class, 'estudiantesAtrasadosFundamentación'])->name('estudiantesAtrasadosFundamentación');
 
+Route::get('/consultas/exportar', [EstudianteController::class, 'exportarConsultaCsv'])
+    ->name('exportarConsultaCsv');
 
 
 //Profesores
@@ -414,21 +419,29 @@ Route::post('/profesor/tutor/guardar-opinion-corte', [App\Http\Controllers\Profe
 
 
 
-
-    // Rutas para administración de fechas
-
-    // Gestión de fechas de entrega
-    Route::get('/fechaEntrega', [App\Http\Controllers\fechaEntregaController::class, 'index'])
+// Gestión de fechas de entrega
+Route::get('/fechaEntrega', [App\Http\Controllers\fechaEntregaController::class, 'index'])
         ->name('fechaEntrega');
     
-    Route::post('/fechas/fundamentacion', [App\Http\Controllers\fechaEntregaController::class, 'actualizarFundamentacion'])
+Route::post('/fechas/fundamentacion', [App\Http\Controllers\fechaEntregaController::class, 'actualizarFundamentacion'])
         ->name('fechas.fundamentacion.actualizar');
     
-    Route::post('/fechas/corte/{numeroCorte}', [App\Http\Controllers\fechaEntregaController::class, 'actualizarCorte'])
+Route::post('/fechas/corte/{numeroCorte}', [App\Http\Controllers\fechaEntregaController::class, 'actualizarCorte'])
         ->name('fechas.corte.actualizar');
     
-    
-    
-    
-    Route::delete('/fechas/reiniciar', [App\Http\Controllers\fechaEntregaController::class, 'reiniciarFechas'])
+Route::delete('/fechas/reiniciar', [App\Http\Controllers\fechaEntregaController::class, 'reiniciarFechas'])
         ->name('fechas.reiniciar');
+
+
+
+   
+
+// ============ Tesis Histórico ============
+Route::get('/gestionarTesisHistorico',              [TesisHistoricoController::class, 'mostrar'])->name('gestionarTesisHistorico');
+Route::post('/agregarTesisHistorico',               [TesisHistoricoController::class, 'agregar'])->name('agregarTesisHistorico');
+Route::post('/modificarTesisHistorico',             [TesisHistoricoController::class, 'modificar'])->name('modificarTesisHistorico');
+Route::post('/eliminarTesisHistorico',              [TesisHistoricoController::class, 'eliminar'])->name('eliminarTesisHistorico');
+Route::post('/eliminarVariasTesisHistorico',        [TesisHistoricoController::class, 'eliminarVarios'])->name('eliminarVariasTesisHistorico');
+Route::get('/descargarFundamentacionHistorico/{id}',[TesisHistoricoController::class, 'descargarFundamentacion'])->name('descargarFundamentacionHistorico');
+Route::get('/descargarCorteHistorico/{id}',         [TesisHistoricoController::class, 'descargarCorte'])->name('descargarCorteHistorico');
+Route::get('/exportarTesisHistoricoCsv',            [TesisHistoricoController::class, 'exportarCsv'])->name('exportarTesisHistoricoCsv');

@@ -18,7 +18,7 @@ class EstudianteController extends Controller
     protected $modeloCarrera = Carrera::class;
     protected $modeloFacultad = Facultad::class;
     protected $rutaVista = 'gestionarEstudiante';
-    
+
     protected $columnaGrupo = 'id_grupo';
     protected $columnaModalidad = 'id_modalidad';
     protected $columnaCarrera = 'id_carrera';
@@ -31,6 +31,10 @@ class EstudianteController extends Controller
     protected $columnaFechaIngreso = 'Fecha_ingreso';
     protected $columnaYearAcademico = 'year_academico';
     protected $columnaUsuario = 'id_usuario';
+
+    /* =============================================================
+       CRUD BÁSICO
+       ============================================================= */
 
     public function mostrar()
     {
@@ -72,7 +76,7 @@ class EstudianteController extends Controller
         $estudiante->{$this->columnaFechaIngreso} = $request->fecha_ingreso;
         $estudiante->{$this->columnaYearAcademico} = $request->año_académico;
         $estudiante->{$this->columnaUsuario} = $request->id_usuario;
-        
+
         $estudiante->save();
 
         return redirect(route($this->rutaVista))->with('success', 'Estudiante agregado correctamente');
@@ -104,7 +108,7 @@ class EstudianteController extends Controller
         ]);
 
         $estudiante = $this->modelo::find($request->id);
-        
+
         if ($estudiante) {
             $estudiante->{$this->columnaGrupo} = $request->id_grupo;
             $estudiante->{$this->columnaModalidad} = $request->id_modalidad;
@@ -118,7 +122,7 @@ class EstudianteController extends Controller
             $estudiante->{$this->columnaFechaIngreso} = $request->fecha_ingreso;
             $estudiante->{$this->columnaYearAcademico} = $request->año_académico;
             $estudiante->{$this->columnaUsuario} = $request->id_usuario;
-            
+
             $estudiante->save();
 
             return redirect(route($this->rutaVista))->with('success', 'Estudiante actualizado correctamente');
@@ -128,6 +132,10 @@ class EstudianteController extends Controller
             'error' => 'No se pudo encontrar el estudiante a modificar'
         ]);
     }
+
+    /* =============================================================
+       CONSULTAS
+       ============================================================= */
 
     public function estudiantesAtrasadosFundamentación(Request $request)
     {
@@ -151,51 +159,46 @@ class EstudianteController extends Controller
         return view('consultas.estudiantes.estudiantesAtrasadosFundamentación', compact('estudiantes', 'carreras', 'carreraParam'));
     }
 
-   public function estudiantes_sin_tutor(Request $request)
-{
-    $carreraParam = $request->input('carrera');
-    $yearParam = $request->input('year_academico');
-    
-    $carreras = $this->modeloCarrera::all();
-    $estudiantes = null;
-    $carreraSeleccionada = null;
+    public function estudiantes_sin_tutor(Request $request)
+    {
+        $carreraParam = $request->input('carrera');
+        $yearParam    = $request->input('year_academico');
 
-    if ($carreraParam) {
-        // Obtener la carrera seleccionada para mostrar en la vista
-        $carreraSeleccionada = $this->modeloCarrera::find($carreraParam);
-        
-        // Iniciar la consulta base
-        $query = $this->modelo::with(['grupo', 'modalidad', 'carrera'])
-            ->where('id_carrera', $carreraParam)
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                      ->from('tutor_estudiante') 
-                      ->whereRaw('tutor_estudiante.id_estudiante = estudiantes.id');
-            });
+        $carreras = $this->modeloCarrera::all();
+        $estudiantes = null;
+        $carreraSeleccionada = null;
 
-        // Aplicar filtro por año académico si se proporciona
-        if ($yearParam && $yearParam !== '') {
-            $query->where('year_academico', $yearParam);
+        if ($carreraParam) {
+            $carreraSeleccionada = $this->modeloCarrera::find($carreraParam);
+
+            $query = $this->modelo::with(['grupo', 'modalidad', 'carrera'])
+                ->where('id_carrera', $carreraParam)
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                          ->from('tutor_estudiante')
+                          ->whereRaw('tutor_estudiante.id_estudiante = estudiantes.id');
+                });
+
+            if ($yearParam && $yearParam !== '') {
+                $query->where('year_academico', $yearParam);
+            }
+
+            $query->orderBy('year_academico', 'desc')
+                  ->orderBy('Apellido1')
+                  ->orderBy('Apellido2')
+                  ->orderBy('Nombre_estudiante');
+
+            $estudiantes = $query->get();
         }
 
-        // Ordenar por año académico descendente y luego por apellidos
-        $query->orderBy('year_academico', 'desc')
-              ->orderBy('Apellido1')
-              ->orderBy('Apellido2')
-              ->orderBy('Nombre_estudiante');
-
-        $estudiantes = $query->get();
+        return view('consultas.estudiantes.estudiantes_sin_tutor', compact(
+            'estudiantes',
+            'carreras',
+            'carreraParam',
+            'yearParam',
+            'carreraSeleccionada'
+        ));
     }
-
-    // Pasar también el año seleccionado y la carrera seleccionada a la vista
-    return view('consultas.estudiantes.estudiantes_sin_tutor', compact(
-        'estudiantes', 
-        'carreras', 
-        'carreraParam',
-        'yearParam',
-        'carreraSeleccionada'
-    ));
-}
 
     public function buscarEstudiante(Request $request)
     {
@@ -227,11 +230,11 @@ class EstudianteController extends Controller
 
         if ($facultadParam) {
             $estudiantes = $this->modelo::with(['carrera.facultad'])
-                ->whereHas('carrera.facultad', function($query) use ($facultadParam) {
+                ->whereHas('carrera.facultad', function ($query) use ($facultadParam) {
                     if (is_numeric($facultadParam)) {
                         $query->where('facultades.idFacultad', $facultadParam);
                     } else {
-                        $query->where(function($q) use ($facultadParam) {
+                        $query->where(function ($q) use ($facultadParam) {
                             $q->whereRaw('LOWER(facultades.Nombre_facultad) = LOWER(?)', [$facultadParam])
                               ->orWhereRaw('LOWER(facultades.Siglas) = LOWER(?)', [$facultadParam]);
                         });
@@ -253,7 +256,7 @@ class EstudianteController extends Controller
         if ($carreraParam) {
             $estudiantes = $this->modelo::with(['grupo', 'modalidad', 'carrera'])
                 ->where('id_carrera', $carreraParam)
-                ->whereHas('modalidad', function($query) {
+                ->whereHas('modalidad', function ($query) {
                     $query->whereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%diurno%'])
                           ->orWhereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%regular diurno%'])
                           ->orWhereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%curso diurno%']);
@@ -274,7 +277,7 @@ class EstudianteController extends Controller
         if ($carreraParam) {
             $estudiantes = $this->modelo::with(['grupo', 'modalidad', 'carrera'])
                 ->where('id_carrera', $carreraParam)
-                ->whereHas('modalidad', function($query) {
+                ->whereHas('modalidad', function ($query) {
                     $query->whereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%encuentro%'])
                           ->orWhereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%por encuentro%'])
                           ->orWhereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%curso por encuentro%'])
@@ -285,6 +288,227 @@ class EstudianteController extends Controller
 
         return view('consultas.estudiantes.estudiantesCursoEncuentro', compact('estudiantes', 'carreras', 'carreraParam'));
     }
+
+    /* =============================================================
+       EXPORTAR CONSULTAS A CSV
+       ============================================================= */
+
+    /**
+     * Exporta a CSV el resultado de cualquiera de las consultas de estudiantes.
+     *
+     * El parámetro "tipo" indica qué consulta exportar:
+     *   - sin_tutor
+     *   - atrasados_fundamentacion
+     *   - curso_diurno
+     *   - curso_encuentro
+     *   - facultad
+     */
+    public function exportarConsultaCsv(Request $request)
+    {
+        $tipo = $request->input('tipo');
+
+        try {
+            switch ($tipo) {
+                case 'sin_tutor':
+                    $estudiantes = $this->querySinTutor($request);
+                    $nombreBase  = 'estudiantes_sin_tutor';
+                    break;
+
+                case 'atrasados_fundamentacion':
+                    $estudiantes = $this->queryAtrasadosFundamentacion($request);
+                    $nombreBase  = 'estudiantes_atrasados_fundamentacion';
+                    break;
+
+                case 'curso_diurno':
+                    $estudiantes = $this->queryCursoDiurno($request);
+                    $nombreBase  = 'estudiantes_curso_diurno';
+                    break;
+
+                case 'curso_encuentro':
+                    $estudiantes = $this->queryCursoEncuentro($request);
+                    $nombreBase  = 'estudiantes_curso_encuentro';
+                    break;
+
+                case 'facultad':
+                    $estudiantes = $this->queryFacultad($request);
+                    $nombreBase  = 'estudiantes_facultad';
+                    break;
+
+                default:
+                    abort(400, 'Tipo de consulta no válido');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Error al generar el CSV: ' . $e->getMessage());
+        }
+
+        $nombreArchivo = $nombreBase . '_' . date('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $nombreArchivo . '"',
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
+        ];
+
+        $callback = function () use ($estudiantes) {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF"); // BOM UTF-8
+
+            fputcsv($out, [
+                '#', 'Grupo', 'Modalidad', 'CI', 'Nro',
+                'Nombre', 'Apellido1', 'Apellido2', 'Sexo',
+                'Fecha de Ingreso', 'Año', 'Carrera',
+            ], ';');
+
+            foreach ($estudiantes as $index => $e) {
+                fputcsv($out, [
+                    $index + 1,
+                    $e->grupo ? $e->grupo->número : '—',
+                    $e->modalidad ? $e->modalidad->Nombre_modalidad : '—',
+                    $e->CI_estudiante,
+                    $e->número,
+                    $e->Nombre_estudiante,
+                    $e->Apellido1,
+                    $e->Apellido2,
+                    $e->sexo,
+                    $e->Fecha_ingreso ? date('d/m/Y', strtotime($e->Fecha_ingreso)) : '—',
+                    $e->year_academico,
+                    $e->carrera ? $e->carrera->Nombre_carrera : '—',
+                ], ';');
+            }
+
+            fclose($out);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /* =============================================================
+       QUERIES REUTILIZABLES (usadas por el export CSV)
+       ============================================================= */
+
+    private function querySinTutor(Request $request)
+    {
+        $carreraParam = $request->input('carrera');
+        $yearParam    = $request->input('year_academico');
+
+        $query = $this->modelo::with(['grupo', 'modalidad', 'carrera'])
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('tutor_estudiante')
+                      ->whereRaw('tutor_estudiante.id_estudiante = estudiantes.id');
+            });
+
+        if ($carreraParam) {
+            $query->where('id_carrera', $carreraParam);
+        }
+
+        if ($yearParam && $yearParam !== '') {
+            $query->where('year_academico', $yearParam);
+        }
+
+        return $query->orderBy('year_academico', 'desc')
+                     ->orderBy('Apellido1')
+                     ->orderBy('Apellido2')
+                     ->orderBy('Nombre_estudiante')
+                     ->get();
+    }
+
+    private function queryAtrasadosFundamentacion(Request $request)
+    {
+        $carreraParam = $request->input('carrera');
+
+        $query = $this->modelo::with(['grupo', 'modalidad', 'carrera'])
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('tesis')
+                      ->join('fundamentaciones', 'tesis.id', '=', 'fundamentaciones.id_tesis')
+                      ->whereRaw('tesis.id_estudiante = estudiantes.id');
+            });
+
+        if ($carreraParam) {
+            $query->where('id_carrera', $carreraParam);
+        }
+
+        return $query->orderBy('Apellido1')
+                     ->orderBy('Apellido2')
+                     ->orderBy('Nombre_estudiante')
+                     ->get();
+    }
+
+    private function queryCursoDiurno(Request $request)
+    {
+        $carreraParam = $request->input('carrera');
+
+        $query = $this->modelo::with(['grupo', 'modalidad', 'carrera'])
+            ->whereHas('modalidad', function ($query) {
+                $query->whereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%diurno%'])
+                      ->orWhereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%regular diurno%'])
+                      ->orWhereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%curso diurno%']);
+            });
+
+        if ($carreraParam) {
+            $query->where('id_carrera', $carreraParam);
+        }
+
+        return $query->orderBy('Apellido1')
+                     ->orderBy('Apellido2')
+                     ->orderBy('Nombre_estudiante')
+                     ->get();
+    }
+
+    private function queryCursoEncuentro(Request $request)
+    {
+        $carreraParam = $request->input('carrera');
+
+        $query = $this->modelo::with(['grupo', 'modalidad', 'carrera'])
+            ->whereHas('modalidad', function ($query) {
+                $query->whereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%encuentro%'])
+                      ->orWhereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%por encuentro%'])
+                      ->orWhereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%curso por encuentro%'])
+                      ->orWhereRaw('LOWER(Nombre_modalidad) LIKE LOWER(?)', ['%semipresencial%']);
+            });
+
+        if ($carreraParam) {
+            $query->where('id_carrera', $carreraParam);
+        }
+
+        return $query->orderBy('Apellido1')
+                     ->orderBy('Apellido2')
+                     ->orderBy('Nombre_estudiante')
+                     ->get();
+    }
+
+    private function queryFacultad(Request $request)
+    {
+        $facultadParam = $request->input('facultad');
+
+        $query = $this->modelo::with(['carrera.facultad']);
+
+        if ($facultadParam) {
+            $query->whereHas('carrera.facultad', function ($q) use ($facultadParam) {
+                if (is_numeric($facultadParam)) {
+                    $q->where('facultades.idFacultad', $facultadParam);
+                } else {
+                    $q->where(function ($q) use ($facultadParam) {
+                        $q->whereRaw('LOWER(facultades.Nombre_facultad) = LOWER(?)', [$facultadParam])
+                          ->orWhereRaw('LOWER(facultades.Siglas) = LOWER(?)', [$facultadParam]);
+                    });
+                }
+            });
+        }
+
+        return $query->orderBy('Apellido1')
+                     ->orderBy('Apellido2')
+                     ->orderBy('Nombre_estudiante')
+                     ->get();
+    }
+
+    /* =============================================================
+       UTILIDADES
+       ============================================================= */
 
     public function vaciar()
     {

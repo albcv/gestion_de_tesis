@@ -547,3 +547,39 @@ div[style*="position: absolute"] {
         font-size: 12px;
     }
 }
+
+
+/* =====================================================
+   Botón Exportar CSV
+   ===================================================== */
+.btn-exportar-consulta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+    color: #fff;
+    border: 2px solid #1e3a8a;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+    box-shadow: 0 3px 10px rgba(30, 64, 175, 0.2);
+    margin-top: 10px;
+}
+
+.btn-exportar-consulta:hover {
+    background: linear-gradient(135deg, #1e3a8a 0%, #172554 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(30, 64, 175, 0.35);
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .btn-exportar-consulta {
+        width: 100%;
+        justify-content: center;
+    }
+}

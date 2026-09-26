@@ -201,10 +201,11 @@ class cortesController extends Controller
         }
     }
 
-    public function editar($id)
+      public function editar($id)
     {
         try {
             $corte = $this->modeloCorte::with([
+                'tesis.estudiante',
                 'versiones' => fn($q) => $q->orderBy('version_numero', 'desc'),
             ])->findOrFail($id);
 
@@ -780,4 +781,61 @@ class cortesController extends Controller
 
         return redirect()->route($this->rutaVista);
     }
+
+
+        /**
+     * Búsqueda de tesis para el datalist (AJAX).
+     * Solo devuelve tesis con fundamentación aprobada.
+     */
+    public function buscarTesis(Request $request)
+    {
+        $termino = trim($request->input('q', ''));
+
+        try {
+            $query = $this->modeloTesis::with(['estudiante', 'fundamentacion.aprobada'])
+                ->whereHas('fundamentacion.aprobada');
+
+            if ($termino !== '') {
+                $query->where(function ($q) use ($termino) {
+                    $q->where('Nombre_trabajo', 'LIKE', "%{$termino}%")
+                      ->orWhereHas('estudiante', function ($q) use ($termino) {
+                          $q->where('Nombre_estudiante', 'LIKE', "%{$termino}%")
+                            ->orWhere('Apellido1', 'LIKE', "%{$termino}%")
+                            ->orWhere('Apellido2', 'LIKE', "%{$termino}%")
+                            ->orWhere('CI_estudiante', 'LIKE', "%{$termino}%");
+                      });
+                });
+            }
+
+            $tesis = $query->orderBy('Nombre_trabajo')
+                ->limit(30)
+                ->get();
+
+            $resultados = $tesis->map(function ($t) {
+                $est = $t->estudiante;
+                $nombreEst = $est
+                    ? trim($est->Nombre_estudiante . ' ' . $est->Apellido1)
+                    : 'Sin estudiante';
+
+                // Label que verá el usuario (también se usa como value del option)
+                $label = $t->Nombre_trabajo . ' - ' . $nombreEst;
+
+                return [
+                    'id'     => $t->id,
+                    'label'  => $label,
+                    'nombre' => $t->Nombre_trabajo,
+                    'estudiante' => $nombreEst,
+                ];
+            });
+
+            return response()->json($resultados);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al buscar tesis: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 }

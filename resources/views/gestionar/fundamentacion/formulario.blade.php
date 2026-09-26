@@ -8,6 +8,17 @@
     $esEdicion = isset($fundamentacion) && $fundamentacion !== null;
     $accion    = $esEdicion ? route('modificarFundamentación') : route('agregarFundamentación');
     $titulo    = $esEdicion ? 'Editar Fundamentación' : 'Crear Fundamentación';
+
+    // Etiqueta de la tesis actual para precargar en modo edición
+    $tesisActualLabel = '';
+    if ($esEdicion && $fundamentacion->tesis) {
+        $t = $fundamentacion->tesis;
+        $est = $t->estudiante;
+        $nombreEst = $est
+            ? trim($est->Nombre_estudiante . ' ' . $est->Apellido1)
+            : 'Sin estudiante';
+        $tesisActualLabel = $t->Nombre_trabajo . ' - ' . $nombreEst;
+    }
 @endphp
 
 <div class="contenido-principal">
@@ -52,21 +63,29 @@
 
                     <div class="form-grid">
                         <div class="campo-formulario">
-                            <label for="id_tesis">Tesis Asociada *</label>
-                            <select id="id_tesis" name="id_tesis"
-                                    class="atributo @error('id_tesis') atributo-error @enderror"
-                                    required>
-                                <option value="">Seleccione una tesis</option>
-                                @foreach ($tesis as $tesisItem)
-                                    <option value="{{ $tesisItem->id }}"
-                                        {{ old('id_tesis', $esEdicion ? $fundamentacion->id_tesis : (isset($tesisSeleccionada) ? $tesisSeleccionada->id : '')) == $tesisItem->id ? 'selected' : '' }}>
-                                        Tesis #{{ $tesisItem->id }}: {{ $tesisItem->Nombre_trabajo }}
-                                        @if ($tesisItem->estudiante)
-                                            - {{ $tesisItem->estudiante->Nombre_estudiante }} {{ $tesisItem->estudiante->Apellido1 }}
-                                        @endif
-                                    </option>
-                                @endforeach
-                            </select>
+                            <label for="tesis_buscar">Tesis Asociada *</label>
+
+                            <input type="text"
+                                   id="tesis_buscar"
+                                   class="atributo @error('id_tesis') atributo-error @enderror"
+                                   list="tesis-list"
+                                   placeholder="Escribe el nombre de la tesis o del estudiante..."
+                                   autocomplete="off"
+                                   required
+                                   value="{{ old('_tesis_label', $esEdicion ? $tesisActualLabel : '') }}">
+
+                            <datalist id="tesis-list"></datalist>
+
+                            <input type="hidden"
+                                   name="id_tesis"
+                                   id="id_tesis_hidden"
+                                   value="{{ old('id_tesis', $esEdicion ? $fundamentacion->id_tesis : '') }}">
+
+                            <small class="ayuda-campo">
+                                Escribe al menos 2 caracteres
+                            </small>
+                            <small id="tesis_estado" style="display:none; color:#666; font-style:italic; margin-top:4px;"></small>
+
                             @error('id_tesis') <small class="mensaje-error">{{ $message }}</small> @enderror
                         </div>
                     </div>
@@ -176,5 +195,99 @@
 
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const inputBuscar  = document.getElementById('tesis_buscar');
+    const datalist     = document.getElementById('tesis-list');
+    const inputHidden  = document.getElementById('id_tesis_hidden');
+    const estadoMsg    = document.getElementById('tesis_estado');
+
+    if (!inputBuscar || !datalist || !inputHidden) return;
+
+    const urlBuscar = '{{ route("buscarTesisFundamentacion") }}';
+    const idActual  = inputHidden.value || '';
+    const mapLabels = new Map();
+    let timeoutId = null;
+
+    function setEstado(msg) {
+        if (!estadoMsg) return;
+        if (msg) {
+            estadoMsg.textContent = msg;
+            estadoMsg.style.display = 'inline-block';
+        } else {
+            estadoMsg.style.display = 'none';
+        }
+    }
+
+    function cargarTesis(termino) {
+        setEstado('Buscando...');
+
+        const url = `${urlBuscar}?q=${encodeURIComponent(termino)}&id_actual=${encodeURIComponent(idActual)}`;
+
+        fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            datalist.innerHTML = '';
+            mapLabels.clear();
+
+            data.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.label;
+                datalist.appendChild(opt);
+                mapLabels.set(t.label, t.id);
+            });
+
+            setEstado(data.length === 0
+                ? 'Sin tesis disponibles'
+                : `${data.length} tesis encontrada(s)`);
+
+            sincronizarHidden();
+        })
+        .catch(err => {
+            console.error('Error al buscar tesis:', err);
+            setEstado('Error al buscar');
+        });
+    }
+
+    function sincronizarHidden() {
+        const label = inputBuscar.value.trim();
+        if (mapLabels.has(label)) {
+            inputHidden.value = mapLabels.get(label);
+        } else {
+            inputHidden.value = '';
+        }
+    }
+
+    inputBuscar.addEventListener('input', function () {
+        clearTimeout(timeoutId);
+        const termino = this.value.trim();
+
+        if (mapLabels.has(termino)) {
+            inputHidden.value = mapLabels.get(termino);
+            setEstado('');
+            return;
+        }
+
+        if (termino.length === 0) {
+            inputHidden.value = '';
+        }
+
+        timeoutId = setTimeout(() => {
+            cargarTesis(termino);
+        }, 250);
+    });
+
+    inputBuscar.addEventListener('blur', sincronizarHidden);
+    inputBuscar.addEventListener('change', sincronizarHidden);
+
+    cargarTesis('');
+});
+</script>
 
 @endsection

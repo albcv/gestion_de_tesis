@@ -30,51 +30,58 @@
         <div class="resultado-info">
             <h3>Estudiantes de la Facultad</h3>
             <p style="text-align: center;">Total de estudiantes encontrados: {{ count($estudiantes) }}</p>
+
+            {{-- Botón Exportar CSV --}}
+            <div class="acciones-exportar">
+                <a href="{{ route('exportarConsultaCsv', array_merge(request()->query(), ['tipo' => 'facultad'])) }}"
+                   class="btn-exportar-consulta">
+                    📄 Exportar a CSV
+                </a>
+            </div>
         </div>
         
         <table>
-    <thead>
-        <tr>
-            <th>Grupo</th>
-            <th>Modalidad</th>
-            <th>CI</th>
-            <th>Nro</th>
-            <th>Nombre</th>
-            <th>Apellido1</th>
-            <th>Apellido2</th>
-            <th>Sexo</th>
-            <th>Fecha de ingreso</th>
-            <th>Año</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($estudiantes as $estudiante)
-        <tr id="{{ $estudiante->id }}">
-            <td>
-                @if($estudiante->grupo)
-                    {{ $estudiante->grupo->número }}
-                @else
-                    <span style="color: #000;">Grupo no encontrado</span>
-                @endif
-            </td>
-            <td>
-                @if($estudiante->modalidad)
-                    {{ $estudiante->modalidad->Nombre_modalidad }}
-                @else
-                    <span style="color: #000;">Modalidad no encontrada</span>
-                @endif
-            </td>
-            <td>{{ $estudiante->CI_estudiante }}</td>
-            <td>{{ $estudiante->número }}</td>
-            <td>{{ $estudiante->Nombre_estudiante }}</td>
-            <td>{{ $estudiante->Apellido1 }}</td>
-            <td>{{ $estudiante->Apellido2 }}</td>
-            <td>{{ $estudiante->sexo }}</td>
-            <td>{{ $estudiante->Fecha_ingreso }}</td>
-            <td>{{ $estudiante->year_academico }}</td>
-        </tr>
-        @endforeach
-
+            <thead>
+                <tr>
+                    <th>Grupo</th>
+                    <th>Modalidad</th>
+                    <th>CI</th>
+                    <th>Nro</th>
+                    <th>Nombre</th>
+                    <th>Apellido1</th>
+                    <th>Apellido2</th>
+                    <th>Sexo</th>
+                    <th>Fecha de ingreso</th>
+                    <th>Año</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($estudiantes as $estudiante)
+                <tr id="{{ $estudiante->id }}">
+                    <td>
+                        @if($estudiante->grupo)
+                            {{ $estudiante->grupo->número }}
+                        @else
+                            <span style="color: #000;">Grupo no encontrado</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($estudiante->modalidad)
+                            {{ $estudiante->modalidad->Nombre_modalidad }}
+                        @else
+                            <span style="color: #000;">Modalidad no encontrada</span>
+                        @endif
+                    </td>
+                    <td>{{ $estudiante->CI_estudiante }}</td>
+                    <td>{{ $estudiante->número }}</td>
+                    <td>{{ $estudiante->Nombre_estudiante }}</td>
+                    <td>{{ $estudiante->Apellido1 }}</td>
+                    <td>{{ $estudiante->Apellido2 }}</td>
+                    <td>{{ $estudiante->sexo }}</td>
+                    <td>{{ $estudiante->Fecha_ingreso }}</td>
+                    <td>{{ $estudiante->year_academico }}</td>
+                </tr>
+                @endforeach
             </tbody>
         </table>
     @else

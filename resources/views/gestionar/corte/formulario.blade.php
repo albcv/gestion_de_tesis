@@ -8,6 +8,16 @@
     $esEdicion = isset($corte) && $corte !== null;
     $accion    = $esEdicion ? route('modificarCorte') : route('agregarCorte');
     $titulo    = $esEdicion ? 'Editar Corte' : 'Crear Corte';
+
+    // Etiqueta de la tesis actual (para precargar el input en modo edición)
+    $tesisActualLabel = '';
+    if ($esEdicion && $corte->tesis) {
+        $est = $corte->tesis->estudiante;
+        $nombreEst = $est
+            ? trim($est->Nombre_estudiante . ' ' . $est->Apellido1)
+            : 'Sin estudiante';
+        $tesisActualLabel = $corte->tesis->Nombre_trabajo . ' - ' . $nombreEst;
+    }
 @endphp
 
 <div class="contenido-principal">
@@ -51,28 +61,41 @@
 
                     <div class="form-grid">
                         <div class="campo-formulario">
-                            <label for="id_tesis">Tesis Asociada *</label>
+                            <label for="tesis_buscar">Tesis Asociada *</label>
+
                             @if(isset($tesisId) && $tesisId && !$esEdicion)
+                                {{-- Preseleccionada desde "Detalles de Tesis": no se puede cambiar --}}
                                 <input type="hidden" name="id_tesis" value="{{ $tesisId }}">
                                 <input type="text" class="atributo" disabled
-                                       value="{{ $tesisSeleccionada->Nombre_trabajo ?? 'Tesis seleccionada' }}">
+                                       value="{{ $tesisSeleccionada->Nombre_trabajo ?? 'Tesis seleccionada' }}
+                                              - {{ $tesisSeleccionada->estudiante
+                                                    ? trim($tesisSeleccionada->estudiante->Nombre_estudiante . ' ' . $tesisSeleccionada->estudiante->Apellido1)
+                                                    : 'Sin estudiante' }}">
                                 <small class="ayuda-campo">Tesis preseleccionada desde Detalles de Tesis</small>
                             @else
-                                <select id="id_tesis" name="id_tesis"
-                                        class="atributo @error('id_tesis') atributo-error @enderror"
-                                        required>
-                                    <option value="">Seleccione una tesis</option>
-                                    @foreach ($tesis as $tesisItem)
-                                        <option value="{{ $tesisItem->id }}"
-                                            {{ old('id_tesis', $esEdicion ? $corte->id_tesis : (isset($tesisId) ? $tesisId : '')) == $tesisItem->id ? 'selected' : '' }}>
-                                            Tesis #{{ $tesisItem->id }}: {{ $tesisItem->Nombre_trabajo }}
-                                            @if ($tesisItem->estudiante)
-                                                - {{ $tesisItem->estudiante->Nombre_estudiante }} {{ $tesisItem->estudiante->Apellido1 }}
-                                            @endif
-                                        </option>
-                                    @endforeach
-                                </select>
+                                {{-- Datalist con búsqueda server-side --}}
+                                <input type="text"
+                                       id="tesis_buscar"
+                                       class="atributo @error('id_tesis') atributo-error @enderror"
+                                       list="tesis-list"
+                                       placeholder="Escribe el nombre de la tesis o del estudiante..."
+                                       autocomplete="off"
+                                       required
+                                       value="{{ old('_tesis_label', $esEdicion ? $tesisActualLabel : '') }}">
+
+                                <datalist id="tesis-list"></datalist>
+
+                                <input type="hidden"
+                                       name="id_tesis"
+                                       id="id_tesis_hidden"
+                                       value="{{ old('id_tesis', $esEdicion ? $corte->id_tesis : '') }}">
+
+                                <small class="ayuda-campo">
+                                    Escribe al menos 2 caracteres para filtrar
+                                </small>
+                                <small id="tesis_estado" style="display:none; color:#666; font-style:italic; margin-top:4px;"></small>
                             @endif
+
                             @error('id_tesis') <small class="mensaje-error">{{ $message }}</small> @enderror
                         </div>
 
@@ -202,5 +225,106 @@
 
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const inputBuscar  = document.getElementById('tesis_buscar');
+    const datalist     = document.getElementById('tesis-list');
+    const inputHidden  = document.getElementById('id_tesis_hidden');
+    const estadoMsg    = document.getElementById('tesis_estado');
+
+    if (!inputBuscar || !datalist || !inputHidden) return;
+
+    const urlBuscar = '{{ route("buscarTesis") }}';
+    const mapLabels = new Map(); // label => id
+    let timeoutId = null;
+
+    function setEstado(msg) {
+        if (!estadoMsg) return;
+        if (msg) {
+            estadoMsg.textContent = msg;
+            estadoMsg.style.display = 'inline-block';
+        } else {
+            estadoMsg.style.display = 'none';
+        }
+    }
+
+    function cargarTesis(termino) {
+        setEstado('Buscando...');
+
+        fetch(`${urlBuscar}?q=${encodeURIComponent(termino)}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            datalist.innerHTML = '';
+            mapLabels.clear();
+
+            data.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.label;
+                datalist.appendChild(opt);
+                mapLabels.set(t.label, t.id);
+            });
+
+            setEstado(data.length === 0
+                ? 'Sin resultados'
+                : `${data.length} tesis encontradas`);
+
+            // Si el valor actual coincide exactamente con una opción, sincronizar hidden
+            sincronizarHidden();
+        })
+        .catch(err => {
+            console.error('Error al buscar tesis:', err);
+            setEstado('Error al buscar');
+        });
+    }
+
+    function sincronizarHidden() {
+        const label = inputBuscar.value.trim();
+        if (mapLabels.has(label)) {
+            inputHidden.value = mapLabels.get(label);
+        } else {
+            inputHidden.value = '';
+        }
+    }
+
+    inputBuscar.addEventListener('input', function () {
+        clearTimeout(timeoutId);
+        const termino = this.value.trim();
+
+        // Si lo escrito coincide exactamente con una opción conocida,
+        // es una selección: guardar el ID y no volver a buscar.
+        if (mapLabels.has(termino)) {
+            inputHidden.value = mapLabels.get(termino);
+            setEstado('');
+            return;
+        }
+
+        // Si borró todo, limpiar el ID y buscar los primeros
+        if (termino.length === 0) {
+            inputHidden.value = '';
+        }
+
+        // Pequeño debounce para no saturar el servidor
+        timeoutId = setTimeout(() => {
+            cargarTesis(termino);
+        }, 250);
+    });
+
+    // Al perder el foco, sincronizar por si eligió de la lista
+    inputBuscar.addEventListener('blur', sincronizarHidden);
+
+    // Al seleccionar del datalist (algunos navegadores disparan "change")
+    inputBuscar.addEventListener('change', sincronizarHidden);
+
+    // Cargar las primeras opciones al abrir el formulario
+    // (en modo edición ya tenemos un label precargado, pero igual refrescamos la lista)
+    cargarTesis(inputBuscar.value.trim());
+});
+</script>
 
 @endsection

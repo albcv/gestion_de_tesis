@@ -27,19 +27,16 @@
             <select id="year_academico" name="year_academico" class="atributo">
                 <option value="">-- Todos los años --</option>
                 @php
-                    // Obtener años únicos de estudiantes (si ya hay estudiantes cargados)
                     $years = [];
                     if(isset($estudiantes) && $estudiantes->count() > 0) {
                         $years = $estudiantes->pluck('year_academico')->unique()->sort()->toArray();
                     } elseif(isset($carreraSeleccionada)) {
-                        // Obtener años de la carrera seleccionada
                         $years = \App\Models\Estudiante::where('id_carrera', $carreraSeleccionada->id)
                             ->distinct()
                             ->pluck('year_academico')
                             ->sort()
                             ->toArray();
                     } else {
-                        // Años por defecto - del 1 al 6 (años académicos)
                         $years = range(1, 6);
                     }
                 @endphp
@@ -74,6 +71,14 @@
                 @if(request('year_academico'))
                     <p><strong>Año académico:</strong> {{ request('year_academico') }}</p>
                 @endif
+            </div>
+
+            {{-- Botón Exportar CSV --}}
+            <div class="acciones-exportar">
+                <a href="{{ route('exportarConsultaCsv', array_merge(request()->query(), ['tipo' => 'sin_tutor'])) }}"
+                   class="btn-exportar-consulta">
+                    📄 Exportar a CSV
+                </a>
             </div>
         </div>
         
@@ -162,7 +167,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const selectCarrera = document.getElementById('carrera');
     const selectAno = document.getElementById('year_academico');
-    
 
     if (selectCarrera) {
         selectCarrera.addEventListener('change', function() {
@@ -172,7 +176,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Mejorar la experiencia en móviles
     if (window.innerWidth <= 768) {
         const table = document.getElementById('tabla-estudiantes');
         if (table) {

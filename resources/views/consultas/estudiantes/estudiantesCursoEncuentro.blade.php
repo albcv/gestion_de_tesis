@@ -27,6 +27,14 @@
     @if (count($estudiantes) != 0)
         <div class="resultado-info">
             <p style="text-align: center;">Total de estudiantes del curso por encuentro encontrados: {{ count($estudiantes) }}</p>
+
+            {{-- Botón Exportar CSV --}}
+            <div class="acciones-exportar">
+                <a href="{{ route('exportarConsultaCsv', array_merge(request()->query(), ['tipo' => 'curso_encuentro'])) }}"
+                   class="btn-exportar-consulta">
+                    📄 Exportar a CSV
+                </a>
+            </div>
         </div>
         
         <table>
@@ -42,7 +50,6 @@
                     <th>Sexo</th>
                     <th>Fecha de ingreso</th>
                     <th>Año</th>
-                
                 </tr>
             </thead>
             <tbody>
@@ -70,7 +77,6 @@
                     <td>{{ $estudiante->sexo }}</td>
                     <td>{{ $estudiante->Fecha_ingreso }}</td>
                     <td>{{ $estudiante->year_academico }}</td>
-                    
                 </tr>
                 @endforeach
             </tbody>

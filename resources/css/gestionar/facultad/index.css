@@ -478,3 +478,45 @@ tr.fila-seleccionada td {
         font-size: 13px;
     }
 }
+
+/* =====================================================
+   Acciones masivas (eliminar + histórico)
+   ===================================================== */
+.acciones-masivas {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* =====================================================
+   Botón Mover a Histórico — Carmelita oscuro
+   ===================================================== */
+.btn-mover-historico {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: 2px solid #451a03;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.25s;
+    animation: aparecer 0.25s ease-out;
+    box-shadow: 0 4px 12px rgba(120, 53, 15, 0.25);
+}
+
+.btn-mover-historico:hover {
+    background: linear-gradient(135deg, #451a03 0%, #2b1002 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(120, 53, 15, 0.45);
+    border-color: #2b1002;
+}
+
+.btn-mover-historico:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(120, 53, 15, 0.35);
+}

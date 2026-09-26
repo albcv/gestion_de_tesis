@@ -405,4 +405,298 @@ class TesisController extends Controller
                 ->with('error', 'Error al vaciar las tesis: ' . $e->getMessage());
         }
     }
+
+        /**
+     * Mueve las tesis seleccionadas al histórico.
+     *
+     * Requisitos:
+     *  - La fundamentación debe estar aprobada.
+     *  - Se debe indicar el año (ej: 2026).
+     *
+     * Al mover, se elimina:
+     *  - Tesis, fundamentación (y versiones), cortes (y versiones)
+     *  - Usuario y estudiante asociados
+     */
+    public function moverAHistorico(Request $request)
+    {
+        // ---------- Validación ----------
+        $validator = Validator::make($request->all(), [
+            'año'   => 'required|integer|min:2000|max:2100',
+            'ids'   => 'required|array|min:1',
+            'ids.*' => 'integer',
+        ], [
+            'año.required' => 'Debe indicar el año del histórico',
+            'año.integer'  => 'El año debe ser un número entero',
+            'año.min'      => 'El año debe ser mayor o igual a 2000',
+            'año.max'      => 'El año debe ser menor o igual a 2100',
+            'ids.required' => 'Debe seleccionar al menos una tesis',
+            'ids.min'      => 'Debe seleccionar al menos una tesis',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route($this->rutaVista)
+                ->with('error', $validator->errors()->first());
+        }
+
+        $año = (int) $request->input('año');
+        $ids = array_filter(array_map('intval', $request->input('ids', [])), fn($id) => $id > 0);
+
+        if (count($ids) === 0) {
+            return redirect()->route($this->rutaVista)
+                ->with('error', 'Los IDs enviados no son válidos');
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $movidas = 0;
+            $omitidas = [];
+
+            foreach ($ids as $id) {
+                $tesis = $this->modelo::with([
+                    'estudiante.user',
+                    'fundamentacion.aprobada',
+                    'fundamentacion.recomendacion',
+                    'fundamentacion.opinionTutor',
+                    'fundamentacion.versiones' => fn($q) => $q->orderBy('version_numero', 'desc'),
+                    'cortes' => fn($q) => $q->orderBy('Numero_corte', 'desc'),
+                    'cortes.opinionTutor',
+                    'cortes.versiones' => fn($q) => $q->orderBy('version_numero', 'desc'),
+                ])->find($id);
+
+                if (!$tesis) {
+                    continue;
+                }
+
+                // Solo si la fundamentación está aprobada
+                if (!$tesis->fundamentacion || !$tesis->fundamentacion->aprobada) {
+                    $omitidas[] = "#{$id} (sin fundamentación aprobada)";
+                    continue;
+                }
+
+                // La fundamentación debe tener al menos una versión con documento
+                $ultimaVerFund = $tesis->fundamentacion->versiones->first();
+                if (!$ultimaVerFund || empty($ultimaVerFund->ruta_documento)) {
+                    $omitidas[] = "#{$id} (fundamentación sin documento)";
+                    continue;
+                }
+
+                // Nombre completo del estudiante
+                $nombreEstudiante = 'Sin estudiante';
+                if ($tesis->estudiante) {
+                    $nombreEstudiante = trim(
+                        $tesis->estudiante->Nombre_estudiante . ' ' .
+                        $tesis->estudiante->Apellido1 . ' ' .
+                        $tesis->estudiante->Apellido2
+                    );
+                }
+
+                // ----- Copiar última versión de la fundamentación -----
+                $docFundamentacion = $this->copiarAHistorico($ultimaVerFund->ruta_documento);
+
+                // ----- Último corte y su última versión -----
+                $docCorte = null;
+                $ultimoCorte = $tesis->cortes->sortByDesc('Numero_corte')->first();
+
+                if ($ultimoCorte) {
+                    $ultimaVerCorte = $ultimoCorte->versiones->sortByDesc('version_numero')->first();
+                    if ($ultimaVerCorte && !empty($ultimaVerCorte->ruta_documento)) {
+                        $docCorte = $this->copiarAHistorico($ultimaVerCorte->ruta_documento);
+                    }
+                }
+
+                // ----- Crear el registro histórico -----
+                TesisHistorico::create([
+                    'año'                       => $año,
+                    'nombre_tesis'              => $tesis->Nombre_trabajo,
+                    'nombre_estudiante'         => $nombreEstudiante,
+                    'documento_fundamentacion'  => $docFundamentacion,
+                    'documento_corte'           => $docCorte,
+                ]);
+
+                // ============================================================
+                // LIMPIEZA DE DATOS ORIGINALES
+                // ============================================================
+
+                // --- Fundamentación ---
+                if ($tesis->fundamentacion) {
+                    DB::table('profesor_fundamentacion')
+                        ->where('id_fundamentacion', $tesis->fundamentacion->id_fundamentacion)
+                        ->delete();
+
+                    if ($tesis->fundamentacion->recomendacion) {
+                        $tesis->fundamentacion->recomendacion->delete();
+                    }
+                    if ($tesis->fundamentacion->opinionTutor) {
+                        $tesis->fundamentacion->opinionTutor->delete();
+                    }
+
+                    foreach ($tesis->fundamentacion->versiones as $v) {
+                        if (!empty($v->ruta_documento) && Storage::exists($v->ruta_documento)) {
+                            Storage::delete($v->ruta_documento);
+                        }
+                        $v->delete();
+                    }
+
+                    $folderFund = 'fundamentaciones/' . $tesis->fundamentacion->id_fundamentacion;
+                    if (Storage::exists($folderFund)) {
+                        Storage::deleteDirectory($folderFund);
+                    }
+
+                    $tesis->fundamentacion->delete();
+                }
+
+                // --- Cortes ---
+                foreach ($tesis->cortes as $corte) {
+                    DB::table('corte_tesis_profesor')
+                        ->where('corte_tesis_id', $corte->idCortes_de_tesis)
+                        ->delete();
+
+                    DB::table('corte_tesis_no_conformidades')
+                        ->where('corte_tesis_id', $corte->idCortes_de_tesis)
+                        ->delete();
+
+                    if ($corte->opinionTutor) {
+                        $corte->opinionTutor->delete();
+                    }
+
+                    foreach ($corte->versiones as $v) {
+                        if (!empty($v->ruta_documento) && Storage::exists($v->ruta_documento)) {
+                            Storage::delete($v->ruta_documento);
+                        }
+                        $v->delete();
+                    }
+
+                    $folderCorte = 'cortes/' . $corte->idCortes_de_tesis;
+                    if (Storage::exists($folderCorte)) {
+                        Storage::deleteDirectory($folderCorte);
+                    }
+
+                    $corte->delete();
+                }
+
+                // --- Referencias del estudiante ---
+                $estudiante = $tesis->estudiante;
+                $user = $estudiante ? $estudiante->user : null;
+
+                if ($estudiante) {
+                    DB::table('tutor_estudiante')
+                        ->where('id_estudiante', $estudiante->id)
+                        ->delete();
+                }
+
+                // --- Eliminar tesis ---
+                $tesis->delete();
+
+                // --- Eliminar estudiante ---
+                if ($estudiante) {
+                    $estudiante->delete();
+                }
+
+                // --- Eliminar usuario ---
+                if ($user) {
+                    $user->delete();
+                }
+
+                $movidas++;
+            }
+
+            DB::commit();
+
+            if (!empty($omitidas)) {
+                return redirect()->route($this->rutaVista)
+                    ->with('error', "Se movieron {$movidas} tesis al año {$año}. Omitidas: " . implode(', ', $omitidas));
+            }
+
+            return redirect()->route($this->rutaVista)
+                ->with('success', "Se movieron {$movidas} tesis al histórico del año {$año} correctamente.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route($this->rutaVista)
+                ->with('error', 'Error al mover al histórico: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Copia un archivo al directorio "historico" y devuelve la nueva ruta.
+     */
+    private function copiarAHistorico($rutaOriginal)
+    {
+        if (empty($rutaOriginal) || !Storage::exists($rutaOriginal)) {
+            return null;
+        }
+
+        $basename = basename($rutaOriginal);
+        $nuevoNombre = uniqid('hist_') . '_' . $basename;
+        $nuevaRuta = 'historico/' . $nuevoNombre;
+
+        Storage::copy($rutaOriginal, $nuevaRuta);
+
+        return $nuevaRuta;
+    }
+
+
+        /**
+     * Búsqueda de estudiantes para el datalist (AJAX).
+     * Solo devuelve estudiantes SIN tesis asignada,
+     * más el estudiante actual si estamos editando.
+     */
+    public function buscarEstudiantes(Request $request)
+    {
+        $termino = trim($request->input('q', ''));
+        $idActual = $request->input('id_actual'); // id_estudiante actual en modo edición
+
+        try {
+            $query = $this->modeloEstudiante::query()
+                ->where(function ($q) use ($idActual) {
+                    // Estudiantes sin tesis
+                    $q->whereDoesntHave('tesis');
+                    // O el estudiante actual (si estamos editando)
+                    if ($idActual) {
+                        $q->orWhere('id', $idActual);
+                    }
+                });
+
+            if ($termino !== '') {
+                $query->where(function ($q) use ($termino) {
+                    $q->where('Nombre_estudiante', 'LIKE', "%{$termino}%")
+                      ->orWhere('Apellido1', 'LIKE', "%{$termino}%")
+                      ->orWhere('Apellido2', 'LIKE', "%{$termino}%")
+                      ->orWhere('CI_estudiante', 'LIKE', "%{$termino}%");
+                });
+            }
+
+            $estudiantes = $query->orderBy('Nombre_estudiante')
+                ->orderBy('Apellido1')
+                ->limit(30)
+                ->get();
+
+            $resultados = $estudiantes->map(function ($e) {
+                $nombreCompleto = trim(
+                    $e->Nombre_estudiante . ' ' .
+                    $e->Apellido1 . ' ' .
+                    ($e->Apellido2 ?? '')
+                );
+
+                $label = $nombreCompleto . ' (CI: ' . $e->CI_estudiante . ')';
+
+                return [
+                    'id'     => $e->id,
+                    'label'  => $label,
+                    'nombre' => $nombreCompleto,
+                    'ci'     => $e->CI_estudiante,
+                ];
+            });
+
+            return response()->json($resultados);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al buscar estudiantes: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 }
