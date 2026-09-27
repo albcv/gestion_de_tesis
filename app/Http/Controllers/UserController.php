@@ -299,7 +299,7 @@ class UserController extends Controller
         }
     }
 
-    private function agregarEstudiante($request, $user)
+       private function agregarEstudiante($request, $user)
     {
         $validator = Validator::make($request->all(), [
             'ci_estudiante' => [
@@ -321,9 +321,7 @@ class UserController extends Controller
             'nombre_estudiante' => 'required|string|min:3|max:40',
             'apellido1_estudiante' => 'required|string|min:3|max:40',
             'apellido2_estudiante' => 'required|string|min:3|max:40',
-            'numero_estudiante' => 'required|integer',
             'sexo_estudiante' => 'required|in:Masculino,Femenino',
-            'fecha_ingreso' => 'required|date',
             'año_académico' => 'required|integer|min:1|max:6',
             'id_grupo' => 'required|exists:' . $this->tablaGrupo . ',' . $this->columnaIdGrupo,
             'id_modalidad' => 'required|exists:' . $this->tablaModalidad . ',' . $this->columnaIdModalidad,
@@ -341,12 +339,8 @@ class UserController extends Controller
             'apellido2_estudiante.required' => 'El segundo apellido es obligatorio',
             'apellido2_estudiante.min' => 'El segundo apellido debe tener al menos 3 caracteres',
             'apellido2_estudiante.max' => 'El segundo apellido no puede exceder los 40 caracteres',
-            'numero_estudiante.required' => 'El número es obligatorio',
-            'numero_estudiante.integer' => 'El número debe ser un valor numérico',
             'sexo_estudiante.required' => 'El sexo es obligatorio',
             'sexo_estudiante.in' => 'El sexo debe ser Masculino o Femenino',
-            'fecha_ingreso.required' => 'La fecha de ingreso es obligatoria',
-            'fecha_ingreso.date' => 'La fecha de ingreso debe ser una fecha válida',
             'año_académico.required' => 'El año académico es obligatorio',
             'año_académico.integer' => 'El año académico debe ser un número',
             'año_académico.min' => 'El año académico debe ser al menos 1',
@@ -369,9 +363,7 @@ class UserController extends Controller
         $estudiante->Nombre_estudiante = $request->nombre_estudiante;
         $estudiante->Apellido1 = $request->apellido1_estudiante;
         $estudiante->Apellido2 = $request->apellido2_estudiante;
-        $estudiante->número = $request->numero_estudiante;
         $estudiante->sexo = $request->sexo_estudiante;
-        $estudiante->Fecha_ingreso = $request->fecha_ingreso;
         $estudiante->year_academico = $request->año_académico;
         $estudiante->id_grupo = $request->id_grupo;
         $estudiante->id_modalidad = $request->id_modalidad;
@@ -553,7 +545,7 @@ class UserController extends Controller
         }
     }
 
-    private function actualizarEstudiante($request, $user)
+        private function actualizarEstudiante($request, $user)
     {
         $estudianteId = $user->estudiante ? $user->estudiante->id : null;
 
@@ -565,9 +557,7 @@ class UserController extends Controller
             'nombre_estudiante' => 'required|string|min:3|max:40',
             'apellido1_estudiante' => 'required|string|min:3|max:40',
             'apellido2_estudiante' => 'required|string|min:3|max:40',
-            'numero_estudiante' => 'required|integer',
             'sexo_estudiante' => 'required|in:Masculino,Femenino',
-            'fecha_ingreso' => 'required|date',
             'año_académico' => 'required|integer|min:1|max:6',
             'id_grupo' => 'required|exists:' . $this->tablaGrupo . ',' . $this->columnaIdGrupo,
             'id_modalidad' => 'required|exists:' . $this->tablaModalidad . ',' . $this->columnaIdModalidad,
@@ -591,9 +581,7 @@ class UserController extends Controller
         $estudiante->Nombre_estudiante = $request->nombre_estudiante;
         $estudiante->Apellido1 = $request->apellido1_estudiante;
         $estudiante->Apellido2 = $request->apellido2_estudiante;
-        $estudiante->número = $request->numero_estudiante;
         $estudiante->sexo = $request->sexo_estudiante;
-        $estudiante->Fecha_ingreso = $request->fecha_ingreso;
         $estudiante->year_academico = $request->año_académico;
         $estudiante->id_grupo = $request->id_grupo;
         $estudiante->id_modalidad = $request->id_modalidad;

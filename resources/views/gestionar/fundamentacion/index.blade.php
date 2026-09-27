@@ -134,8 +134,6 @@
                         </th>
                         <th>Trabajo de Diploma</th>
                         <th>Estudiante</th>
-                        <th>Facultad</th>
-                        <th>Carrera</th>
                         <th>Versiones</th>
                         <th>Estado</th>
                         <th>Aprobar/Desaprobar</th>
@@ -166,23 +164,7 @@
                                     <span class="sin-informacion">No encontrado</span>
                                 @endif
                             </td>
-                            <td>
-                                @if($fundamentacion->tesis && $fundamentacion->tesis->estudiante &&
-                                    $fundamentacion->tesis->estudiante->carrera &&
-                                    $fundamentacion->tesis->estudiante->carrera->facultad)
-                                    {{ $fundamentacion->tesis->estudiante->carrera->facultad->Nombre_facultad }}
-                                @else
-                                    <span class="sin-informacion">No especificado</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($fundamentacion->tesis && $fundamentacion->tesis->estudiante &&
-                                    $fundamentacion->tesis->estudiante->carrera)
-                                    {{ $fundamentacion->tesis->estudiante->carrera->Nombre_carrera }}
-                                @else
-                                    <span class="sin-informacion">No especificado</span>
-                                @endif
-                            </td>
+                           
                             <td>
                                 @if($fundamentacion->versiones && $fundamentacion->versiones->count() > 0)
                                     <div class="versiones-container">

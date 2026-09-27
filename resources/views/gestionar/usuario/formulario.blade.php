@@ -165,13 +165,6 @@
                         </div>
 
                         <div class="campo-formulario">
-                            <label for="numero_estudiante">Número del Estudiante *</label>
-                            <input type="number" id="numero_estudiante" name="numero_estudiante" class="atributo"
-                                   autocomplete="off"
-                                   value="{{ old('numero_estudiante', $esEdicion && $usuario->estudiante ? $usuario->estudiante->número : '') }}">
-                        </div>
-
-                        <div class="campo-formulario">
                             <label for="sexo_estudiante">Sexo *</label>
                             <select name="sexo_estudiante" id="sexo_estudiante" class="atributo">
                                 <option value="">Seleccione</option>
@@ -184,12 +177,6 @@
                                     Femenino
                                 </option>
                             </select>
-                        </div>
-
-                        <div class="campo-formulario">
-                            <label for="fecha_ingreso">Fecha de Ingreso *</label>
-                            <input type="date" id="fecha_ingreso" name="fecha_ingreso" class="atributo"
-                                   value="{{ old('fecha_ingreso', $esEdicion && $usuario->estudiante ? $usuario->estudiante->Fecha_ingreso : '') }}">
                         </div>
 
                         <div class="campo-formulario">

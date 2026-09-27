@@ -10,19 +10,17 @@ class Estudiante extends Model
    protected $primaryKey = 'id';
 
    protected $fillable = [
-        'CI_estudiante',
-        'sexo',
-        'Nombre_estudiante',
-        'Apellido1',
-        'Apellido2',
-        'Fecha_ingreso',
-        'year_academico',
-        'id_grupo',
-        'id_modalidad',
-        'número',
-        'id_usuario',
-        'id_carrera'
-    ];
+    'CI_estudiante',
+    'sexo',
+    'Nombre_estudiante',
+    'Apellido1',
+    'Apellido2',
+    'year_academico',
+    'id_grupo',
+    'id_modalidad',
+    'id_usuario',
+    'id_carrera',
+];
 
     public function tesis()
     {

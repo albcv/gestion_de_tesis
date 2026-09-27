@@ -325,6 +325,8 @@ Route::get('/profesoresDepartamento', [profesorController::class, 'profesoresDep
 
 Route::get('/profesoresNoTutores', [profesorController::class, 'profesoresNoTutores'])->name('profesoresNoTutores');
 
+Route::get('/consultas/profesores/exportar', [ProfesorController::class, 'exportarConsultaCsvProfesores'])
+    ->name('exportarConsultaCsvProfesores');
 
 
 Route::get('/profesoresDoctores', [profesorController::class, 'profesoresDoctores'])->name('profesoresDoctores');

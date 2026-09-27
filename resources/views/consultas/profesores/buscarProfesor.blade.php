@@ -4,22 +4,25 @@
 
 @vite(['resources/css/consultas/ejecutar_consultas.css'])
 
-<form action="{{ route('mostrar_profesor') }}" id="formulario_buscar_profesor" method="post">
-    
-
-@csrf
-
-<div class="campo" id="campo_ci">
-<label for="ci">Carnet de identidad</label>
-<input type="text" id="ci" name="ci" required>
+<!-- =====================================================
+     BOTÓN VOLVER AL MENÚ DE PROFESORES
+     ===================================================== -->
+<div class="nav-volver">
+    <a href="/profesores" class="btn-volver-consulta">
+        ← Volver a Consultas de Profesores
+    </a>
 </div>
 
-<input type="submit" value="Aceptar" id="aceptar">
+<form action="{{ route('mostrar_profesor') }}" id="formulario_buscar_profesor" method="post">
+    @csrf
 
+    <div class="campo" id="campo_ci">
+        <label for="ci">Carnet de identidad</label>
+        <input type="text" id="ci" name="ci" required>
+    </div>
 
+    <input type="submit" value="Aceptar" id="aceptar">
 </form>
-
-
 
 @if(isset($profesor))
     <table>
@@ -37,42 +40,33 @@
         <tbody>
             <tr>
                 <td>
-                @if($profesor->departamento)
-                    {{ $profesor->departamento->Nombre_departamento }}
-                @else
-                    <span style="color: #999;">Departamento no encontrado</span>
-                @endif
-            </td>
-            <td>{{ $profesor->CI_profesor }}</td>
-            <td>{{ $profesor->Nombre_profesor }}</td>
-            <td>{{ $profesor->Apellido1 }}</td>
-            <td>{{ $profesor->Apellido2 }}</td>
-            <td>{{ $profesor->Categoria_docente }}</td>
-            <td>{{ $profesor->Categoria_cientifica }}</td>
+                    @if($profesor->departamento)
+                        {{ $profesor->departamento->Nombre_departamento }}
+                    @else
+                        <span class="no-data">Departamento no encontrado</span>
+                    @endif
+                </td>
+                <td>{{ $profesor->CI_profesor }}</td>
+                <td>{{ $profesor->Nombre_profesor }}</td>
+                <td>{{ $profesor->Apellido1 }}</td>
+                <td>{{ $profesor->Apellido2 }}</td>
+                <td>{{ $profesor->Categoria_docente }}</td>
+                <td>{{ $profesor->Categoria_cientifica }}</td>
             </tr>
         </tbody>
     </table>
 
     <!-- Botón para nueva búsqueda -->
-    <div style="margin-top: 40px; position: absolute;top: 140px;left:600px;">
-        <a id="nueva_búsqueda" href="{{ route('buscarProfesor') }}" style="color: #000; background-color: #0f0; font-size: 23px;padding: 20px">
-            Nueva Búsqueda
+    <div class="nav-nueva-busqueda">
+        <a href="{{ route('buscarProfesor') }}" class="btn-nueva-busqueda">
+            🔍 Nueva Búsqueda
         </a>
-
     </div>
 
     <script>
-
-    document.getElementById('campo_ci').style.display='none'
-    document.getElementById('aceptar').style.display='none'
-
+        document.getElementById('campo_ci').style.display = 'none';
+        document.getElementById('aceptar').style.display = 'none';
     </script>
-
-
 @endif
-
-
-
-
 
 @endsection

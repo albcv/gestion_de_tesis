@@ -583,3 +583,105 @@ div[style*="position: absolute"] {
         justify-content: center;
     }
 }
+
+
+/* =====================================================
+   Botón Volver al menú de consultas
+   ===================================================== */
+.nav-volver {
+    max-width: 700px;
+    margin: 20px auto 0;
+    padding: 0 5px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.btn-volver-consulta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #fff;
+    color: #030;
+    border: 2px solid #030;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    box-shadow: 0 3px 10px rgba(0, 51, 0, 0.08);
+}
+
+.btn-volver-consulta:hover {
+    background: #030;
+    color: #fff;
+    transform: translateX(-4px);
+    box-shadow: 0 6px 16px rgba(0, 51, 0, 0.25);
+}
+
+.btn-volver-consulta:active {
+    transform: translateX(-2px);
+}
+
+/* =====================================================
+   Botón Nueva Búsqueda (en buscarProfesor)
+   ===================================================== */
+.nav-nueva-busqueda {
+    max-width: 700px;
+    margin: 24px auto;
+    text-align: center;
+}
+
+.btn-nueva-busqueda {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 26px;
+    background: linear-gradient(135deg, #030 0%, #0a3 100%);
+    color: #fff;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 15px rgba(0, 51, 0, 0.25);
+}
+
+.btn-nueva-busqueda:hover {
+    background: linear-gradient(135deg, #0a3 0%, #030 100%);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0, 51, 0, 0.35);
+}
+
+.btn-nueva-busqueda:active {
+    transform: translateY(0);
+}
+
+/* =====================================================
+   Responsive — Móvil
+   ===================================================== */
+@media (max-width: 768px) {
+    .nav-volver {
+        margin: 15px auto 0;
+        padding: 0 12px;
+    }
+
+    .btn-volver-consulta {
+        width: 100%;
+        justify-content: center;
+        padding: 11px 16px;
+        font-size: 13px;
+    }
+
+    .nav-nueva-busqueda {
+        margin: 20px auto;
+    }
+
+    .btn-nueva-busqueda {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}

@@ -121,8 +121,6 @@
                         </th>
                         <th>Estudiante</th>
                         <th>Nombre del Trabajo</th>
-                        <th>Carrera</th>
-                        <th>Facultad</th>
                         <th class="col-acciones">Acciones</th>
                     </tr>
                 </thead>
@@ -143,20 +141,7 @@
                                 @endif
                             </td>
                             <td>{{ $trabajo->Nombre_trabajo }}</td>
-                            <td>
-                                @if($trabajo->estudiante && $trabajo->estudiante->carrera)
-                                    {{ $trabajo->estudiante->carrera->Nombre_carrera }}
-                                @else
-                                    <span class="sin-informacion">No asignada</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($trabajo->estudiante && $trabajo->estudiante->carrera && $trabajo->estudiante->carrera->facultad)
-                                    {{ $trabajo->estudiante->carrera->facultad->Siglas }}
-                                @else
-                                    <span class="sin-informacion">No asignada</span>
-                                @endif
-                            </td>
+                           
                             <td>
                                 <div class="acciones-td">
                                     <a href="{{ route('gestionarTesis', ['accion' => 'detalles', 'id' => $trabajo->id]) }}"

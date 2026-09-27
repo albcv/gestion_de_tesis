@@ -71,16 +71,8 @@
                     <span>{{ $usuario->estudiante->Apellido2 }}</span>
                 </div>
                 <div class="detalle-campo">
-                    <label>Número del Estudiante:</label>
-                    <span>{{ $usuario->estudiante->número }}</span>
-                </div>
-                <div class="detalle-campo">
                     <label>Sexo:</label>
                     <span>{{ $usuario->estudiante->sexo }}</span>
-                </div>
-                <div class="detalle-campo">
-                    <label>Fecha de Ingreso:</label>
-                    <span>{{ date('d/m/Y', strtotime($usuario->estudiante->Fecha_ingreso)) }}</span>
                 </div>
                 <div class="detalle-campo">
                     <label>Año Académico:</label>

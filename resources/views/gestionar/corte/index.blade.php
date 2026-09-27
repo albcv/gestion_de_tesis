@@ -130,8 +130,6 @@
                         </th>
                         <th>Trabajo de Diploma</th>
                         <th>Estudiante</th>
-                        <th>Facultad</th>
-                        <th>Carrera</th>
                         <th>N° Corte</th>
                         <th>Versiones</th>
                         <th>Estado</th>
@@ -163,20 +161,8 @@
                                     <span class="sin-informacion">No encontrado</span>
                                 @endif
                             </td>
-                            <td>
-                                @if($corte->tesis && $corte->tesis->estudiante && $corte->tesis->estudiante->carrera && $corte->tesis->estudiante->carrera->facultad)
-                                    {{ $corte->tesis->estudiante->carrera->facultad->Nombre_facultad }}
-                                @else
-                                    <span class="sin-informacion">No especificado</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($corte->tesis && $corte->tesis->estudiante && $corte->tesis->estudiante->carrera)
-                                    {{ $corte->tesis->estudiante->carrera->Nombre_carrera }}
-                                @else
-                                    <span class="sin-informacion">No especificado</span>
-                                @endif
-                            </td>
+                          
+                            
                             <td>
                                 <strong>Corte {{ $corte->Numero_corte }}</strong>
                             </td>
