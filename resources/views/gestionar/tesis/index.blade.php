@@ -4,6 +4,8 @@
 
 @vite(['resources/css/gestionar/facultad/index.css'])
 @vite(['resources/css/gestionar/usuario/filtros.css'])
+@vite(['resources/css/gestionar/tesis/modal.css'])
+
 
 <div class="contenido-principal">
     <div class="contenedor-facultades">

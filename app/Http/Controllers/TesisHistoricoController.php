@@ -391,15 +391,13 @@ class TesisHistoricoController extends Controller
             $out = fopen('php://output', 'w');
             fwrite($out, "\xEF\xBB\xBF");
 
-            fputcsv($out, ['Año', 'Tesis', 'Estudiante', 'Fundamentación', 'Corte'], ';');
+            fputcsv($out, ['Año', 'Tesis', 'Estudiante'], ';');
 
             foreach ($historicos as $h) {
                 fputcsv($out, [
                     $h->año,
                     $h->nombre_tesis,
                     $h->nombre_estudiante,
-                    $h->documento_fundamentacion ? basename($h->documento_fundamentacion) : '—',
-                    $h->documento_corte ? basename($h->documento_corte) : '—',
                 ], ';');
             }
 

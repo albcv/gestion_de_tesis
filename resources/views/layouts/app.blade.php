@@ -40,6 +40,7 @@
             ['nombre' => 'Revisar Fundamentación',  'url' => route('revisarFundamentación'),     'permiso' => 'revisarFundamentación',     'icono' => '🔍'],
             ['nombre' => 'Revisar Corte',           'url' => route('revisarCorte'),              'permiso' => 'revisarCorte',              'icono' => '🔍'],
             ['nombre' => 'Estudiantes tutorados',   'url' => route('estudiantesTutorados'),      'permiso' => 'estudiantesTutorados',      'icono' => '🧑‍🎓'],
+            ['nombre' => 'Tesis Histórico',   'url' => route('gestionarTesisHistorico'),         'permiso' => 'gestionarTesisHistorico',    'icono' => '📜'],
         ];
 
         // Menús del header (navegación general)

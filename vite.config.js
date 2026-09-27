@@ -33,6 +33,7 @@ export default defineConfig({
 
                 //css gestionar
                 'resources/css/gestionar/fechaEntrega.css',
+                 'resources/css/gestionar/tesis/modal.css',
                
                 //css gestionar facultad
                  'resources/css/gestionar/facultad/index.css',

@@ -24,7 +24,7 @@
             @endif
         </div>
 
-        <h1>📦 Histórico de Tesis</h1>
+        <h1>📜 Histórico de Tesis</h1>
 
         @if (session('error'))
             <div class="alerta alerta-error">{{ session('error') }}</div>
@@ -112,8 +112,7 @@
                                        value="{{ $h->id }}" onchange="actualizarSeleccion()">
                             </td>
                             <td>
-                                <span class="badge-rol-detalle"
-                                      style="background:linear-gradient(135deg,#78350f,#451a03);">
+                                <span class="badge-rol-detalle">
                                     {{ $h->año }}
                                 </span>
                             </td>
@@ -139,17 +138,16 @@
                             </td>
                             <td>
                                 <div class="acciones-td">
-                                    <a href="{{ route('gestionarTesisHistorico', ['accion' => 'detalles', 'id' => $h->id]) }}"
-                                       title="Ver detalles">
-                                        <img src="{{ asset('img/ver.jpg') }}" class="imagen_botón" alt="Ver">
-                                    </a>
+
+                                <a href="{{ route('gestionarTesisHistorico', ['accion' => 'editar', 'id' => $h->id]) }}"
+                                       title="Editar">
+                                        <img src="{{ asset('img/editar.jpg') }}" class="imagen_botón" alt="Editar">
+                                </a>
+                                   
                                     <img src="{{ asset('img/eliminar.jpg') }}" class="imagen_botón"
                                          alt="Eliminar" title="Eliminar"
                                          onclick="eliminarHistorico({{ $h->id }})">
-                                    <a href="{{ route('gestionarTesisHistorico', ['accion' => 'editar', 'id' => $h->id]) }}"
-                                       title="Editar">
-                                        <img src="{{ asset('img/editar.jpg') }}" class="imagen_botón" alt="Editar">
-                                    </a>
+                                    
                                 </div>
                             </td>
                         </tr>

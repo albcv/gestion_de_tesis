@@ -10,6 +10,8 @@ use App\Models\tutor_estudiante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use App\Models\TesisHistorico;
 
 class TesisController extends Controller
 {
@@ -52,12 +54,56 @@ class TesisController extends Controller
     }
 
     /**
-     * Listado, formulario o detalles según query param.
+     * Elimina los documentos físicos asociados a una tesis:
+     *  - Versiones de su fundamentación (carpeta fundamentaciones/{id})
+     *  - Versiones de todos sus cortes (carpetas cortes/{id})
      *
-     *  /gestionarTesis                       → listado
-     *  /gestionarTesis?accion=crear          → formulario crear
-     *  /gestionarTesis?accion=editar&id=X    → formulario editar
-     *  /gestionarTesis?accion=detalles&id=X  → detalles
+     * Debe invocarse ANTES de borrar la tesis (la BD borra en cascada).
+     */
+    private function eliminarDocumentosTesis($tesis): void
+    {
+        if (!$tesis) {
+            return;
+        }
+
+        $tesis->loadMissing([
+            'fundamentacion.versiones',
+            'cortes.versiones',
+        ]);
+
+        // ----- Fundamentación -----
+        if ($tesis->fundamentacion) {
+            $idFund = $tesis->fundamentacion->id_fundamentacion;
+
+            foreach ($tesis->fundamentacion->versiones as $v) {
+                if (!empty($v->ruta_documento) && Storage::exists($v->ruta_documento)) {
+                    Storage::delete($v->ruta_documento);
+                }
+            }
+
+            $folderFund = 'fundamentaciones/' . $idFund;
+            if (Storage::exists($folderFund)) {
+                Storage::deleteDirectory($folderFund);
+            }
+        }
+
+        // ----- Cortes -----
+        foreach ($tesis->cortes as $corte) {
+            foreach ($corte->versiones as $v) {
+                if (!empty($v->ruta_documento) && Storage::exists($v->ruta_documento)) {
+                    Storage::delete($v->ruta_documento);
+                }
+            }
+
+            $folderCorte = 'cortes/' . $corte->idCortes_de_tesis;
+            if (Storage::exists($folderCorte)) {
+                Storage::deleteDirectory($folderCorte);
+            }
+        }
+    }
+
+    /**
+     * Listado, formulario o detalles según query param.
      */
     public function mostrar(Request $request)
     {
@@ -322,8 +368,28 @@ class TesisController extends Controller
                 ->with('error', 'La tesis no existe o ya ha sido eliminada');
         }
 
-        $this->modelo::destroy($request->id);
-        return redirect()->route($this->rutaVista);
+        DB::beginTransaction();
+        try {
+            // Cargar tesis con relaciones para poder limpiar storage antes del DELETE
+            $tesis = $this->modelo::with([
+                'fundamentacion.versiones',
+                'cortes.versiones',
+            ])->find($request->id);
+
+            if ($tesis) {
+                $this->eliminarDocumentosTesis($tesis);
+            }
+
+            $this->modelo::destroy($request->id);
+
+            DB::commit();
+            return redirect()->route($this->rutaVista);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route($this->rutaVista)
+                ->with('error', 'Error al eliminar la tesis: ' . $e->getMessage());
+        }
     }
 
     public function eliminarVarios(Request $request)
@@ -342,8 +408,28 @@ class TesisController extends Controller
                 ->with('error', 'Los IDs enviados no son válidos');
         }
 
-        $this->modelo::whereIn($this->columnaIdTesis, $ids)->delete();
-        return redirect()->route($this->rutaVista);
+        DB::beginTransaction();
+        try {
+            // Cargar todas las tesis con sus relaciones para limpiar storage
+            $tesisList = $this->modelo::with([
+                'fundamentacion.versiones',
+                'cortes.versiones',
+            ])->whereIn($this->columnaIdTesis, $ids)->get();
+
+            foreach ($tesisList as $t) {
+                $this->eliminarDocumentosTesis($t);
+            }
+
+            $this->modelo::whereIn($this->columnaIdTesis, $ids)->delete();
+
+            DB::commit();
+            return redirect()->route($this->rutaVista);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route($this->rutaVista)
+                ->with('error', 'Error al eliminar las tesis: ' . $e->getMessage());
+        }
     }
 
     public function exportarCsv()
@@ -397,29 +483,35 @@ class TesisController extends Controller
 
     public function vaciar()
     {
+        DB::beginTransaction();
         try {
+            // Cargar todas las tesis con sus relaciones para borrar sus documentos
+            $tesisList = $this->modelo::with([
+                'fundamentacion.versiones',
+                'cortes.versiones',
+            ])->get();
+
+            foreach ($tesisList as $t) {
+                $this->eliminarDocumentosTesis($t);
+            }
+
             $this->modelo::query()->delete();
+
+            DB::commit();
             return redirect()->route($this->rutaVista);
+
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->route($this->rutaVista)
                 ->with('error', 'Error al vaciar las tesis: ' . $e->getMessage());
         }
     }
 
-        /**
+    /**
      * Mueve las tesis seleccionadas al histórico.
-     *
-     * Requisitos:
-     *  - La fundamentación debe estar aprobada.
-     *  - Se debe indicar el año (ej: 2026).
-     *
-     * Al mover, se elimina:
-     *  - Tesis, fundamentación (y versiones), cortes (y versiones)
-     *  - Usuario y estudiante asociados
      */
     public function moverAHistorico(Request $request)
     {
-        // ---------- Validación ----------
         $validator = Validator::make($request->all(), [
             'año'   => 'required|integer|min:2000|max:2100',
             'ids'   => 'required|array|min:1',
@@ -468,20 +560,17 @@ class TesisController extends Controller
                     continue;
                 }
 
-                // Solo si la fundamentación está aprobada
                 if (!$tesis->fundamentacion || !$tesis->fundamentacion->aprobada) {
                     $omitidas[] = "#{$id} (sin fundamentación aprobada)";
                     continue;
                 }
 
-                // La fundamentación debe tener al menos una versión con documento
                 $ultimaVerFund = $tesis->fundamentacion->versiones->first();
                 if (!$ultimaVerFund || empty($ultimaVerFund->ruta_documento)) {
                     $omitidas[] = "#{$id} (fundamentación sin documento)";
                     continue;
                 }
 
-                // Nombre completo del estudiante
                 $nombreEstudiante = 'Sin estudiante';
                 if ($tesis->estudiante) {
                     $nombreEstudiante = trim(
@@ -491,10 +580,8 @@ class TesisController extends Controller
                     );
                 }
 
-                // ----- Copiar última versión de la fundamentación -----
                 $docFundamentacion = $this->copiarAHistorico($ultimaVerFund->ruta_documento);
 
-                // ----- Último corte y su última versión -----
                 $docCorte = null;
                 $ultimoCorte = $tesis->cortes->sortByDesc('Numero_corte')->first();
 
@@ -505,7 +592,6 @@ class TesisController extends Controller
                     }
                 }
 
-                // ----- Crear el registro histórico -----
                 TesisHistorico::create([
                     'año'                       => $año,
                     'nombre_tesis'              => $tesis->Nombre_trabajo,
@@ -636,23 +722,18 @@ class TesisController extends Controller
         return $nuevaRuta;
     }
 
-
-        /**
+    /**
      * Búsqueda de estudiantes para el datalist (AJAX).
-     * Solo devuelve estudiantes SIN tesis asignada,
-     * más el estudiante actual si estamos editando.
      */
     public function buscarEstudiantes(Request $request)
     {
         $termino = trim($request->input('q', ''));
-        $idActual = $request->input('id_actual'); // id_estudiante actual en modo edición
+        $idActual = $request->input('id_actual');
 
         try {
             $query = $this->modeloEstudiante::query()
                 ->where(function ($q) use ($idActual) {
-                    // Estudiantes sin tesis
                     $q->whereDoesntHave('tesis');
-                    // O el estudiante actual (si estamos editando)
                     if ($idActual) {
                         $q->orWhere('id', $idActual);
                     }
@@ -697,6 +778,4 @@ class TesisController extends Controller
             ], 500);
         }
     }
-
-
 }

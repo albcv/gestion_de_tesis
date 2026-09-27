@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -126,12 +127,80 @@ class UserController extends Controller
     }
 
     /**
+     * Elimina los documentos físicos asociados a una tesis.
+     */
+    private function eliminarDocumentosTesis($tesis): void
+    {
+        if (!$tesis) {
+            return;
+        }
+
+        $tesis->loadMissing([
+            'fundamentacion.versiones',
+            'cortes.versiones',
+        ]);
+
+        // ----- Fundamentación -----
+        if ($tesis->fundamentacion) {
+            $idFund = $tesis->fundamentacion->id_fundamentacion;
+
+            foreach ($tesis->fundamentacion->versiones as $v) {
+                if (!empty($v->ruta_documento) && Storage::exists($v->ruta_documento)) {
+                    Storage::delete($v->ruta_documento);
+                }
+            }
+
+            $folderFund = 'fundamentaciones/' . $idFund;
+            if (Storage::exists($folderFund)) {
+                Storage::deleteDirectory($folderFund);
+            }
+        }
+
+        // ----- Cortes -----
+        foreach ($tesis->cortes as $corte) {
+            foreach ($corte->versiones as $v) {
+                if (!empty($v->ruta_documento) && Storage::exists($v->ruta_documento)) {
+                    Storage::delete($v->ruta_documento);
+                }
+            }
+
+            $folderCorte = 'cortes/' . $corte->idCortes_de_tesis;
+            if (Storage::exists($folderCorte)) {
+                Storage::deleteDirectory($folderCorte);
+            }
+        }
+    }
+
+    /**
+     * Helper: a partir de un estudiante, localiza su tesis y limpia los documentos.
+     */
+    private function eliminarDocumentosDeEstudiante($estudiante): void
+    {
+        if (!$estudiante) {
+            return;
+        }
+
+        $estudiante->loadMissing(['tesis.fundamentacion.versiones', 'tesis.cortes.versiones']);
+
+        if ($estudiante->tesis) {
+            $this->eliminarDocumentosTesis($estudiante->tesis);
+        }
+    }
+
+    /**
      * Listado, formulario de creación/edición o detalles según query param.
      *
-     *  /gestionarUsuarios                       → listado
-     *  /gestionarUsuarios?accion=crear          → formulario crear
-     *  /gestionarUsuarios?accion=editar&id=X    → formulario editar
-     *  /gestionarUsuarios?accion=detalles&id=X  → detalles
+     *  /gestionarUsuarios                                        → listado
+     *  /gestionarUsuarios?accion=crear                           → formulario crear
+     *  /gestionarUsuarios?accion=editar&id=X                     → formulario editar
+     *  /gestionarUsuarios?accion=detalles&id=X                   → detalles
+     *
+     *  Filtros:
+     *    buscar              → texto
+     *    filtro_rol          → estudiante|profesor|{id_rol}
+     *    filtro_carrera      → id_carrera  (solo si filtro_rol = estudiante)
+     *    filtro_modalidad    → idModalidad (solo si filtro_rol = estudiante)
+     *    filtro_grupo        → id_grupo    (solo si filtro_rol = estudiante)
      */
     public function mostrar(Request $request)
     {
@@ -152,9 +221,12 @@ class UserController extends Controller
 
         // ---------- Listado ----------
         try {
-            $buscar = $request->input('buscar');
-            $filtroRol = $request->input('filtro_rol');
-            $porPagina = $request->input('por_pagina', 10);
+            $buscar           = $request->input('buscar');
+            $filtroRol        = $request->input('filtro_rol');
+            $filtroCarrera    = $request->input('filtro_carrera');
+            $filtroModalidad  = $request->input('filtro_modalidad');
+            $filtroGrupo      = $request->input('filtro_grupo');
+            $porPagina        = $request->input('por_pagina', 10);
 
             $query = $this->modelo::with(['rol', 'estudiante', 'profesor']);
 
@@ -196,11 +268,36 @@ class UserController extends Controller
                 }
             }
 
+            // ---- Filtros exclusivos de estudiantes ----
+            $esFiltroEstudiante = strtolower((string) $filtroRol) === strtolower(self::ROL_ESTUDIANTE);
+
+            if ($esFiltroEstudiante
+                && ($filtroCarrera || $filtroModalidad || $filtroGrupo)) {
+
+                $query->whereHas('estudiante', function ($q) use ($filtroCarrera, $filtroModalidad, $filtroGrupo) {
+                    if ($filtroCarrera) {
+                        $q->where('id_carrera', $filtroCarrera);
+                    }
+                    if ($filtroModalidad) {
+                        $q->where('id_modalidad', $filtroModalidad);
+                    }
+                    if ($filtroGrupo) {
+                        $q->where('id_grupo', $filtroGrupo);
+                    }
+                });
+            }
+
             $usuarios = $query->paginate($porPagina)->appends($request->query());
 
-            $roles = $this->modeloRol::all();
+            // ---- Catálogos para la vista ----
+            $roles       = $this->modeloRol::all();
+            $carreras    = $this->modeloCarrera::orderBy('Nombre_carrera')->get();
+            $modalidades = $this->modeloModalidad::orderBy('Nombre_modalidad')->get();
+            $grupos      = $this->modeloGrupo::orderBy('número')->get();
 
-            return view('gestionar.usuario.index', compact('usuarios', 'roles'));
+            return view('gestionar.usuario.index', compact(
+                'usuarios', 'roles', 'carreras', 'modalidades', 'grupos'
+            ));
 
         } catch (\Exception $e) {
             return redirect()->route($this->rutaVistaPrincipal)
@@ -231,7 +328,6 @@ class UserController extends Controller
 
     /**
      * Agrega un nuevo usuario.
-     * Si el botón pulsado es "continuar", vuelve al formulario de creación.
      */
     public function agregar(Request $request)
     {
@@ -299,7 +395,7 @@ class UserController extends Controller
         }
     }
 
-       private function agregarEstudiante($request, $user)
+    private function agregarEstudiante($request, $user)
     {
         $validator = Validator::make($request->all(), [
             'ci_estudiante' => [
@@ -522,8 +618,13 @@ class UserController extends Controller
             } elseif ($request->rol == $this->rolProfesorId) {
                 $this->actualizarProfesor($request, $user);
             } else {
-                if ($user->estudiante) $user->estudiante->delete();
-                if ($user->profesor)   $user->profesor->delete();
+                if ($user->estudiante) {
+                    $this->eliminarDocumentosDeEstudiante($user->estudiante);
+                    $user->estudiante->delete();
+                }
+                if ($user->profesor) {
+                    $user->profesor->delete();
+                }
             }
 
             DB::commit();
@@ -545,7 +646,7 @@ class UserController extends Controller
         }
     }
 
-        private function actualizarEstudiante($request, $user)
+    private function actualizarEstudiante($request, $user)
     {
         $estudianteId = $user->estudiante ? $user->estudiante->id : null;
 
@@ -568,7 +669,9 @@ class UserController extends Controller
             throw new \Illuminate\Validation\ValidationException($validator);
         }
 
-        if ($user->profesor) $user->profesor->delete();
+        if ($user->profesor) {
+            $user->profesor->delete();
+        }
 
         if ($user->estudiante) {
             $estudiante = $user->estudiante;
@@ -610,7 +713,10 @@ class UserController extends Controller
             throw new \Illuminate\Validation\ValidationException($validator);
         }
 
-        if ($user->estudiante) $user->estudiante->delete();
+        if ($user->estudiante) {
+            $this->eliminarDocumentosDeEstudiante($user->estudiante);
+            $user->estudiante->delete();
+        }
 
         if ($user->profesor) {
             $profesor = $user->profesor;
@@ -642,16 +748,23 @@ class UserController extends Controller
                     ->with('error', 'El usuario no existe o ya ha sido eliminado');
             }
 
-            $user = $this->modelo::find($request->id);
+            $user = $this->modelo::with([
+                'estudiante.tesis.fundamentacion.versiones',
+                'estudiante.tesis.cortes.versiones',
+            ])->find($request->id);
+
             if (!$user) {
                 return redirect()->route($this->rutaVistaPrincipal)
                     ->with('error', 'El usuario no existe');
             }
 
-            // No permitir eliminarse a sí mismo
             if (Auth::id() === $user->id) {
                 return redirect()->route($this->rutaVistaPrincipal)
                     ->with('error', 'No puede eliminar su propio usuario');
+            }
+
+            if ($user->estudiante && $user->estudiante->tesis) {
+                $this->eliminarDocumentosTesis($user->estudiante->tesis);
             }
 
             if ($user->estudiante) $user->estudiante->delete();
@@ -688,7 +801,6 @@ class UserController extends Controller
                 ->with('error', 'Los IDs enviados no son válidos');
         }
 
-        // Evitar eliminar el propio usuario
         if (in_array(Auth::id(), $ids)) {
             return redirect()->route($this->rutaVistaPrincipal)
                 ->with('error', 'No puede eliminar su propio usuario');
@@ -696,9 +808,16 @@ class UserController extends Controller
 
         DB::beginTransaction();
         try {
-            $usuarios = $this->modelo::whereIn($this->columnaIdUsuario, $ids)->get();
+            $usuarios = $this->modelo::with([
+                'estudiante.tesis.fundamentacion.versiones',
+                'estudiante.tesis.cortes.versiones',
+            ])->whereIn($this->columnaIdUsuario, $ids)->get();
 
             foreach ($usuarios as $u) {
+                if ($u->estudiante && $u->estudiante->tesis) {
+                    $this->eliminarDocumentosTesis($u->estudiante->tesis);
+                }
+
                 if ($u->estudiante) $u->estudiante->delete();
                 if ($u->profesor)   $u->profesor->delete();
                 $u->delete();

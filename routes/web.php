@@ -447,3 +447,4 @@ Route::post('/eliminarVariasTesisHistorico',        [TesisHistoricoController::c
 Route::get('/descargarFundamentacionHistorico/{id}',[TesisHistoricoController::class, 'descargarFundamentacion'])->name('descargarFundamentacionHistorico');
 Route::get('/descargarCorteHistorico/{id}',         [TesisHistoricoController::class, 'descargarCorte'])->name('descargarCorteHistorico');
 Route::get('/exportarTesisHistoricoCsv',            [TesisHistoricoController::class, 'exportarCsv'])->name('exportarTesisHistoricoCsv');
+

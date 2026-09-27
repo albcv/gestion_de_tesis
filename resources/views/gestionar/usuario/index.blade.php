@@ -26,6 +26,17 @@
             <div class="alerta alerta-error">{{ session('error') }}</div>
         @endif
 
+        @php
+            $esFiltroEstudiante = strtolower((string) request('filtro_rol')) === 'estudiante';
+            $hayFiltros = request('buscar')
+                       || request('filtro_rol')
+                       || ($esFiltroEstudiante && (
+                              request('filtro_carrera')
+                           || request('filtro_modalidad')
+                           || request('filtro_grupo')
+                       ));
+        @endphp
+
         <!-- Filtros -->
         <form method="GET" action="{{ route('gestionarUsuarios') }}" class="form-filtros-usuarios">
             <div class="filtros-fila">
@@ -45,6 +56,39 @@
                     @endforeach
                 </select>
 
+                {{-- Filtros exclusivos para estudiantes --}}
+                @if ($esFiltroEstudiante)
+                    <select name="filtro_carrera" class="input-filtro">
+                        <option value="">Todas las carreras</option>
+                        @foreach ($carreras as $carrera)
+                            <option value="{{ $carrera->id }}"
+                                {{ request('filtro_carrera') == $carrera->id ? 'selected' : '' }}>
+                                {{ $carrera->Nombre_carrera }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <select name="filtro_modalidad" class="input-filtro">
+                        <option value="">Todas las modalidades</option>
+                        @foreach ($modalidades as $modalidad)
+                            <option value="{{ $modalidad->idModalidad }}"
+                                {{ request('filtro_modalidad') == $modalidad->idModalidad ? 'selected' : '' }}>
+                                {{ $modalidad->Nombre_modalidad }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <select name="filtro_grupo" class="input-filtro">
+                        <option value="">Todos los grupos</option>
+                        @foreach ($grupos as $grupo)
+                            <option value="{{ $grupo->id }}"
+                                {{ request('filtro_grupo') == $grupo->id ? 'selected' : '' }}>
+                                Grupo {{ $grupo->número }}
+                            </option>
+                        @endforeach
+                    </select>
+                @endif
+
                 <select name="por_pagina" class="input-filtro">
                     <option value="10" {{ request('por_pagina', 10) == 10 ? 'selected' : '' }}>10</option>
                     <option value="25" {{ request('por_pagina', 10) == 25 ? 'selected' : '' }}>25</option>
@@ -53,7 +97,7 @@
                 </select>
 
                 <button type="submit" class="btn-guardar-filtro">Aplicar</button>
-                @if(request('buscar') || request('filtro_rol'))
+                @if ($hayFiltros)
                     <a href="{{ route('gestionarUsuarios') }}" class="btn-limpiar-filtro">Limpiar</a>
                 @endif
             </div>
@@ -63,7 +107,7 @@
             <p>
                 Mostrando {{ $usuarios->firstItem() ?? 0 }} - {{ $usuarios->lastItem() ?? 0 }}
                 de {{ $usuarios->total() }} usuarios
-                @if(request('buscar') || request('filtro_rol')) (filtrados) @endif
+                @if ($hayFiltros) (filtrados) @endif
             </p>
 
             <button type="button" id="btn_eliminar_seleccionados"
@@ -124,7 +168,7 @@
                             <td>{{ $usuario->rol->rol ?? 'Sin rol' }}</td>
                             <td>
                                 <div class="acciones-td">
-                                     <a href="{{ route('gestionarUsuarios', ['accion' => 'detalles', 'id' => $usuario->id]) }}"
+                                    <a href="{{ route('gestionarUsuarios', ['accion' => 'detalles', 'id' => $usuario->id]) }}"
                                        title="Ver detalles">
                                         <img src="{{ asset('img/ver.jpg') }}" class="imagen_botón" alt="Ver">
                                     </a>
@@ -135,14 +179,13 @@
                                        title="Editar">
                                         <img src="{{ asset('img/editar.jpg') }}" class="imagen_botón" alt="Editar">
                                     </a>
-                                   
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
                             <td colspan="6" class="sin-registros">
-                                @if(request('buscar') || request('filtro_rol'))
+                                @if ($hayFiltros)
                                     No se encontraron usuarios con los criterios de búsqueda
                                 @else
                                     No hay usuarios registrados
@@ -217,6 +260,22 @@
 
         document.getElementById('formEliminarVarias').submit();
     }
+
+    /* ============ AUTO-SUBMIT FILTROS ============ */
+    document.querySelectorAll('.form-filtros-usuarios select').forEach(sel => {
+        sel.addEventListener('change', function () {
+            // Si el usuario cambia el rol y ya no es estudiante,
+            // nos aseguramos de no arrastrar filtros de estudiante en la URL.
+            if (this.name === 'filtro_rol' && this.value !== 'estudiante') {
+                const form = this.closest('form');
+                ['filtro_carrera', 'filtro_modalidad', 'filtro_grupo'].forEach(n => {
+                    const el = form.querySelector(`[name="${n}"]`);
+                    if (el) el.value = '';
+                });
+            }
+            this.closest('form')?.submit();
+        });
+    });
 </script>
 
 @endsection
