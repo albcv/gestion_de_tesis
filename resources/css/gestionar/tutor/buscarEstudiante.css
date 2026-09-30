@@ -1,0 +1,369 @@
+/* ============================================================
+   BUSCAR ESTUDIANTE (Asignar Tutor) — Estilos dedicados
+   ============================================================ */
+
+/* ---------- Variables ---------- */
+:root {
+    --be-primary:        #2563eb;
+    --be-primary-dark:   #1d4ed8;
+    --be-primary-light:  #dbeafe;
+    --be-success:        #16a34a;
+    --be-success-bg:     #dcfce7;
+    --be-danger:         #dc2626;
+    --be-danger-bg:      #fee2e2;
+    --be-text:           #1f2937;
+    --be-text-muted:     #6b7280;
+    --be-border:         #e5e7eb;
+    --be-bg:             #f9fafb;
+    --be-white:          #ffffff;
+    --be-radius:         12px;
+    --be-radius-sm:      8px;
+    --be-shadow:         0 1px 3px rgba(0, 0, 0, .08);
+    --be-shadow-lg:      0 10px 30px rgba(37, 99, 235, .08);
+    --be-transition:     .18s ease;
+}
+
+/* ============================================================
+   WRAPPERS
+   ============================================================ */
+.main-content-wrapper {
+    padding: 32px 24px;
+    background:
+        radial-gradient(circle at 0% 0%, #eef2ff 0%, transparent 45%),
+        radial-gradient(circle at 100% 100%, #f0f9ff 0%, transparent 45%),
+        var(--be-bg);
+    min-height: calc(100vh - 60px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.asignar-tutor-container {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    animation: beFadeUp .35s ease;
+}
+
+@keyframes beFadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.form-header {
+    text-align: center;
+    padding: 0 8px 4px;
+}
+
+.form-header h1 {
+    margin: 0 0 8px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--be-text);
+    letter-spacing: -.01em;
+}
+
+.form-subtitle {
+    margin: 0;
+    color: var(--be-text-muted);
+    font-size: .95rem;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   TARJETA PRINCIPAL
+   ============================================================ */
+.form-container {
+    background: var(--be-white);
+    border-radius: var(--be-radius);
+    border: 1px solid var(--be-border);
+    box-shadow: var(--be-shadow-lg);
+    padding: 32px 28px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Franja superior decorativa */
+.form-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--be-primary) 0%, #60a5fa 50%, #a78bfa 100%);
+}
+
+/* ============================================================
+   FORM GROUP
+   ============================================================ */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.form-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--be-text);
+    font-size: .95rem;
+}
+
+.label-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+/* ============================================================
+   INPUT / SELECT con datalist
+   ============================================================ */
+.select-profesor {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--be-text);
+    background-color: var(--be-white);
+
+    /* Icono de lupa embebido como SVG */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 16px center;
+
+    border: 1.5px solid var(--be-border);
+    border-radius: var(--be-radius-sm);
+    outline: none;
+    transition: border-color var(--be-transition), box-shadow var(--be-transition), background-color var(--be-transition);
+    cursor: text;
+}
+
+.select-profesor::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+.select-profesor:hover {
+    border-color: #cbd5e1;
+}
+
+.select-profesor:focus {
+    border-color: var(--be-primary);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
+    background-color: #fefeff;
+}
+
+/* Autofill de Chrome */
+.select-profesor:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px var(--be-white) inset;
+    -webkit-text-fill-color: var(--be-text);
+}
+
+/* ============================================================
+   TEXTO DE AYUDA
+   ============================================================ */
+.ayuda-campo {
+    display: inline-block;
+    color: var(--be-text-muted);
+    font-size: .82rem;
+    line-height: 1.5;
+    margin-top: 2px;
+}
+
+/* Estado dinámico (Buscando..., N encontrados, etc.) */
+#estudiante_estado {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    font-size: .84rem !important;
+    color: var(--be-primary) !important;
+    font-style: normal !important;
+    font-weight: 500;
+    padding: 6px 12px;
+    background: var(--be-primary-light);
+    border-radius: 999px;
+    margin-top: 6px !important;
+    animation: beFadeIn .2s ease;
+}
+
+#estudiante_estado:empty {
+    display: none !important;
+}
+
+@keyframes beFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ============================================================
+   ALERTAS
+   ============================================================ */
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 18px;
+    border-radius: var(--be-radius-sm);
+    font-size: .92rem;
+    line-height: 1.45;
+    border: 1px solid transparent;
+    margin-bottom: 20px;
+    animation: beFadeIn .25s ease;
+}
+
+.alert-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    line-height: 1.4;
+}
+
+.alert-error {
+    background: var(--be-danger-bg);
+    color: #7f1d1d;
+    border-color: rgba(220, 38, 38, .25);
+}
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+.form-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px solid var(--be-border);
+}
+
+.btn-asignar,
+.btn-cancelar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: .95rem;
+    font-family: inherit;
+    font-weight: 600;
+    border-radius: var(--be-radius-sm);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background var(--be-transition), transform .1s, box-shadow var(--be-transition), opacity var(--be-transition);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.btn-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+/* ---------- Botón Continuar ---------- */
+.btn-asignar {
+    background: var(--be-primary);
+    color: var(--be-white);
+    box-shadow: 0 1px 2px rgba(37, 99, 235, .25);
+    flex: 1;
+    min-width: 160px;
+}
+
+.btn-asignar:hover:not(:disabled) {
+    background: var(--be-primary-dark);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, .35);
+    transform: translateY(-1px);
+}
+
+.btn-asignar:active:not(:disabled) {
+    transform: translateY(0) scale(.98);
+}
+
+.btn-asignar:disabled {
+    background: #cbd5e1;
+    color: #f1f5f9;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: .85;
+}
+
+/* ---------- Botón Cancelar ---------- */
+.btn-cancelar {
+    background: #f3f4f6;
+    color: var(--be-text);
+    border: 1px solid var(--be-border);
+    flex: 0 0 auto;
+}
+
+.btn-cancelar:hover {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+}
+
+.btn-cancelar:active {
+    transform: scale(.97);
+}
+
+/* ============================================================
+   FOCUS VISIBLE (accesibilidad)
+   ============================================================ */
+.btn-asignar:focus-visible,
+.btn-cancelar:focus-visible,
+.select-profesor:focus-visible {
+    outline: 2px solid var(--be-primary);
+    outline-offset: 2px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+    .main-content-wrapper {
+        padding: 20px 14px;
+    }
+
+    .form-container {
+        padding: 24px 18px;
+    }
+
+    .form-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .form-subtitle {
+        font-size: .88rem;
+    }
+
+    .form-buttons {
+        flex-direction: column;
+    }
+
+    .btn-asignar,
+    .btn-cancelar {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .select-profesor {
+        font-size: .95rem;
+        padding: 12px 14px 12px 42px;
+        background-position: 14px center;
+    }
+}
+
+@media (max-width: 380px) {
+    .form-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .form-container {
+        padding: 20px 14px;
+    }
+}

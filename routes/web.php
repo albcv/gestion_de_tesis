@@ -187,8 +187,16 @@ Route::post('/vaciarProfesor', [profesorController::class, 'vaciar']);
 
 
 // Tutores-estudiantes
-Route::get('/asignarTutor/{id_estudiante}', [tutorEstudianteController::class, 'mostrarAsignarTutor'])->name('asignarTutor');
-Route::post('/agregarTutorEstudiante', [tutorEstudianteController::class, 'agregar'])->name('agregarTutorEstudiante');
+
+Route::get('/asignarTutor/{id_estudiante?}', [tutorEstudianteController::class, 'mostrarAsignarTutor'])
+    ->name('asignarTutor');
+
+Route::get('/buscarEstudiantesTutor', [tutorEstudianteController::class, 'buscarEstudiantes'])
+    ->name('buscarEstudiantesTutor');
+
+Route::post('/agregarTutorEstudiante', [tutorEstudianteController::class, 'agregar'])
+    ->name('agregarTutorEstudiante');
+
 Route::post('/eliminarTutorEstudiante', [tutorEstudianteController::class, 'eliminar'])->name('eliminarTutorEstudiante');
 
 

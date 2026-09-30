@@ -42,6 +42,11 @@ export default defineConfig({
                 //css gestionar usuarios
                 'resources/css/gestionar/usuario/detalles.css',
                 'resources/css/gestionar/usuario/filtros.css',
+
+                //Tutor
+                'resources/css/gestionar/tutor/asignarTutor.css',
+                'resources/css/gestionar/tutor/buscarEstudiante.css',
+                
                 
                 // === validaciones  ===
                 'resources/js/validaciones/validarLogin.js',
