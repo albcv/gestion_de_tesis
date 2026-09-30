@@ -38,10 +38,7 @@
                     @endif
                 </span>
             </div>
-            <div class="detalle-campo">
-                <label>ID de la Carrera:</label>
-                <span>{{ $carrera->id }}</span>
-            </div>
+           
             <div class="detalle-campo">
                 <label>Fecha de Creación:</label>
                 <span>{{ $carrera->created_at ? $carrera->created_at->format('d/m/Y H:i:s') : 'N/A' }}</span>
@@ -65,16 +62,7 @@
                 <label>Total de Modalidades:</label>
                 <span><strong style="font-size:22px; color:#030;">{{ count($modalidades_carrera) }}</strong></span>
             </div>
-            <div class="detalle-campo">
-                <label>Año Académico Mayor:</label>
-                <span>
-                    @if($carrera->estudiantes_por_ano->count() > 0)
-                        {{ $carrera->estudiantes_por_ano->keys()->max() }}
-                    @else
-                        —
-                    @endif
-                </span>
-            </div>
+           
         </div>
     </div>
 

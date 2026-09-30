@@ -164,7 +164,7 @@
                                     <span class="sin-informacion">No encontrado</span>
                                 @endif
                             </td>
-                           
+
                             <td>
                                 @if($fundamentacion->versiones && $fundamentacion->versiones->count() > 0)
                                     <div class="versiones-container">
@@ -208,6 +208,13 @@
                             </td>
                             <td>
                                 <div class="acciones-td">
+                                    {{-- 🔗 Asignar Oponente (vincular profesores a la fundamentación) --}}
+                                    <a href="{{ route('vincularProfesorFundamentación', ['id' => $fundamentacion->id_fundamentacion]) }}"
+                                       class="btn-asignar-oponente"
+                                       title="Asignar oponente(s) a esta fundamentación">
+                                        🔗 Asignar Oponente
+                                    </a>
+
                                     <a href="{{ route('gestionarFundamentaciones', ['accion' => 'detalles', 'id' => $fundamentacion->id_fundamentacion]) }}"
                                        title="Ver detalles">
                                         <img src="{{ asset('img/ver.jpg') }}" class="imagen_botón" alt="Ver">

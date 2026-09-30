@@ -25,10 +25,7 @@
     <div class="detalle-seccion">
         <h2>📋 Información de la Fundamentación</h2>
         <div class="detalle-grid">
-            <div class="detalle-campo">
-                <label>ID:</label>
-                <span>{{ $fundamentacion->id_fundamentacion }}</span>
-            </div>
+            
             <div class="detalle-campo">
                 <label>Estado:</label>
                 <span>

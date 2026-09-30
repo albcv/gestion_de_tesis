@@ -78,7 +78,7 @@
                                     @if (now()->greaterThan($fechaEntrega->fecha_entrega))
                                         <span class="time-remaining expired">Fecha de entrega vencida</span>
                                     @else
-                                    <span class="time-remaining valid">{{ (int) now()->diffInDays($fechaEntrega->fecha_entrega) }} días restantes</span>
+                                        <span class="time-remaining valid">{{ (int) now()->diffInDays($fechaEntrega->fecha_entrega) }} días restantes</span>
                                     @endif
                                 @else
                                     <span class="time-remaining">Sin fecha límite</span>
@@ -103,6 +103,21 @@
                                 <div class="alert-box secondary">
                                     {{ $fundamentacion->opinionTutor->opinion }}
                                 </div>
+
+                                {{-- Documento de revisión adjunto por el tutor --}}
+                                @if ($fundamentacion->opinionTutor->documento_revision)
+                                    <div class="documento-revision-box">
+                                        <span class="documento-revision-icono">📎</span>
+                                        <div class="documento-revision-texto">
+                                            <strong>Documento de revisión del tutor</strong>
+                                            <small>El tutor adjuntó un archivo con observaciones detalladas</small>
+                                        </div>
+                                        <a href="{{ route('estudiante.descargarRevisionFundamentacion', $fundamentacion->id_fundamentacion) }}"
+                                           class="documento-revision-btn">
+                                            📥 Descargar
+                                        </a>
+                                    </div>
+                                @endif
                             </div>
                         @endif
 
@@ -129,7 +144,7 @@
                                                     <td>{{ $version->created_at->format('d/m/Y H:i') }}</td>
                                                     <td>{{ $version->descripcion ?? 'Sin descripción' }}</td>
                                                     <td>
-                                                        <a href="{{ route('ver-documento-version', $version->id) }}" 
+                                                        <a href="{{ route('ver-documento-version', $version->id) }}"
                                                            class="action-btn download-btn" style="font-size: 45px;padding:20px;background: #0f4">
                                                             📥
                                                         </a>
@@ -149,7 +164,7 @@
                     @php
                         $puedeSubir = true;
                         $mensajeError = '';
-                        
+
                         if ($fundamentacion && $fundamentacion->aprobada) {
                             $puedeSubir = false;
                             $mensajeError = 'Tu fundamentación ya está aprobada. No puedes subir nuevas versiones.';
@@ -189,7 +204,7 @@
                                     </div>
                                 </div>
                                 <button type="submit" class="submit-btn primary-btn">
-                                    <i class="fas fa-upload"></i> 
+                                    <i class="fas fa-upload"></i>
                                     @if ($fundamentacion && $fundamentacion->versiones && $fundamentacion->versiones->count() > 0)
                                         Subir Nueva Versión
                                     @else
@@ -217,7 +232,7 @@
     document.getElementById('documento')?.addEventListener('change', function(e) {
         const file = e.target.files[0];
         const maxSize = 10 * 1024 * 1024; // 10MB
-        
+
         if (file && file.size > maxSize) {
             alert('El archivo excede el tamaño máximo de 10MB');
             e.target.value = '';

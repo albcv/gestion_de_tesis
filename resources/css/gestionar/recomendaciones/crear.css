@@ -1,0 +1,589 @@
+/* ============================================================
+   CREAR RECOMENDACIÓN DE FUNDAMENTACIÓN — Estilos
+   ============================================================ */
+
+/* ---------- Variables ---------- */
+:root {
+    --cr-primary:        #2563eb;
+    --cr-primary-dark:   #1d4ed8;
+    --cr-primary-light:  #dbeafe;
+    --cr-success:        #16a34a;
+    --cr-success-bg:     #dcfce7;
+    --cr-warning:        #d97706;
+    --cr-warning-bg:     #fef3c7;
+    --cr-danger:         #dc2626;
+    --cr-danger-bg:      #fee2e2;
+    --cr-info:           #0ea5e9;
+    --cr-text:           #1f2937;
+    --cr-text-muted:     #6b7280;
+    --cr-border:         #e5e7eb;
+    --cr-bg:             #f9fafb;
+    --cr-white:          #ffffff;
+    --cr-radius:         12px;
+    --cr-radius-sm:      8px;
+    --cr-shadow:         0 1px 3px rgba(0, 0, 0, .08);
+    --cr-shadow-lg:      0 10px 30px rgba(37, 99, 235, .08);
+    --cr-transition:     .18s ease;
+}
+
+/* ============================================================
+   WRAPPER PRINCIPAL
+   ============================================================ */
+.crear-recomendacion-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    background:
+        radial-gradient(circle at 0% 0%, #eef2ff 0%, transparent 45%),
+        radial-gradient(circle at 100% 100%, #f0f9ff 0%, transparent 45%),
+        var(--cr-bg);
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    animation: crFadeUp .35s ease;
+}
+
+@keyframes crFadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes crFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.form-header {
+    text-align: center;
+    padding: 0 8px 4px;
+}
+
+.form-header h1 {
+    margin: 0 0 8px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--cr-text);
+    letter-spacing: -.01em;
+}
+
+.form-header .subtitle {
+    margin: 0;
+    color: var(--cr-text-muted);
+    font-size: .95rem;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   TARJETA INFORMACIÓN
+   ============================================================ */
+.info-fundamentacion {
+    background: var(--cr-white);
+    border: 1px solid var(--cr-border);
+    border-left: 4px solid var(--cr-primary);
+    border-radius: var(--cr-radius);
+    box-shadow: var(--cr-shadow);
+    padding: 22px 24px;
+}
+
+.info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--cr-border);
+}
+
+.info-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--cr-text);
+}
+
+.info-badge {
+    display: inline-block;
+    background: var(--cr-primary-light);
+    color: var(--cr-primary-dark);
+    font-size: .8rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(37, 99, 235, .25);
+    letter-spacing: .02em;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.info-item { display: flex; flex-direction: column; gap: 4px; }
+
+.info-label {
+    font-size: .8rem;
+    color: var(--cr-text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.info-value {
+    font-size: .96rem;
+    color: var(--cr-text);
+    font-weight: 500;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+/* ============================================================
+   TARJETA FORMULARIO
+   ============================================================ */
+.form-container {
+    background: var(--cr-white);
+    border-radius: var(--cr-radius);
+    border: 1px solid var(--cr-border);
+    box-shadow: var(--cr-shadow-lg);
+    padding: 28px 26px;
+    position: relative;
+    overflow: hidden;
+}
+
+.form-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #f59e0b 0%, var(--cr-primary) 50%, #a78bfa 100%);
+}
+
+.form-recomendacion {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ============================================================
+   FORM GROUP
+   ============================================================ */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--cr-text);
+    font-size: .95rem;
+    flex-wrap: wrap;
+}
+
+.label-icon { font-size: 1.1rem; line-height: 1; }
+
+.label-hint {
+    font-weight: 400;
+    color: var(--cr-text-muted);
+    font-size: .82rem;
+}
+
+/* ============================================================
+   TEXTAREA
+   ============================================================ */
+.textarea-container {
+    position: relative;
+    border: 1.5px solid var(--cr-border);
+    border-radius: var(--cr-radius-sm);
+    background: var(--cr-white);
+    transition: border-color var(--cr-transition), box-shadow var(--cr-transition);
+    overflow: hidden;
+}
+
+.textarea-container:focus-within {
+    border-color: var(--cr-primary);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
+}
+
+.textarea-container textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 16px 18px;
+    font-family: inherit;
+    font-size: .96rem;
+    line-height: 1.6;
+    color: var(--cr-text);
+    resize: vertical;
+    min-height: 220px;
+    display: block;
+}
+
+.textarea-container textarea::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+.textarea-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 8px 14px;
+    background: #f8fafc;
+    border-top: 1px solid var(--cr-border);
+    font-size: .78rem;
+}
+
+.char-count {
+    color: var(--cr-text-muted);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    transition: color var(--cr-transition);
+}
+
+/* ============================================================
+   ERRORES
+   ============================================================ */
+.error-message {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 6px;
+    color: var(--cr-danger);
+    font-size: .85rem;
+    font-weight: 500;
+    padding: 8px 12px;
+    background: var(--cr-danger-bg);
+    border-left: 3px solid var(--cr-danger);
+    border-radius: 6px;
+    animation: crFadeIn .2s ease;
+}
+
+.error-icon { flex-shrink: 0; line-height: 1.3; }
+
+/* ============================================================
+   ALERTAS
+   ============================================================ */
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 16px;
+    border-radius: var(--cr-radius-sm);
+    font-size: .92rem;
+    line-height: 1.45;
+    border: 1px solid transparent;
+    animation: crFadeIn .25s ease;
+}
+
+.alert-icon { font-size: 1.05rem; flex-shrink: 0; line-height: 1.4; }
+.alert-success { background: var(--cr-success-bg); color: #14532d; border-color: rgba(22, 163, 74, .3); }
+.alert-error   { background: var(--cr-danger-bg);  color: #7f1d1d; border-color: rgba(220, 38, 38, .3); }
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+.form-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px solid var(--cr-border);
+}
+
+.btn-guardar,
+.btn-cancelar,
+.btn-crear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: .95rem;
+    font-family: inherit;
+    font-weight: 600;
+    border-radius: var(--cr-radius-sm);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background var(--cr-transition), transform .1s, box-shadow var(--cr-transition), opacity var(--cr-transition);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.btn-icon { font-size: 1rem; line-height: 1; }
+
+.btn-guardar,
+.btn-crear {
+    background: var(--cr-primary);
+    color: var(--cr-white);
+    box-shadow: 0 1px 2px rgba(37, 99, 235, .25);
+}
+
+.btn-guardar:hover:not(:disabled),
+.btn-crear:hover:not(:disabled) {
+    background: var(--cr-primary-dark);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, .35);
+    transform: translateY(-1px);
+}
+
+.btn-guardar:active:not(:disabled),
+.btn-crear:active:not(:disabled) {
+    transform: translateY(0) scale(.98);
+}
+
+.btn-guardar:disabled,
+.btn-crear:disabled {
+    background: #cbd5e1;
+    color: #f1f5f9;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: .85;
+}
+
+.btn-cancelar {
+    background: #f3f4f6;
+    color: var(--cr-text);
+    border: 1px solid var(--cr-border);
+}
+
+.btn-cancelar:hover { background: #e5e7eb; border-color: #d1d5db; }
+.btn-cancelar:active { transform: scale(.97); }
+
+/* ============================================================
+   FOCUS VISIBLE
+   ============================================================ */
+.btn-guardar:focus-visible,
+.btn-crear:focus-visible,
+.btn-cancelar:focus-visible,
+.textarea-container textarea:focus-visible {
+    outline: 2px solid var(--cr-primary);
+    outline-offset: 2px;
+}
+
+/* ============================================================
+   TABS (No Conformidad)
+   ============================================================ */
+.tabs-form-container {
+    padding: 0;  /* las tabs manejan su propio padding */
+}
+
+.tabs-nav {
+    display: flex;
+    gap: 4px;
+    background: #f3f4f6;
+    padding: 6px;
+    border-bottom: 1px solid var(--cr-border);
+    border-radius: var(--cr-radius) var(--cr-radius) 0 0;
+    position: relative;
+    z-index: 1;
+}
+
+.tab-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: .92rem;
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--cr-text-muted);
+    background: transparent;
+    border: none;
+    border-radius: var(--cr-radius-sm);
+    cursor: pointer;
+    transition: background var(--cr-transition), color var(--cr-transition), box-shadow var(--cr-transition);
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: var(--cr-text);
+    background: rgba(255, 255, 255, .5);
+}
+
+.tab-btn.active {
+    color: var(--cr-primary-dark);
+    background: var(--cr-white);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+}
+
+.tab-content {
+    padding: 26px 26px 24px;
+}
+
+.tab-pane {
+    display: none;
+    animation: crFadeIn .25s ease;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+.tab-description {
+    background: var(--cr-primary-light);
+    border-left: 3px solid var(--cr-primary);
+    border-radius: var(--cr-radius-sm);
+    padding: 12px 16px;
+    margin-bottom: 20px;
+}
+
+.tab-description p {
+    margin: 0;
+    font-size: .9rem;
+    color: var(--cr-primary-dark);
+    line-height: 1.5;
+}
+
+.tab-description p + p {
+    margin-top: 6px;
+}
+
+.tab-description .hint {
+    color: var(--cr-text-muted);
+    font-size: .84rem;
+    font-style: italic;
+}
+
+/* ============================================================
+   SELECT de No Conformidad
+   ============================================================ */
+.select-nc {
+    width: 100%;
+    padding: 13px 42px 13px 16px;
+    font-size: .96rem;
+    font-family: inherit;
+    color: var(--cr-text);
+    background-color: var(--cr-white);
+
+    /* Flecha SVG embebida */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+
+    border: 1.5px solid var(--cr-border);
+    border-radius: var(--cr-radius-sm);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    transition: border-color var(--cr-transition), box-shadow var(--cr-transition), background-color var(--cr-transition);
+}
+
+.select-nc:hover { border-color: #cbd5e1; }
+
+.select-nc:focus {
+    border-color: var(--cr-primary);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
+    background-color: #fefeff;
+}
+
+.select-nc option[value=""] {
+    color: var(--cr-text-muted);
+}
+
+/* ============================================================
+   PREVIEW de No Conformidad
+   ============================================================ */
+.nc-preview {
+    margin-top: 16px;
+    background: var(--cr-bg);
+    border: 1px solid var(--cr-border);
+    border-left: 3px solid var(--cr-primary);
+    border-radius: var(--cr-radius-sm);
+    padding: 16px 18px;
+    animation: crFadeIn .25s ease;
+}
+
+.nc-preview h4 {
+    margin: 0 0 12px;
+    font-size: .96rem;
+    font-weight: 600;
+    color: var(--cr-text);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--cr-border);
+}
+
+.nc-preview-content .info-item {
+    background: var(--cr-white);
+    padding: 12px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--cr-border);
+    gap: 6px;
+}
+
+.nc-preview-content .info-label {
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: .78rem;
+}
+
+.nc-preview-content .info-value {
+    white-space: pre-wrap;   /* respeta saltos de línea del texto de la NC */
+    font-weight: 400;
+    line-height: 1.55;
+    color: var(--cr-text);
+}
+
+/* ============================================================
+   NO DATA
+   ============================================================ */
+.no-data {
+    text-align: center;
+    padding: 24px 20px;
+    background: var(--cr-warning-bg);
+    border: 1px dashed rgba(217, 119, 6, .4);
+    border-radius: var(--cr-radius-sm);
+    color: #78350f;
+}
+
+.no-data p { margin: 6px 0; font-size: .92rem; line-height: 1.5; }
+.no-data p:first-child { font-weight: 600; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+    .crear-recomendacion-container { padding: 24px 16px; }
+    .form-container { padding: 0; }
+    .tab-content { padding: 22px 18px; }
+    .info-fundamentacion { padding: 18px; }
+    .info-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+}
+
+@media (max-width: 640px) {
+    .form-header h1 { font-size: 1.4rem; }
+    .form-header .subtitle { font-size: .88rem; }
+    .info-header { flex-direction: column; align-items: flex-start; }
+
+    .tabs-nav { flex-direction: column; gap: 4px; }
+    .tab-btn { width: 100%; }
+
+    .form-buttons {
+        flex-direction: column-reverse;
+    }
+    .btn-guardar, .btn-crear, .btn-cancelar { width: 100%; }
+
+    .textarea-container textarea { font-size: .93rem; padding: 14px; min-height: 180px; }
+}
+
+@media (max-width: 380px) {
+    .crear-recomendacion-container { padding: 16px 12px; }
+    .form-header h1 { font-size: 1.2rem; }
+    .tab-content { padding: 18px 14px; }
+}

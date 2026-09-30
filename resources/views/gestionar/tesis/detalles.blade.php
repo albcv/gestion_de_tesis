@@ -23,10 +23,7 @@
     <div class="detalle-seccion">
         <h2>📝 Información de la Tesis</h2>
         <div class="detalle-grid">
-            <div class="detalle-campo">
-                <label>ID de la Tesis:</label>
-                <span>{{ $tesis->id }}</span>
-            </div>
+            
             <div class="detalle-campo detalle-campo-full">
                 <label>Nombre del Trabajo:</label>
                 <span>{{ $tesis->Nombre_trabajo }}</span>

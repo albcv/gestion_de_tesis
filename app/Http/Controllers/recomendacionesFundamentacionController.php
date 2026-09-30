@@ -47,7 +47,7 @@ class recomendacionesFundamentacionController extends Controller
     {
         try {
             $fundamentacion = $this->modeloFundamentacion::with('tesis.estudiante')->findOrFail($id_fundamentacion);
-            return view('gestionar.gestionarRecomendacionesFundamentación.crear', compact('fundamentacion'));
+            return view('gestionar.fundamentacion.agregarRecomendacion', compact('fundamentacion'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error al cargar el formulario: ' . $e->getMessage());
         }
@@ -57,7 +57,7 @@ class recomendacionesFundamentacionController extends Controller
     {
         try {
             $recomendacion = $this->modelo::with('fundamentacion.tesis.estudiante')->findOrFail($id);
-            return view('gestionar.gestionarRecomendacionesFundamentación.editar', compact('recomendacion'));
+            return view('gestionar.fundamentacion.editarRecomendacion', compact('recomendacion'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error al cargar el formulario de edición: ' . $e->getMessage());
         }

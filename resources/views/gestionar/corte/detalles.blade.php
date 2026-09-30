@@ -25,10 +25,7 @@
     <div class="detalle-seccion">
         <h2>📋 Información del Corte</h2>
         <div class="detalle-grid">
-            <div class="detalle-campo">
-                <label>ID:</label>
-                <span>{{ $corte->idCortes_de_tesis }}</span>
-            </div>
+            
             <div class="detalle-campo">
                 <label>Número de Corte:</label>
                 <span><strong>Corte {{ $corte->Numero_corte }}</strong></span>
@@ -252,7 +249,6 @@
                         <tr style="background:linear-gradient(135deg,#030 0%,#0a3 100%); color:#fff;">
                             <th style="padding:12px 14px; text-align:left;">#</th>
                             <th style="padding:12px 14px; text-align:left;">Deficiencias Detectadas</th>
-                            <th style="padding:12px 14px; text-align:left;">Fecha</th>
                             <th style="padding:12px 14px; text-align:center;">Acciones</th>
                         </tr>
                     </thead>
@@ -261,13 +257,7 @@
                             <tr style="border-bottom:1px solid #e8f5e9;">
                                 <td style="padding:10px 14px;">{{ $index + 1 }}</td>
                                 <td style="padding:10px 14px;">{{ $nc->Deficiencias_detectadas }}</td>
-                                <td style="padding:10px 14px;">
-                                    @if(isset($nc->pivot) && $nc->pivot->created_at)
-                                        {{ date('d/m/Y', strtotime($nc->pivot->created_at)) }}
-                                    @else
-                                        —
-                                    @endif
-                                </td>
+                               
                                 <td style="padding:10px 14px; text-align:center;">
                                     <div style="display:flex; gap:8px; justify-content:center;">
                                         <a href="{{ route('editarNoConformidadCorte', ['id_corte' => $corte->idCortes_de_tesis, 'id_nc' => $nc->idNoConformidades]) }}"

@@ -22,10 +22,7 @@
     <div class="detalle-seccion">
         <h2>🔐 Información de Cuenta</h2>
         <div class="detalle-grid">
-            <div class="detalle-campo">
-                <label>ID:</label>
-                <span>{{ $usuario->id }}</span>
-            </div>
+            
             <div class="detalle-campo">
                 <label>Nombre de Usuario:</label>
                 <span>{{ $usuario->name }}</span>

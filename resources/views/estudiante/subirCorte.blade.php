@@ -1,6 +1,5 @@
 @extends('layouts.app')
 
-
 @vite(['resources/css/estudiante/subirCorte.css'])
 
 @section('content')
@@ -44,15 +43,11 @@
                 <div class="card-body">
                     <div class="info-row">
                         <div class="info-column">
-                            <p class="info-label">
-                                <strong>Título:</strong>
-                            </p>
+                            <p class="info-label"><strong>Título:</strong></p>
                             <p class="info-content">{{ $tesis->Nombre_trabajo }}</p>
                         </div>
                         <div class="info-column">
-                            <p class="info-label">
-                                <strong>Estudiante:</strong>
-                            </p>
+                            <p class="info-label"><strong>Estudiante:</strong></p>
                             <p class="info-content">{{ $tesis->estudiante->Nombre_estudiante }} {{ $tesis->estudiante->Apellido1 }} {{ $tesis->estudiante->Apellido2 }}</p>
                         </div>
                     </div>
@@ -71,7 +66,7 @@
                                 $corte = $cortes->where('Numero_corte', $i)->first();
                                 $fechaEntrega = $fechasEntrega->get($i);
                                 $headerClass = 'sin-estado';
-                                
+
                                 if ($corte && $corte->aprobado) {
                                     $headerClass = 'aprobado';
                                 } elseif ($corte && $corte->desaprobado) {
@@ -80,7 +75,7 @@
                                     $headerClass = 'pendiente';
                                 }
                             @endphp
-                            
+
                             <div class="corte-card">
                                 <div class="corte-header {{ $headerClass }}">
                                     <span>Corte {{ $i }}</span>
@@ -98,9 +93,7 @@
                                     <div class="corte-info">
                                         <!-- Fecha de entrega -->
                                         <div class="corte-info-item">
-                                            <p class="corte-label">
-                                                <strong>Fecha de entrega:</strong>
-                                            </p>
+                                            <p class="corte-label"><strong>Fecha de entrega:</strong></p>
                                             <p class="corte-value">
                                                 {{ $fechaEntrega ? $fechaEntrega->fecha_entrega->format('d/m/Y') : 'No establecida' }}
                                             </p>
@@ -109,9 +102,7 @@
                                         <!-- Tiempo restante -->
                                         @if ($fechaEntrega)
                                             <div class="corte-info-item">
-                                                <p class="corte-label">
-                                                    <strong>Tiempo restante:</strong>
-                                                </p>
+                                                <p class="corte-label"><strong>Tiempo restante:</strong></p>
                                                 <p class="corte-value">
                                                     @if (now()->greaterThan($fechaEntrega->fecha_entrega))
                                                         <span class="text-danger">Fecha de entrega vencida</span>
@@ -125,9 +116,7 @@
                                         <!-- No conformidades -->
                                         @if ($corte && $corte->noConformidades && $corte->noConformidades->count() > 0)
                                             <div class="corte-info-item">
-                                                <p class="corte-label">
-                                                    <strong>No conformidades:</strong>
-                                                </p>
+                                                <p class="corte-label"><strong>No conformidades:</strong></p>
                                                 <ul class="corte-list">
                                                     @foreach ($corte->noConformidades as $noConformidad)
                                                         <li class="corte-list-item no-conformidad">
@@ -141,26 +130,37 @@
                                         <!-- Opinión del Tutor -->
                                         @if ($corte && $corte->opinionTutor)
                                             <div class="corte-info-item">
-                                                <p class="corte-label">
-                                                    <strong>Opinión del Tutor:</strong>
-                                                </p>
+                                                <p class="corte-label"><strong>Opinión del Tutor:</strong></p>
                                                 <p class="corte-value">
                                                     {{ $corte->opinionTutor->opinion }}
                                                 </p>
+
+                                                {{-- Documento de revisión adjunto por el tutor --}}
+                                                @if ($corte->opinionTutor->documento_revision)
+                                                    <div class="documento-revision-box">
+                                                        <span class="documento-revision-icono">📎</span>
+                                                        <div class="documento-revision-texto">
+                                                            <strong>Documento de revisión del tutor</strong>
+                                                            <small>El tutor adjuntó un archivo con observaciones detalladas</small>
+                                                        </div>
+                                                        <a href="{{ route('estudiante.descargarRevisionCorte', $corte->idCortes_de_tesis) }}"
+                                                           class="documento-revision-btn">
+                                                            📥 Descargar
+                                                        </a>
+                                                    </div>
+                                                @endif
                                             </div>
                                         @endif
 
                                         <!-- Versiones -->
                                         @if ($corte && $corte->versiones && $corte->versiones->count() > 0)
                                             <div class="corte-info-item">
-                                                <p class="corte-label">
-                                                    <strong>Versiones:</strong>
-                                                </p>
+                                                <p class="corte-label"><strong>Versiones:</strong></p>
                                                 <ul class="corte-list">
                                                     @foreach ($corte->versiones as $version)
                                                         <li class="corte-list-item version">
-                                                            v{{ $version->version_numero }} - 
-                                                            <a href="{{ route('ver-documento-version-corte', $version->id) }}" 
+                                                            v{{ $version->version_numero }} -
+                                                            <a href="{{ route('ver-documento-version-corte', $version->id) }}"
                                                                class="version-link">
                                                                 {{ $version->nombre_archivo }}
                                                             </a>
@@ -185,25 +185,25 @@
                                                 <label for="documento{{ $i }}" class="form-label">
                                                     Documento (PDF, DOC, DOCX)
                                                 </label>
-                                                <input type="file" class="form-control form-control-file" 
-                                                       id="documento{{ $i }}" name="documento" 
+                                                <input type="file" class="form-control form-control-file"
+                                                       id="documento{{ $i }}" name="documento"
                                                        required accept=".pdf,.doc,.docx">
                                                 <small class="form-hint">Máximo 10MB</small>
                                             </div>
                                             <div class="form-group">
                                                 <label for="enlace{{ $i }}" class="form-label">
-                                                    Enlace GitHub 
+                                                    Enlace GitHub
                                                 </label>
-                                                <input type="url" class="form-control" 
-                                                       id="enlace{{ $i }}" name="enlace" 
+                                                <input type="url" class="form-control"
+                                                       id="enlace{{ $i }}" name="enlace"
                                                        placeholder="https://github.com/usuario/repositorio">
                                             </div>
                                             <div class="form-group">
                                                 <label for="descripcion{{ $i }}" class="form-label">
                                                     Descripción (opcional)
                                                 </label>
-                                                <textarea class="form-control form-textarea" 
-                                                          id="descripcion{{ $i }}" name="descripcion" 
+                                                <textarea class="form-control form-textarea"
+                                                          id="descripcion{{ $i }}" name="descripcion"
                                                           rows="3" placeholder="Breve descripción de los cambios"></textarea>
                                             </div>
                                             <button type="submit" class="btn btn-primary">
@@ -228,7 +228,7 @@
         input.addEventListener('change', function(e) {
             const file = e.target.files[0];
             const maxSize = 10 * 1024 * 1024; // 10MB
-            
+
             if (file && file.size > maxSize) {
                 alert('El archivo excede el tamaño máximo de 10MB');
                 e.target.value = '';

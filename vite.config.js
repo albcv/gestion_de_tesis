@@ -46,6 +46,13 @@ export default defineConfig({
                 //Tutor
                 'resources/css/gestionar/tutor/asignarTutor.css',
                 'resources/css/gestionar/tutor/buscarEstudiante.css',
+
+                //Oponente
+                'resources/css/gestionar/asignarOponente.css',
+
+                //Fundamentación
+                'resources/css/gestionar/recomendaciones/crear.css',
+                'resources/css/gestionar/recomendaciones/editar.css',
                 
                 
                 // === validaciones  ===

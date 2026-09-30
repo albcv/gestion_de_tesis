@@ -161,8 +161,7 @@
                                     <span class="sin-informacion">No encontrado</span>
                                 @endif
                             </td>
-                          
-                            
+
                             <td>
                                 <strong>Corte {{ $corte->Numero_corte }}</strong>
                             </td>
@@ -209,6 +208,13 @@
                             </td>
                             <td>
                                 <div class="acciones-td">
+                                    {{-- 🔗 Asignar Oponente --}}
+                                    <a href="{{ route('vincularProfesorCorte', ['id' => $corte->idCortes_de_tesis]) }}"
+                                       class="btn-asignar-oponente"
+                                       title="Asignar oponente(s) a este corte">
+                                        🔗 Asignar Oponente
+                                    </a>
+
                                     <a href="{{ route('gestionarCortes', ['accion' => 'detalles', 'id' => $corte->idCortes_de_tesis]) }}"
                                        title="Ver detalles">
                                         <img src="{{ asset('img/ver.jpg') }}" class="imagen_botón" alt="Ver">

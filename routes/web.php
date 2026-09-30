@@ -18,6 +18,7 @@ use App\Http\Controllers\fundamentacionesAprobadasController;
 use App\Http\Controllers\recomendacionesFundamentacionController;
 use App\Http\Controllers\cortesAprobadosController;
 use App\Http\Controllers\tutorEstudianteController;
+use App\Http\Controllers\Estudiante\DocumentoRevisionController;
 use App\Http\Controllers\gruposController;
 use App\Http\Controllers\rolesController;
 use App\Http\Controllers\permisosController;
@@ -362,6 +363,15 @@ Route::get('/estadisticas', [estadisticasController::class, 'obtenerEstadisticas
     Route::get('/subirCorte', [App\Http\Controllers\Estudiante\SubirCorteController::class, 'index'])->name('subirCorte');
     Route::post('/cortes/subir-version/{numeroCorte}', [App\Http\Controllers\Estudiante\SubirCorteController::class, 'subirVersion'])->name('subirVersionCorte');
     
+    // Descargar documento de revisión del tutor (fundamentación)
+    Route::get('/estudiante/descargar-revision-fundamentacion/{idFundamentacion}',
+    [DocumentoRevisionController::class, 'descargarRevisionFundamentacion'])
+    ->name('estudiante.descargarRevisionFundamentacion');
+
+    // Descargar documento de revisión del tutor (corte)
+    Route::get('/estudiante/descargar-revision-corte/{idCorte}',
+        [DocumentoRevisionController::class, 'descargarRevisionCorte'])
+        ->name('estudiante.descargarRevisionCorte');
 
 
 // Rutas para profesores
@@ -414,19 +424,36 @@ Route::delete('/profesor/corte/eliminar-no-conformidad', [App\Http\Controllers\P
 
 
     
-    // Estudiantes Tutorados
-Route::get('estudiantesTutorados', [App\Http\Controllers\Profesor\EstudianteTutoradoController::class, 'index'])
+// Estudiantes Tutorados
+
+// Listado de estudiantes tutorados
+Route::get('estudiantesTutorados',
+    [App\Http\Controllers\Profesor\EstudianteTutoradoController::class, 'index'])
     ->name('estudiantesTutorados');
 
-Route::get('/profesor/estudiante-tutorado/{id}', [App\Http\Controllers\Profesor\EstudianteTutoradoController::class, 'show'])
+// Vista detallada de un estudiante tutorado
+Route::get('/profesor/estudiante-tutorado/{id}',
+    [App\Http\Controllers\Profesor\EstudianteTutoradoController::class, 'show'])
     ->name('revisarEstudianteTutorado');
 
-Route::post('/profesor/tutor/guardar-opinion-fundamentacion', [App\Http\Controllers\Profesor\EstudianteTutoradoController::class, 'guardarOpinionFundamentacion'])
+// Guardar opinión sobre fundamentación
+Route::post('/profesor/tutor/guardar-opinion-fundamentacion',
+    [App\Http\Controllers\Profesor\EstudianteTutoradoController::class, 'guardarOpinionFundamentacion'])
     ->name('tutor.guardarOpinionFundamentacion');
 
-Route::post('/profesor/tutor/guardar-opinion-corte', [App\Http\Controllers\Profesor\EstudianteTutoradoController::class, 'guardarOpinionCorte'])
+// Guardar opinión sobre corte
+Route::post('/profesor/tutor/guardar-opinion-corte',
+    [App\Http\Controllers\Profesor\EstudianteTutoradoController::class, 'guardarOpinionCorte'])
     ->name('tutor.guardarOpinionCorte');
 
+// 👇 NUEVAS — Descarga de documentos de revisión
+Route::get('/profesor/tutor/descargar-documento-fundamentacion/{id}',
+    [App\Http\Controllers\Profesor\EstudianteTutoradoController::class, 'descargarDocumentoFundamentacion'])
+    ->name('tutor.descargarDocumentoFundamentacion');
+
+Route::get('/profesor/tutor/descargar-documento-corte/{id}',
+    [App\Http\Controllers\Profesor\EstudianteTutoradoController::class, 'descargarDocumentoCorte'])
+    ->name('tutor.descargarDocumentoCorte');
 
 
 // Gestión de fechas de entrega

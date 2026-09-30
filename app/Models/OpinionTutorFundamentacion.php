@@ -17,7 +17,8 @@ class OpinionTutorFundamentacion extends Model
     protected $fillable = [
         'id_fundamentacion',
         'id_profesor',
-        'opinion'
+        'opinion',
+         'documento_revision', 
     ];
     
     /**

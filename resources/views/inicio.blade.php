@@ -9,23 +9,52 @@
     @php
         use Illuminate\Support\Facades\Auth;
         use Illuminate\Support\Facades\DB;
-        
+        use App\Models\Estudiante;
+
         $user = Auth::user();
         $rolNombre = null;
         $hasRoleAccess = false;
-        
+
+        // Variables específicas del estudiante
+        $estudiante = null;
+        $tesisEstudiante = null;
+        $fundamentacionAprobada = false;
+
+        // Variables específicas del profesor
+        $profesor = null;
+        $cantidadTutorados = 0;
+
         if ($user) {
             // Obtener el nombre del rol desde la base de datos
             $rol = DB::table('roles')->where('id', $user->id_rol)->first();
-            
+
             if ($rol) {
                 $rolNombre = strtolower($rol->rol); // Convertir a minúsculas
-                
+
                 // Verificar si tiene acceso a esta vista
                 $allowedRoles = ['administrador', 'profesor', 'estudiante'];
                 $hasRoleAccess = in_array($rolNombre, $allowedRoles);
-                
-               
+            }
+
+            // Datos extra solo para el estudiante
+            if ($rolNombre === 'estudiante') {
+                $estudiante = Estudiante::with([
+                    'tesis.fundamentacion',
+                ])->where('id_usuario', $user->id)->first();
+
+                if ($estudiante && $estudiante->tesis) {
+                    $tesisEstudiante = $estudiante->tesis;
+                    $fundamentacionAprobada = $tesisEstudiante->fundamentacion
+                        && $tesisEstudiante->fundamentacion->aprobada;
+                }
+            }
+
+            // Datos extra solo para el profesor
+            if ($rolNombre === 'profesor') {
+                $profesor = \App\Models\Profesor::where('id_usuario', $user->id)->first();
+                if ($profesor) {
+                    $cantidadTutorados = $profesor->tutorados()->count();
+                }
             }
         }
     @endphp
@@ -33,6 +62,9 @@
     <h1>Gestión de Tesis 🎓</h1>
 
     @if ($hasRoleAccess)
+        {{-- ============================
+             ADMINISTRADOR
+             ============================ --}}
         @if ($rolNombre === 'administrador')
             <div class="bienvenido">
                 <p>Bienvenido al sitio web de gestión de trabajos de diploma de la Universidad de Ciego de Ávila "Máximo Gómez Báez". Aquí podrás administrar información sobre las facultades, estudiantes, carreras así como los cortes de tesis y profesores oponentes.</p>
@@ -41,7 +73,7 @@
             <!-- Estadísticas para administrador -->
             <div class="stats-container">
                 <h2>Estadísticas del Sistema</h2>
-                
+
                 <div class="stats-grid">
                     <!-- Gráfico de Fundamentaciones -->
                     <div class="stat-card">
@@ -105,8 +137,6 @@
                                     <div class="stat-label">Estudiantes sin Tutor</div>
                                 </div>
                             </div>
-
-                            
                         </div>
                     </div>
 
@@ -120,7 +150,6 @@
                                     <div class="stat-label">Total de Estudiantes</div>
                                 </div>
                             </div>
-                    
                             <div class="student-stat-item">
                                 <div class="stat-icon">❌</div>
                                 <div class="stat-info">
@@ -130,14 +159,12 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
 
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     try {
-                        // Obtener estadísticas del servidor
                         fetch('{{ route("estadisticas") }}')
                             .then(response => {
                                 if (!response.ok) {
@@ -146,32 +173,28 @@
                                 return response.json();
                             })
                             .then(data => {
-                                // Actualizar valores en la interfaz
                                 if (data.fundamentaciones) {
                                     document.getElementById('fundAprobadas').textContent = data.fundamentaciones.aprobadas || 0;
                                     document.getElementById('fundDesaprobadas').textContent = data.fundamentaciones.desaprobadas || 0;
                                     document.getElementById('fundPendientes').textContent = data.fundamentaciones.pendientes || 0;
                                 }
-                                
+
                                 if (data.cortes) {
                                     document.getElementById('cortesAprobados').textContent = data.cortes.aprobados || 0;
                                     document.getElementById('cortesDesaprobados').textContent = data.cortes.desaprobados || 0;
                                     document.getElementById('cortesPendientes').textContent = data.cortes.pendientes || 0;
                                 }
-                                
+
                                 if (data.estudiantes) {
                                     document.getElementById('totalEstudiantes').textContent = data.estudiantes.total || 0;
                                     document.getElementById('estudiantesSinTutor').textContent = data.estudiantes.sin_tutor || 0;
                                 }
 
-                                // Actualizar estudiantes de año culminante
                                 if (data.estudiantes_culminante) {
                                     document.getElementById('totalEstudiantesCulminante').textContent = data.estudiantes_culminante.total || 0;
                                     document.getElementById('estudiantesCulminanteSinTutor').textContent = data.estudiantes_culminante.sin_tutor || 0;
                                 }
 
-
-                                // Crear gráfico de Fundamentaciones
                                 const ctxFund = document.getElementById('fundamentacionesChart');
                                 if (ctxFund) {
                                     new Chart(ctxFund.getContext('2d'), {
@@ -184,27 +207,18 @@
                                                     data.fundamentaciones?.desaprobadas || 0,
                                                     data.fundamentaciones?.pendientes || 0
                                                 ],
-                                                backgroundColor: [
-                                                    '#4CAF50',
-                                                    '#F44336',
-                                                    '#FFC107'
-                                                ],
+                                                backgroundColor: ['#4CAF50', '#F44336', '#FFC107'],
                                                 borderWidth: 1
                                             }]
                                         },
                                         options: {
                                             responsive: true,
                                             maintainAspectRatio: false,
-                                            plugins: {
-                                                legend: {
-                                                    display: false
-                                                }
-                                            }
+                                            plugins: { legend: { display: false } }
                                         }
                                     });
                                 }
 
-                                // Crear gráfico de Cortes
                                 const ctxCortes = document.getElementById('cortesChart');
                                 if (ctxCortes) {
                                     new Chart(ctxCortes.getContext('2d'), {
@@ -217,29 +231,20 @@
                                                     data.cortes?.desaprobados || 0,
                                                     data.cortes?.pendientes || 0
                                                 ],
-                                                backgroundColor: [
-                                                    '#4CAF50',
-                                                    '#F44336',
-                                                    '#FFC107'
-                                                ],
+                                                backgroundColor: ['#4CAF50', '#F44336', '#FFC107'],
                                                 borderWidth: 1
                                             }]
                                         },
                                         options: {
                                             responsive: true,
                                             maintainAspectRatio: false,
-                                            plugins: {
-                                                legend: {
-                                                    display: false
-                                                }
-                                            }
+                                            plugins: { legend: { display: false } }
                                         }
                                     });
                                 }
                             })
                             .catch(error => {
                                 console.error('Error al cargar estadísticas:', error);
-                            
                             });
                     } catch (error) {
                         console.error('Error en la inicialización del script:', error);
@@ -248,16 +253,124 @@
             </script>
         @endif
 
+        {{-- ============================
+             ESTUDIANTE
+             ============================ --}}
         @if ($rolNombre === 'estudiante')
             <div class="bienvenido">
                 <p>Bienvenido al sitio web de gestión de trabajos de diploma de la Universidad de Ciego de Ávila "Máximo Gómez Báez". Aquí podrás subir tu fundamentación y tus cortes de tesis.</p>
             </div>
+
+            {{-- Botones de acción para el estudiante --}}
+            @if ($estudiante && $tesisEstudiante)
+                <div class="estudiante-acciones">
+
+                    {{-- Subir Fundamentación (siempre visible) --}}
+                    <a href="{{ route('subirFundamentación') }}"
+                       class="accion-card accion-fundamentacion">
+                        <div class="accion-icono">📄</div>
+                        <div class="accion-info">
+                            <h3 class="accion-titulo">Subir Fundamentación</h3>
+                            <p class="accion-descripcion">
+                                @if ($fundamentacionAprobada)
+                                    Tu fundamentación está aprobada. Puedes consultar tus versiones.
+                                @else
+                                    Sube tu fundamentación de tesis.
+                                @endif
+                            </p>
+                        </div>
+                        <span class="accion-flecha">→</span>
+                    </a>
+
+                    {{-- Subir Corte (solo si la fundamentación está aprobada) --}}
+                    @if ($fundamentacionAprobada)
+                        <a href="{{ route('subirCorte') }}"
+                           class="accion-card accion-corte">
+                            <div class="accion-icono">📚</div>
+                            <div class="accion-info">
+                                <h3 class="accion-titulo">Subir Corte</h3>
+                                <p class="accion-descripcion">
+                                    Sube tus cortes de tesis.
+                                </p>
+                            </div>
+                            <span class="accion-flecha">→</span>
+                        </a>
+                    @endif
+
+                </div>
+            @elseif ($estudiante && !$tesisEstudiante)
+                <div class="alert alert-warning">
+                    <p>Aún no tienes una tesis asignada. Contacta al administrador del sistema para que te asigne un trabajo de diploma.</p>
+                </div>
+            @elseif (!$estudiante)
+                <div class="alert alert-warning">
+                    <p>No se encontró tu perfil de estudiante. Contacta al administrador del sistema.</p>
+                </div>
+            @endif
         @endif
 
+        {{-- ============================
+             PROFESOR
+             ============================ --}}
         @if ($rolNombre === 'profesor')
             <div class="bienvenido">
                 <p>Bienvenido al sitio web de gestión de trabajos de diploma de la Universidad de Ciego de Ávila "Máximo Gómez Báez". Aquí podrás revisar las fundamentaciones y los cortes de tesis de los estudiantes.</p>
             </div>
+
+            {{-- Botones de acción para el profesor --}}
+            @if ($profesor)
+                <div class="estudiante-acciones">
+
+                    {{-- Revisar Fundamentación --}}
+                    <a href="{{ route('revisarFundamentación') }}"
+                       class="accion-card accion-revisar-fundamentacion">
+                        <div class="accion-icono">🔍</div>
+                        <div class="accion-info">
+                            <h3 class="accion-titulo">Revisar Fundamentación</h3>
+                            <p class="accion-descripcion">
+                                Consulta y revisa las fundamentaciones de tesis de los estudiantes.
+                            </p>
+                        </div>
+                        <span class="accion-flecha">→</span>
+                    </a>
+
+                    {{-- Revisar Corte --}}
+                    <a href="{{ route('revisarCorte') }}"
+                       class="accion-card accion-revisar-corte">
+                        <div class="accion-icono">🔎</div>
+                        <div class="accion-info">
+                            <h3 class="accion-titulo">Revisar Corte</h3>
+                            <p class="accion-descripcion">
+                                Consulta y revisa los cortes de tesis de los estudiantes.
+                            </p>
+                        </div>
+                        <span class="accion-flecha">→</span>
+                    </a>
+
+                    {{-- Estudiantes Tutorados --}}
+                    <a href="{{ route('estudiantesTutorados') }}"
+                       class="accion-card accion-tutorados">
+                        <div class="accion-icono">🧑‍🎓</div>
+                        <div class="accion-info">
+                            <h3 class="accion-titulo">Estudiantes Tutorados</h3>
+                            <p class="accion-descripcion">
+                                @if ($cantidadTutorados > 0)
+                                    Tienes <strong>{{ $cantidadTutorados }}</strong>
+                                    estudiante{{ $cantidadTutorados === 1 ? '' : 's' }} tutorado{{ $cantidadTutorados === 1 ? '' : 's' }}.
+                                @else
+                                    Aún no tienes estudiantes asignados como tutorados.
+                                @endif
+                            </p>
+                        </div>
+                        <span class="accion-flecha">→</span>
+                    </a>
+
+                </div>
+            @else
+                <div class="alert alert-warning">
+                    <p>No se encontró tu perfil de profesor. Contacta al administrador del sistema.</p>
+                </div>
+            @endif
         @endif
     @else
         @if ($user && is_null($user->id_rol))
@@ -270,6 +383,5 @@
             </div>
         @endif
     @endif
-
 
 @endsection

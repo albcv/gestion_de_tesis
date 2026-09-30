@@ -32,7 +32,6 @@
                         <thead class="table-header">
                             <tr>
                                 <th><span class="icon">🎓 Estudiante</span></th>
-                                <th><span class="icon">🪪 CI</span></th>
                                 <th><span class="icon">📄 Tesis</span></th>
                                 <th><span class="icon">✅ Fundamentación</span></th>
                                 <th><span class="icon">📚 Cortes</span></th>
@@ -47,9 +46,7 @@
                                         {{ $estudiante->Apellido1 }}
                                         {{ $estudiante->Apellido2 }}
                                     </td>
-                                    <td class="align-middle" data-label="CI">
-                                        {{ $estudiante->CI_estudiante }}
-                                    </td>
+                                  
                                     <td class="align-middle" data-label="Tesis">
                                         @if ($estudiante->tesis)
                                             <div class="tema-tesis-texto">

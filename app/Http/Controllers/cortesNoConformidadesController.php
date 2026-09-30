@@ -51,7 +51,7 @@ class cortesNoConformidadesController extends Controller
             $corte = $this->modeloCorte::with('tesis')->findOrFail($id_corte);
             $noConformidades = $this->modeloNoConformidad::all();
             
-            return view('gestionar.gestionarCortesNoConformidades.crear', compact('corte', 'noConformidades'));
+            return view('gestionar.corte.agregarNoConformidad', compact('corte', 'noConformidades'));
         } catch (\Exception $e) {
             return redirect()->route('verCorte', ['id' => $id_corte])
                 ->with('error', 'Error al cargar el formulario: ' . $e->getMessage());
@@ -66,7 +66,7 @@ class cortesNoConformidadesController extends Controller
             $noConformidad = $this->modeloNoConformidad::findOrFail($id_nc);
             $noConformidades = $this->modeloNoConformidad::all();
             
-            return view('gestionar.gestionarCortesNoConformidades.editar', compact('corte', 'noConformidad', 'noConformidades'));
+            return view('gestionar.corte.editarNoConformidad', compact('corte', 'noConformidad', 'noConformidades'));
         } catch (\Exception $e) {
             return redirect()->route('verCorte', ['id' => $id_corte])
                 ->with('error', 'Error al cargar el formulario de edición: ' . $e->getMessage());

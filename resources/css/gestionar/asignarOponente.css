@@ -1,0 +1,495 @@
+/* ============================================================
+   VINCULAR PROFESOR A LA FUNDAMENTACIÓN — Estilos
+   ============================================================ */
+
+/* ---------- Variables ---------- */
+:root {
+    --ao-primary:        #2563eb;
+    --ao-primary-dark:   #1d4ed8;
+    --ao-primary-light:  #dbeafe;
+    --ao-success:        #16a34a;
+    --ao-success-bg:     #dcfce7;
+    --ao-warning:        #d97706;
+    --ao-warning-bg:     #fef3c7;
+    --ao-danger:         #dc2626;
+    --ao-danger-bg:      #fee2e2;
+    --ao-text:           #1f2937;
+    --ao-text-muted:     #6b7280;
+    --ao-border:         #e5e7eb;
+    --ao-bg:             #f9fafb;
+    --ao-white:          #ffffff;
+    --ao-radius:         12px;
+    --ao-radius-sm:      8px;
+    --ao-shadow:         0 1px 3px rgba(0, 0, 0, .08);
+    --ao-shadow-lg:      0 10px 30px rgba(37, 99, 235, .08);
+    --ao-transition:     .18s ease;
+}
+
+/* ============================================================
+   WRAPPER PRINCIPAL
+   ============================================================ */
+.vincular-profesor-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    background:
+        radial-gradient(circle at 0% 0%, #eef2ff 0%, transparent 45%),
+        radial-gradient(circle at 100% 100%, #f0f9ff 0%, transparent 45%),
+        var(--ao-bg);
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    animation: aoFadeUp .35s ease;
+}
+
+@keyframes aoFadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.form-header {
+    text-align: center;
+    padding: 0 8px 4px;
+}
+
+.form-header h1 {
+    margin: 0 0 8px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ao-text);
+    letter-spacing: -.01em;
+}
+
+.form-header .subtitle {
+    margin: 0;
+    color: var(--ao-text-muted);
+    font-size: .95rem;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   TARJETA INFORMACIÓN FUNDAMENTACIÓN
+   ============================================================ */
+.info-fundamentacion {
+    background: var(--ao-white);
+    border: 1px solid var(--ao-border);
+    border-left: 4px solid var(--ao-primary);
+    border-radius: var(--ao-radius);
+    box-shadow: var(--ao-shadow);
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ao-border);
+}
+
+.info-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ao-text);
+}
+
+.info-badge {
+    display: inline-block;
+    background: var(--ao-primary-light);
+    color: var(--ao-primary-dark);
+    font-size: .8rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(37, 99, 235, .25);
+    letter-spacing: .02em;
+}
+
+/* ---------- Grid de información ---------- */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.info-label {
+    font-size: .8rem;
+    color: var(--ao-text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.info-value {
+    font-size: .96rem;
+    color: var(--ao-text);
+    font-weight: 500;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+/* ============================================================
+   TARJETA FORMULARIO
+   ============================================================ */
+.form-container {
+    background: var(--ao-white);
+    border-radius: var(--ao-radius);
+    border: 1px solid var(--ao-border);
+    box-shadow: var(--ao-shadow-lg);
+    padding: 28px 26px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Franja superior decorativa */
+.form-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--ao-primary) 0%, #60a5fa 50%, #a78bfa 100%);
+}
+
+.form-vincular {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ============================================================
+   FORM GROUP
+   ============================================================ */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--ao-text);
+    font-size: .95rem;
+    flex-wrap: wrap;
+}
+
+.label-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.label-hint {
+    font-weight: 400;
+    color: var(--ao-text-muted);
+    font-size: .82rem;
+}
+
+/* ============================================================
+   SELECT
+   ============================================================ */
+.select-profesor {
+    width: 100%;
+    padding: 13px 42px 13px 16px;
+    font-size: .96rem;
+    font-family: inherit;
+    color: var(--ao-text);
+    background-color: var(--ao-white);
+
+    /* Flecha SVG embebida */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+
+    border: 1.5px solid var(--ao-border);
+    border-radius: var(--ao-radius-sm);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    transition: border-color var(--ao-transition), box-shadow var(--ao-transition), background-color var(--ao-transition);
+}
+
+.select-profesor:hover {
+    border-color: #cbd5e1;
+}
+
+.select-profesor:focus {
+    border-color: var(--ao-primary);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
+    background-color: #fefeff;
+}
+
+.select-profesor option[value=""] {
+    color: var(--ao-text-muted);
+}
+
+/* ============================================================
+   VISTA PREVIA DEL PROFESOR
+   ============================================================ */
+.profesor-preview {
+    margin-top: 12px;
+    background: var(--ao-bg);
+    border: 1px solid var(--ao-border);
+    border-left: 3px solid var(--ao-primary);
+    border-radius: var(--ao-radius-sm);
+    padding: 16px 18px;
+    animation: aoFadeIn .25s ease;
+}
+
+@keyframes aoFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.profesor-preview h4 {
+    margin: 0 0 12px;
+    font-size: .96rem;
+    font-weight: 600;
+    color: var(--ao-text);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ao-border);
+}
+
+.profesor-info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profesor-info-grid .info-item {
+    background: var(--ao-white);
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--ao-border);
+}
+
+/* ============================================================
+   NO DATA
+   ============================================================ */
+.no-data {
+    text-align: center;
+    padding: 24px 20px;
+    background: var(--ao-warning-bg);
+    border: 1px dashed rgba(217, 119, 6, .4);
+    border-radius: var(--ao-radius-sm);
+    color: #78350f;
+}
+
+.no-data p {
+    margin: 6px 0;
+    font-size: .92rem;
+    line-height: 1.5;
+}
+
+.no-data p:first-child {
+    font-weight: 600;
+}
+
+/* ============================================================
+   ALERTAS
+   ============================================================ */
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 16px;
+    border-radius: var(--ao-radius-sm);
+    font-size: .92rem;
+    line-height: 1.45;
+    border: 1px solid transparent;
+    animation: aoFadeIn .25s ease;
+}
+
+.alert-icon {
+    font-size: 1.05rem;
+    flex-shrink: 0;
+    line-height: 1.4;
+}
+
+.alert-success {
+    background: var(--ao-success-bg);
+    color: #14532d;
+    border-color: rgba(22, 163, 74, .3);
+}
+
+.alert-error {
+    background: var(--ao-danger-bg);
+    color: #7f1d1d;
+    border-color: rgba(220, 38, 38, .3);
+}
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+.form-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px solid var(--ao-border);
+}
+
+.btn-vincular,
+.btn-cancelar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: .95rem;
+    font-family: inherit;
+    font-weight: 600;
+    border-radius: var(--ao-radius-sm);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background var(--ao-transition), transform .1s, box-shadow var(--ao-transition), opacity var(--ao-transition);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.btn-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+/* ---------- Botón Vincular (primario) ---------- */
+.btn-vincular {
+    background: var(--ao-primary);
+    color: var(--ao-white);
+    box-shadow: 0 1px 2px rgba(37, 99, 235, .25);
+    flex: 1;
+    min-width: 180px;
+}
+
+.btn-vincular:hover:not(:disabled) {
+    background: var(--ao-primary-dark);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, .35);
+    transform: translateY(-1px);
+}
+
+.btn-vincular:active:not(:disabled) {
+    transform: translateY(0) scale(.98);
+}
+
+.btn-vincular:disabled {
+    background: #cbd5e1;
+    color: #f1f5f9;
+    cursor: not-allowed;
+    opacity: .85;
+    box-shadow: none;
+}
+
+/* ---------- Botón Cancelar (secundario) ---------- */
+.btn-cancelar {
+    background: #f3f4f6;
+    color: var(--ao-text);
+    border: 1px solid var(--ao-border);
+    flex: 0 0 auto;
+}
+
+.btn-cancelar:hover {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+}
+
+.btn-cancelar:active {
+    transform: scale(.97);
+}
+
+/* ============================================================
+   FOCUS VISIBLE (accesibilidad)
+   ============================================================ */
+.btn-vincular:focus-visible,
+.btn-cancelar:focus-visible,
+.select-profesor:focus-visible {
+    outline: 2px solid var(--ao-primary);
+    outline-offset: 2px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+    .vincular-profesor-container {
+        padding: 24px 16px;
+    }
+
+    .form-container {
+        padding: 22px 18px;
+    }
+
+    .info-fundamentacion {
+        padding: 18px;
+    }
+
+    .info-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+    }
+}
+
+@media (max-width: 640px) {
+    .form-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .form-header .subtitle {
+        font-size: .88rem;
+    }
+
+    .info-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .form-buttons {
+        flex-direction: column;
+    }
+
+    .btn-vincular,
+    .btn-cancelar {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .select-profesor {
+        font-size: .93rem;
+        padding: 12px 40px 12px 14px;
+        background-position: right 14px center;
+    }
+}
+
+@media (max-width: 380px) {
+    .vincular-profesor-container {
+        padding: 16px 12px;
+    }
+
+    .form-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .form-container {
+        padding: 18px 14px;
+    }
+}
