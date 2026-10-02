@@ -44,11 +44,17 @@ El desarrollo siguió la metodología ágil **Extreme Programming (XP)**, permit
 **Login**  
 <img src="img/login.png" alt="Formulario de login" >
 
+**Registro**  
+<img src="img/registro.png" alt="Formulario de registro" >
+
 **Inicio**  
 <img src="img/inicio.png" alt="Vista de inicio">
 
+**Estadísticas**  
+<img src="img/estadísticas.png" alt="Vista de inicio">
+
 **Navegación**  
-<img src="img/sidebar.png" alt="Vista de inicio">
+<img src="img/sidebar.png" alt="Navegación">
 
 **Perfil de usuario**  
 <img src="img/perfil.png" alt="Vista de perfil de usuario">
@@ -57,7 +63,7 @@ El desarrollo siguió la metodología ágil **Extreme Programming (XP)**, permit
 <img src="img/gestionar_usuarios.png" alt="Vista de gestión de usuarios">
 
 **Gestionar facultad**  
-<img src="img/gestionar_facultad.png" alt="Vista de gestión de carreras">
+<img src="img/gestionar_facultad.png" alt="Vista de gestión de facultades">
 
 **Gestionar carreras**  
 <img src="img/gestionar_carreras.png" alt="Vista de gestión de carreras">
@@ -66,11 +72,27 @@ El desarrollo siguió la metodología ágil **Extreme Programming (XP)**, permit
 <img src="img/gestionar_tesis.png" alt="Vista de gestión de tesis">
 
 **Detalles de una Tesis**  
-<img src="img/detalles_tesis.png" alt="Vista de gestión de tesis">
+<img src="img/detalles_tesis.png" alt="Vista de detalles de una tesis">
 
 **Gestionar Fechas de Entrega**  
-<img src="img/fechas_entrega.png" alt="Vista de gestión de tesis">
+<img src="img/fechas_entrega.png" alt="Vista de gestión de fechas de entregas">
 
-**Modelo lógico**  
+## Rol de Estudiante
+<img src="img/estudiante/inicio_estudiante.jpg" alt="Vista de inicio (rol estudiante)">
+
+<img src="img/estudiante/menu_estudiante.jpg" alt="Navegación (rol estudiante)">
+
+<img src="img/estudiante/subir_fundamentacion.jpg" alt="Subir fundamentación (rol estudiante)">
+
+
+## Rol de Profesor
+<img src="img/profesor/inicio_profesor.jpg" alt="Vista de inicio (rol profesor)">
+
+<img src="img/profesor/menu_profesor.jpg" alt="Navegación (rol profesor)">
+
+<img src="img/profesor/estudiantes_tutorados.jpg" alt="Estudiantes Tutorados (rol profesor)">
+
+
+## Modelo lógico 
 <img src="img/modelo_lógico.png" alt="Diagrama del modelo lógico de la aplicación">
 

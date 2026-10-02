@@ -1,0 +1,515 @@
+/* ============================================================
+   ACCIONES RECIENTES — Estilos
+   ============================================================ */
+
+:root {
+    --ar-primary:        #2563eb;
+    --ar-primary-dark:   #1d4ed8;
+    --ar-primary-light:  #dbeafe;
+    --ar-success:        #16a34a;
+    --ar-success-bg:     #dcfce7;
+    --ar-warning:        #d97706;
+    --ar-warning-bg:     #fef3c7;
+    --ar-danger:         #dc2626;
+    --ar-danger-bg:      #fee2e2;
+    --ar-info:           #0ea5e9;
+    --ar-info-bg:        #e0f2fe;
+    --ar-purple:         #7c3aed;
+    --ar-purple-bg:      #f5f3ff;
+    --ar-text:           #1f2937;
+    --ar-text-muted:     #6b7280;
+    --ar-border:         #e5e7eb;
+    --ar-bg:             #f9fafb;
+    --ar-white:          #ffffff;
+    --ar-radius:         12px;
+    --ar-radius-sm:      8px;
+    --ar-shadow:         0 1px 3px rgba(0, 0, 0, .08);
+    --ar-shadow-lg:      0 10px 30px rgba(37, 99, 235, .08);
+    --ar-transition:     .18s ease;
+}
+
+/* ============================================================
+   WRAPPER
+   ============================================================ */
+.acciones-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    background:
+        radial-gradient(circle at 0% 0%, #eef2ff 0%, transparent 45%),
+        radial-gradient(circle at 100% 100%, #f0f9ff 0%, transparent 45%),
+        var(--ar-bg);
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    animation: arFadeUp .35s ease;
+}
+
+@keyframes arFadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes arFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   CABECERA
+   ============================================================ */
+.acciones-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.acciones-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.acciones-header h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ar-text);
+    letter-spacing: -.01em;
+}
+
+.acciones-subtitle {
+    margin: 0;
+    color: var(--ar-text-muted);
+    font-size: .95rem;
+    line-height: 1.5;
+}
+
+.acciones-subtitle strong {
+    color: var(--ar-primary-dark);
+    font-weight: 700;
+}
+
+.btn-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background: var(--ar-white);
+    color: var(--ar-text);
+    border: 1px solid var(--ar-border);
+    border-radius: var(--ar-radius-sm);
+    font-size: .9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background var(--ar-transition), transform .1s, box-shadow var(--ar-transition);
+    white-space: nowrap;
+}
+
+.btn-volver:hover {
+    background: #f3f4f6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+    transform: translateY(-1px);
+}
+
+.btn-volver:active { transform: scale(.97); }
+
+/* ============================================================
+   FILTRO DE DÍAS
+   ============================================================ */
+.acciones-filtro {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: var(--ar-white);
+    padding: 12px 18px;
+    border-radius: var(--ar-radius);
+    border: 1px solid var(--ar-border);
+    box-shadow: var(--ar-shadow);
+}
+
+.filtro-label {
+    color: var(--ar-text-muted);
+    font-size: .88rem;
+    font-weight: 500;
+    margin-right: 4px;
+}
+
+.filtro-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    background: #f3f4f6;
+    color: var(--ar-text);
+    border: 1px solid var(--ar-border);
+    border-radius: 999px;
+    font-size: .82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background var(--ar-transition), color var(--ar-transition), border-color var(--ar-transition);
+    white-space: nowrap;
+}
+
+.filtro-btn:hover {
+    background: var(--ar-primary-light);
+    color: var(--ar-primary-dark);
+    border-color: rgba(37, 99, 235, .35);
+}
+
+.filtro-btn.active {
+    background: var(--ar-primary);
+    color: var(--ar-white);
+    border-color: var(--ar-primary-dark);
+    box-shadow: 0 1px 3px rgba(37, 99, 235, .3);
+}
+
+/* ============================================================
+   RESUMEN (3 tarjetas)
+   ============================================================ */
+.acciones-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.resumen-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 22px;
+    background: var(--ar-white);
+    border-radius: var(--ar-radius);
+    border: 1px solid var(--ar-border);
+    border-left: 4px solid var(--ar-primary);
+    box-shadow: var(--ar-shadow);
+    transition: transform var(--ar-transition), box-shadow var(--ar-transition);
+}
+
+.resumen-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ar-shadow-lg);
+}
+
+.resumen-total         { border-left-color: var(--ar-primary); }
+.resumen-fundamentacion{ border-left-color: var(--ar-info); }
+.resumen-corte         { border-left-color: var(--ar-purple); }
+
+.resumen-icono {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.resumen-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.resumen-valor {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--ar-text);
+    line-height: 1;
+}
+
+.resumen-label {
+    font-size: .82rem;
+    color: var(--ar-text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+/* ============================================================
+   TABLA
+   ============================================================ */
+.acciones-table-wrapper {
+    background: var(--ar-white);
+    border-radius: var(--ar-radius);
+    border: 1px solid var(--ar-border);
+    box-shadow: var(--ar-shadow-lg);
+    overflow: hidden;
+}
+
+.acciones-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .92rem;
+}
+
+.acciones-table thead {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.acciones-table th {
+    text-align: left;
+    padding: 14px 16px;
+    font-weight: 700;
+    color: var(--ar-text);
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    border-bottom: 2px solid var(--ar-border);
+    white-space: nowrap;
+}
+
+.acciones-table td {
+    padding: 14px 16px;
+    color: var(--ar-text);
+    border-bottom: 1px solid var(--ar-border);
+    vertical-align: middle;
+}
+
+.acciones-table tbody tr:last-child td { border-bottom: none; }
+
+.acciones-table tbody tr {
+    transition: background var(--ar-transition);
+}
+
+.acciones-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* ---------- Badges de tipo ---------- */
+.badge-tipo {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badge-fundamentacion {
+    background: var(--ar-info-bg);
+    color: #0c4a6e;
+    border: 1px solid rgba(14, 165, 233, .3);
+}
+
+.badge-corte {
+    background: var(--ar-purple-bg);
+    color: #5b21b6;
+    border: 1px solid rgba(124, 58, 237, .3);
+}
+
+/* ---------- Celdas específicas ---------- */
+.td-estudiante strong {
+    color: var(--ar-text);
+    font-weight: 600;
+}
+
+.td-ci {
+    font-family: monospace;
+    color: var(--ar-text-muted);
+    font-size: .88rem;
+}
+
+.td-trabajo {
+    color: #4b5563;
+    font-size: .88rem;
+    max-width: 260px;
+    word-break: break-word;
+}
+
+.td-version { text-align: center; }
+
+.version-tag {
+    display: inline-block;
+    background: #eff6ff;
+    color: var(--ar-primary-dark);
+    font-weight: 700;
+    font-size: .8rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(37, 99, 235, .25);
+    min-width: 36px;
+    text-align: center;
+}
+
+/* ---------- Badge de acción ---------- */
+.accion-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.accion-subio {
+    background: var(--ar-success-bg);
+    color: #14532d;
+    border: 1px solid rgba(22, 163, 74, .3);
+}
+
+.accion-actualizo {
+    background: var(--ar-warning-bg);
+    color: #78350f;
+    border: 1px solid rgba(217, 119, 6, .3);
+}
+
+.td-descripcion {
+    color: #6b7280;
+    font-size: .85rem;
+    max-width: 220px;
+    word-break: break-word;
+    font-style: italic;
+}
+
+/* ---------- Fecha ---------- */
+.td-fecha {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.fecha-principal {
+    font-weight: 700;
+    color: var(--ar-text);
+    font-size: .92rem;
+}
+
+.fecha-hora {
+    color: var(--ar-text-muted);
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.fecha-hace {
+    color: var(--ar-primary-dark);
+    font-size: .76rem;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+/* ============================================================
+   ESTADO VACÍO
+   ============================================================ */
+.acciones-vacio {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--ar-white);
+    border: 2px dashed var(--ar-border);
+    border-radius: var(--ar-radius);
+    box-shadow: var(--ar-shadow);
+    animation: arFadeIn .3s ease;
+}
+
+.vacio-icono {
+    font-size: 3.5rem;
+    margin-bottom: 12px;
+    line-height: 1;
+}
+
+.acciones-vacio h3 {
+    margin: 0 0 8px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ar-text);
+}
+
+.acciones-vacio p {
+    margin: 0 0 20px;
+    color: var(--ar-text-muted);
+    font-size: .95rem;
+    line-height: 1.5;
+}
+
+.btn-ampliar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 22px;
+    background: var(--ar-primary);
+    color: var(--ar-white);
+    border-radius: var(--ar-radius-sm);
+    font-size: .9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background var(--ar-transition), transform .1s, box-shadow var(--ar-transition);
+    box-shadow: 0 1px 3px rgba(37, 99, 235, .3);
+}
+
+.btn-ampliar:hover {
+    background: var(--ar-primary-dark);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, .35);
+    transform: translateY(-1px);
+}
+
+.btn-ampliar:active { transform: scale(.97); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+    .acciones-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .acciones-table {
+        min-width: 900px;
+    }
+}
+
+@media (max-width: 640px) {
+    .acciones-container { padding: 20px 14px; }
+    .acciones-header h1 { font-size: 1.4rem; }
+    .acciones-header { flex-direction: column; align-items: stretch; }
+    .btn-volver { align-self: flex-start; }
+    .acciones-resumen { grid-template-columns: 1fr; }
+    .filtro-label { width: 100%; margin-bottom: 4px; }
+}
+
+/* ============================================================
+   SCROLLBAR HORIZONTAL (cuando la tabla es más ancha)
+   ============================================================ */
+.acciones-table-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+.acciones-table-wrapper::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+.acciones-table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+.acciones-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ============================================================
+   BADGE DE TIPO: Tesis
+   ============================================================ */
+.badge-tesis {
+    background: #e0f2fe;
+    color: #075985;
+    border: 1px solid rgba(2, 132, 199, .35);
+}
+
+/* ============================================================
+   TARJETA DE RESUMEN: Tesis (azul cian)
+   ============================================================ */
+.resumen-tesis {
+    border-left-color: #0ea5e9;
+}
+
+
+
+/* ============================================================
+   VERSIÓN N/A (para tesis, que no tienen versión)
+   ============================================================ */
+.version-tag.version-na {
+    background: #f3f4f6;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+    font-weight: 500;
+}

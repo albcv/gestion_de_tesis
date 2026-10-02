@@ -10,6 +10,7 @@
         use Illuminate\Support\Facades\Auth;
         use Illuminate\Support\Facades\DB;
         use App\Models\Estudiante;
+        use App\Models\Profesor;
 
         $user = Auth::user();
         $rolNombre = null;
@@ -51,7 +52,7 @@
 
             // Datos extra solo para el profesor
             if ($rolNombre === 'profesor') {
-                $profesor = \App\Models\Profesor::where('id_usuario', $user->id)->first();
+                $profesor = Profesor::where('id_usuario', $user->id)->first();
                 if ($profesor) {
                     $cantidadTutorados = $profesor->tutorados()->count();
                 }
@@ -68,6 +69,26 @@
         @if ($rolNombre === 'administrador')
             <div class="bienvenido">
                 <p>Bienvenido al sitio web de gestión de trabajos de diploma de la Universidad de Ciego de Ávila "Máximo Gómez Báez". Aquí podrás administrar información sobre las facultades, estudiantes, carreras así como los cortes de tesis y profesores oponentes.</p>
+            </div>
+
+            {{-- ============================
+                 BOTONES DE ACCIÓN DEL ADMINISTRADOR
+                 ============================ --}}
+            <div class="estudiante-acciones">
+
+                <a href="{{ route('accionesRecientes') }}"
+                   class="accion-card accion-recientes">
+                    <div class="accion-icono">⚡</div>
+                    <div class="accion-info">
+                        <h3 class="accion-titulo">Acciones Recientes</h3>
+                        <p class="accion-descripcion">
+                            Consulta las subidas y actualizaciones de fundamentaciones
+                            y cortes de los últimos días.
+                        </p>
+                    </div>
+                    <span class="accion-flecha">→</span>
+                </a>
+
             </div>
 
             <!-- Estadísticas para administrador -->
@@ -262,28 +283,53 @@
             </div>
 
             {{-- Botones de acción para el estudiante --}}
-            @if ($estudiante && $tesisEstudiante)
+            @if ($estudiante)
                 <div class="estudiante-acciones">
 
-                    {{-- Subir Fundamentación (siempre visible) --}}
-                    <a href="{{ route('subirFundamentación') }}"
-                       class="accion-card accion-fundamentacion">
-                        <div class="accion-icono">📄</div>
+                    {{-- Crear / Cambiar Tesis (siempre visible) --}}
+                    <a href="{{ route('cambiarTesis') }}"
+                       class="accion-card accion-tesis">
+                        <div class="accion-icono">📝</div>
                         <div class="accion-info">
-                            <h3 class="accion-titulo">Subir Fundamentación</h3>
-                            <p class="accion-descripcion">
-                                @if ($fundamentacionAprobada)
-                                    Tu fundamentación está aprobada. Puedes consultar tus versiones.
+                            <h3 class="accion-titulo">
+                                @if ($tesisEstudiante)
+                                    Cambiar Nombre de Tesis
                                 @else
-                                    Sube tu fundamentación de tesis.
+                                    Crear Tesis
+                                @endif
+                            </h3>
+                            <p class="accion-descripcion">
+                                @if ($tesisEstudiante)
+                                    Actualiza el nombre de tu trabajo de diploma.
+                                @else
+                                    Registra el nombre de tu trabajo de diploma para comenzar.
                                 @endif
                             </p>
                         </div>
                         <span class="accion-flecha">→</span>
                     </a>
 
+                    {{-- Subir Fundamentación (solo si tiene tesis) --}}
+                    @if ($tesisEstudiante)
+                        <a href="{{ route('subirFundamentación') }}"
+                           class="accion-card accion-fundamentacion">
+                            <div class="accion-icono">📄</div>
+                            <div class="accion-info">
+                                <h3 class="accion-titulo">Subir Fundamentación</h3>
+                                <p class="accion-descripcion">
+                                    @if ($fundamentacionAprobada)
+                                        Tu fundamentación está aprobada. Puedes consultar tus versiones.
+                                    @else
+                                        Sube tu fundamentación de tesis.
+                                    @endif
+                                </p>
+                            </div>
+                            <span class="accion-flecha">→</span>
+                        </a>
+                    @endif
+
                     {{-- Subir Corte (solo si la fundamentación está aprobada) --}}
-                    @if ($fundamentacionAprobada)
+                    @if ($tesisEstudiante && $fundamentacionAprobada)
                         <a href="{{ route('subirCorte') }}"
                            class="accion-card accion-corte">
                             <div class="accion-icono">📚</div>
@@ -298,11 +344,7 @@
                     @endif
 
                 </div>
-            @elseif ($estudiante && !$tesisEstudiante)
-                <div class="alert alert-warning">
-                    <p>Aún no tienes una tesis asignada. Contacta al administrador del sistema para que te asigne un trabajo de diploma.</p>
-                </div>
-            @elseif (!$estudiante)
+            @else
                 <div class="alert alert-warning">
                     <p>No se encontró tu perfil de estudiante. Contacta al administrador del sistema.</p>
                 </div>

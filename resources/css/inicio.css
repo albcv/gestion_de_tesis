@@ -373,3 +373,47 @@ h1 {
 .accion-tutorados:hover:not(.accion-bloqueada) .accion-flecha {
     color: #7c3aed;
 }
+
+
+.accion-tesis::before {
+    background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%);
+}
+.accion-tesis .accion-icono {
+    background: #e0f2fe;
+}
+.accion-tesis:hover:not(.accion-bloqueada) {
+    box-shadow: 0 12px 28px rgba(14, 165, 233, .18);
+    border-color: #bae6fd;
+}
+.accion-tesis:hover:not(.accion-bloqueada) .accion-flecha {
+    color: #0ea5e9;
+}
+
+
+/* ============================================================
+   ADMINISTRADOR — Centrar botón "Acciones Recientes"
+   cuando es el único en la fila
+   ============================================================ */
+
+/* Si el contenedor tiene UN solo hijo, lo centramos */
+.estudiante-acciones:has(> .accion-card:only-child) {
+    grid-template-columns: minmax(0, 480px);
+    justify-content: center;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Fallback para navegadores sin :has() */
+@supports not (selector(:has(*))) {
+    /* Solo aplica al bloque específico del admin si lo marcamos con clase */
+    .acciones-admin {
+        display: flex;
+        justify-content: center;
+    }
+
+    .acciones-admin .accion-card {
+        width: 100%;
+        max-width: 480px;
+    }
+}

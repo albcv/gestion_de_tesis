@@ -25,6 +25,7 @@ export default defineConfig({
                 //css estudiante
                 'resources/css/estudiante/subirCorte.css',
                 'resources/css/estudiante/subirFundamentación.css',
+                'resources/css/estudiante/cambiarTesis.css',
 
                 //css consultas
                   'resources/css/consultas/consultas.css',
@@ -61,7 +62,9 @@ export default defineConfig({
                 // Registrar admin
                 'resources/css/registrar-admin.css',
 
-                'resources/css/cambiarContraseña.css'
+                'resources/css/cambiarContraseña.css',
+
+                'resources/css/acciones_recientes.css',
             
             ],
             refresh: true,

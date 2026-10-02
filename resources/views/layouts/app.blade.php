@@ -38,6 +38,7 @@
             ['nombre' => 'Fechas de entrega',       'url' => route('fechaEntrega'),               'permiso' => 'fechaEntrega',              'icono' => '📅'],
             ['nombre' => 'Subir Fundamentación',    'url' => route('subirFundamentación'),        'permiso' => 'subirFundamentación',       'icono' => '⬆️'],
             ['nombre' => 'Subir Corte',             'url' => route('subirCorte'),                 'permiso' => 'subirCorte',                'icono' => '⬆️'],
+            ['nombre' => 'Cambiar Tesis',           'url' => route('cambiarTesis'),               'permiso' => 'cambiarTesis',              'icono' => '📝'],
             ['nombre' => 'Revisar Fundamentación',  'url' => route('revisarFundamentación'),      'permiso' => 'revisarFundamentación',     'icono' => '🔍'],
             ['nombre' => 'Revisar Corte',           'url' => route('revisarCorte'),               'permiso' => 'revisarCorte',              'icono' => '🔍'],
             ['nombre' => 'Estudiantes tutorados',   'url' => route('estudiantesTutorados'),       'permiso' => 'estudiantesTutorados',      'icono' => '🧑‍🎓'],

@@ -262,3 +262,43 @@ body {
         margin-top: 24px;
     }
 }
+
+
+/* ============================================================
+   MENSAJE DE ÉXITO (registro enviado)
+   ============================================================ */
+.login-alert.login-alert-success {
+    background: #dcfce7;
+    color: #14532d;
+    border-left-color: #16a34a;
+}
+
+/* ============================================================
+   ENLACE REGISTRARSE (debajo del formulario)
+   ============================================================ */
+.login-register-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: .9rem;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.login-register-link a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color .15s, text-decoration .15s;
+    margin-left: 4px;
+}
+
+.login-register-link a:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+.login-register-link a:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 3px;
+    border-radius: 3px;
+}

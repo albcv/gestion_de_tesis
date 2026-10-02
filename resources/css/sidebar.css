@@ -47,6 +47,7 @@ a {
     align-items: center;
     justify-content: space-between;
     gap: 20px;
+    overflow: hidden;          /* evita scroll horizontal del header */
 }
 
 /* ==============================
@@ -67,6 +68,8 @@ a {
     font-weight: 700;
     font-size: 20px;
     letter-spacing: 0.5px;
+    min-width: 0;              /* permite encoger sin romper el flex */
+    flex-shrink: 0;
 }
 
 .brand-logo {
@@ -76,6 +79,12 @@ a {
     background-color: #fff;
     border-radius: 50%;
     padding: 3px;
+    flex-shrink: 0;            /* el logo NO se encoge */
+}
+
+.brand-name {
+    white-space: nowrap;       /* evita saltos de línea raros */
+    display: inline-block;
 }
 
 /* ==============================
@@ -384,8 +393,21 @@ a {
 
 @media (max-width: 480px) {
 
+    /* La marca se hace más compacta pero SIEMPRE visible */
+    .brand {
+        gap: 8px;
+        font-size: 17px;
+    }
+
     .brand-name {
-        display: none; /* en pantallas muy pequeñas solo el logo */
+        font-size: 17px;
+        letter-spacing: 0.3px;
+    }
+
+    .brand-logo {
+        width: 36px;
+        height: 36px;
+        padding: 2px;
     }
 
     .nav-container {
@@ -400,5 +422,37 @@ a {
 
     .sidebar {
         width: 260px;
+    }
+}
+
+/* Pantallas muy pequeñas: reduce pero no oculta */
+@media (max-width: 360px) {
+
+    .brand {
+        gap: 6px;
+    }
+
+    .brand-name {
+        font-size: 15px;
+        letter-spacing: 0.2px;
+    }
+
+    .brand-logo {
+        width: 32px;
+        height: 32px;
+        padding: 2px;
+    }
+
+    .menu-toggle {
+        width: 38px;
+        height: 38px;
+    }
+
+    .menu-toggle span {
+        width: 20px;
+    }
+
+    .nav-container {
+        padding: 0 6px;
     }
 }

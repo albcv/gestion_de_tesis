@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PosiblesUsuariosController;
 use App\Http\Controllers\facultadController;
 use App\Http\Controllers\carreraController;
 use App\Http\Controllers\modalidadController;
@@ -28,6 +29,8 @@ use App\Http\Controllers\CambiarContraseñaController;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
  use App\Http\Controllers\TesisHistoricoController;
+ use App\Http\Controllers\Estudiante\CambiarTesisController;
+ use App\Http\Controllers\AccionesRecientesController;
 
 
 Route::get('/', function(){
@@ -53,6 +56,37 @@ Route::view('/inicio', 'inicio')->name('inicio');
 Route::post('/inicioSesion', [loginController::class, 'login'])->name('inicioSesion');
 Route::post('/logout', [loginController::class, 'logout'])->name('logout');
 
+// Registro de usuario (solicitud)
+
+Route::get('/registro',  [PosiblesUsuariosController::class, 'mostrarRegistro'])
+    ->name('registro');
+
+Route::post('/registro', [PosiblesUsuariosController::class, 'registrar'])
+    ->name('registro.post');
+
+/* ============================================================
+   POSIBLES USUARIOS (administración)
+   ============================================================ */
+Route::get('/posibles-usuarios',
+    [PosiblesUsuariosController::class, 'index'])
+    ->name('posiblesUsuarios');
+
+Route::get('/posibles-usuarios/{id}/detalles', [PosiblesUsuariosController::class, 'ver'])
+    ->name('verPosibleUsuario');
+
+Route::post('/posibles-usuarios/{id}/aceptar',
+    [PosiblesUsuariosController::class, 'aceptar'])
+    ->name('aceptarPosibleUsuario');
+
+Route::post('/posibles-usuarios/{id}/rechazar',
+    [PosiblesUsuariosController::class, 'rechazar'])
+    ->name('rechazarPosibleUsuario');
+
+Route::post('/posibles-usuarios/rechazar-varios',
+    [PosiblesUsuariosController::class, 'rechazarVarios'])
+    ->name('rechazarVariosPosiblesUsuarios');
+
+   
 
 // Gestionar Usuarios
 Route::get('/gestionarUsuarios',            [UserController::class, 'mostrar'])->name('gestionarUsuarios');
@@ -65,9 +99,10 @@ Route::post('/eliminarUsuario',             [UserController::class, 'eliminar'])
 Route::post('/eliminarVariosUsuarios',      [UserController::class, 'eliminarVarios'])->name('eliminarVariosUsuarios');
 Route::get('/exportarUsuariosCsv',          [UserController::class, 'exportarCsv'])->name('exportarUsuariosCsv');
 
-
-
-Route::view('/gestionar', 'gestionar.gestionar')->name('gestionar');
+// Acciones recientes (solo administrador)
+Route::get('/acciones-recientes',
+    [AccionesRecientesController::class, 'index'])
+    ->name('accionesRecientes');
 
 
 //Facultad
@@ -372,6 +407,14 @@ Route::get('/estadisticas', [estadisticasController::class, 'obtenerEstadisticas
     Route::get('/estudiante/descargar-revision-corte/{idCorte}',
         [DocumentoRevisionController::class, 'descargarRevisionCorte'])
         ->name('estudiante.descargarRevisionCorte');
+
+    Route::get('/estudiante/cambiar-tesis',
+    [CambiarTesisController::class, 'index'])
+    ->name('cambiarTesis');
+
+    Route::post('/estudiante/cambiar-tesis',
+    [CambiarTesisController::class, 'guardar'])
+    ->name('guardarCambiarTesis');
 
 
 // Rutas para profesores

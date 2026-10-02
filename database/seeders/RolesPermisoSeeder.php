@@ -32,7 +32,7 @@ class RolesPermisoSeeder extends Seeder
                 'agregarNoConformidadCorte', 'editarNoConformidadCorte', 'vincularProfesorCorte',
                 'vincularProfesorFundamentación', 'asignarTutor', 'agregarCarrera', 'verCarrera',
                 'editarCarrera', 'crearTesis', 'editarTesis', 'verTesis', 'gestionarFundamentaciones',
-                'fechaEntrega', 'estadisticas', 'cambiarContraseña'
+                'fechaEntrega', 'estadisticas', 'cambiarContraseña', 'gestionarTesisHistorico', 'posiblesUsuarios', 'verPosibleUsuario', 'accionesRecientes'
             ],
             'Profesor' => [
                 'revisarCorte', 'revisarFundamentación', 'revisarFundamentaciónEstudiante',
@@ -40,7 +40,7 @@ class RolesPermisoSeeder extends Seeder
                 'inicio', 'perfil', 'cambiarContraseña'
             ],
             'Estudiante' => [
-                'subirFundamentación', 'subirCorte', 'inicio', 'perfil', 'cambiarContraseña'
+                'subirFundamentación', 'subirCorte', 'inicio', 'perfil', 'cambiarContraseña', 'cambiarTesis'
             ],
         ];
         

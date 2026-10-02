@@ -202,7 +202,7 @@ class UserController extends Controller
      *    filtro_modalidad    → idModalidad (solo si filtro_rol = estudiante)
      *    filtro_grupo        → id_grupo    (solo si filtro_rol = estudiante)
      */
-    public function mostrar(Request $request)
+       public function mostrar(Request $request)
     {
         $accion = $request->query('accion');
         $id     = $request->query('id');
@@ -295,8 +295,16 @@ class UserController extends Controller
             $modalidades = $this->modeloModalidad::orderBy('Nombre_modalidad')->get();
             $grupos      = $this->modeloGrupo::orderBy('número')->get();
 
+            // ---- Contador de solicitudes pendientes (Posibles Usuarios) ----
+            $posiblesPendientes = \App\Models\PosibleUsuario::count();
+
             return view('gestionar.usuario.index', compact(
-                'usuarios', 'roles', 'carreras', 'modalidades', 'grupos'
+                'usuarios',
+                'roles',
+                'carreras',
+                'modalidades',
+                'grupos',
+                'posiblesPendientes'
             ));
 
         } catch (\Exception $e) {
@@ -908,96 +916,7 @@ class UserController extends Controller
         return view('registrarAdmin');
     }
 
-    private function setupInitialSystem(): void
-    {
-        if ($this->modelo::count() > 0) return;
-
-        DB::beginTransaction();
-        try {
-            $adminRoleId = DB::table('roles')->insertGetId([
-                'rol' => 'Administrador',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            $permisos = [
-                ['permiso' => 'gestionarFacultad'], ['permiso' => 'gestionarCarrera'],
-                ['permiso' => 'gestionarModalidad'], ['permiso' => 'gestionarGrupos'],
-                ['permiso' => 'gestionarDepartamento'], ['permiso' => 'gestionarTesis'],
-                ['permiso' => 'gestionarCortes'], ['permiso' => 'gestionarNoConformidades'],
-                ['permiso' => 'subirCorte'], ['permiso' => 'revisarCorte'],
-                ['permiso' => 'revisarFundamentación'], ['permiso' => 'gestionarUsuarios'],
-                ['permiso' => 'gestionarRoles'], ['permiso' => 'gestionarPermisos'],
-                ['permiso' => 'inicio'], ['permiso' => 'consultas'],
-                ['permiso' => 'estudiantes'], ['permiso' => 'profesores'],
-                ['permiso' => 'buscarEstudiante'], ['permiso' => 'estudiantes_sin_tutor'],
-                ['permiso' => 'estudiantesAtrasadosFundamentación'], ['permiso' => 'estudiantesCursoDiurno'],
-                ['permiso' => 'estudiantesCursoEncuentro'], ['permiso' => 'estudiantesFacultad'],
-                ['permiso' => 'buscarProfesor'], ['permiso' => 'profesoresDepartamento'],
-                ['permiso' => 'profesoresDoctores'], ['permiso' => 'profesoresMáster'],
-                ['permiso' => 'profesoresNoTutores'], ['permiso' => 'mostrar_estudiante'],
-                ['permiso' => 'mostrar_profesor'], ['permiso' => 'crearUsuario'],
-                ['permiso' => 'perfil'], ['permiso' => 'verUsuario'],
-                ['permiso' => 'editarUsuario'], ['permiso' => 'crearFundamentación'],
-                ['permiso' => 'editarFundamentación'], ['permiso' => 'crearCorte'],
-                ['permiso' => 'editarCorte'], ['permiso' => 'verCorte'],
-                ['permiso' => 'verFundamentación'], ['permiso' => 'agregarRecomendacionFundamentacion'],
-                ['permiso' => 'editarRecomendacionFundamentacion'], ['permiso' => 'agregarNoConformidadCorte'],
-                ['permiso' => 'editarNoConformidadCorte'], ['permiso' => 'vincularProfesorCorte'],
-                ['permiso' => 'vincularProfesorFundamentación'], ['permiso' => 'asignarTutor'],
-                ['permiso' => 'agregarCarrera'], ['permiso' => 'verCarrera'],
-                ['permiso' => 'editarCarrera'], ['permiso' => 'crearTesis'],
-                ['permiso' => 'editarTesis'], ['permiso' => 'verTesis'],
-                ['permiso' => 'gestionarFundamentaciones'], ['permiso' => 'subirFundamentación'],
-                ['permiso' => 'fechaEntrega'], ['permiso' => 'revisarFundamentaciónEstudiante'],
-                ['permiso' => 'revisarCorteEstudiante'], ['permiso' => 'estudiantesTutorados'],
-                ['permiso' => 'revisarEstudianteTutorado'],
-            ];
-
-            $permisoIds = [];
-            $id = 1;
-            foreach ($permisos as $permiso) {
-                $existing = DB::table('permisos')->where('permiso', $permiso['permiso'])->first();
-                if ($existing) {
-                    $permisoIds[] = $existing->id;
-                } else {
-                    DB::table('permisos')->insert([
-                        'id' => $id,
-                        'permiso' => $permiso['permiso'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                    $permisoIds[] = $id;
-                    $id++;
-                }
-            }
-
-            $rolesPermisosData = [];
-            foreach ($permisoIds as $permisoId) {
-                $exists = DB::table('roles_permisos')
-                    ->where('id_rol', $adminRoleId)
-                    ->where('id_permiso', $permisoId)
-                    ->exists();
-                if (!$exists) {
-                    $rolesPermisosData[] = [
-                        'id_rol' => $adminRoleId,
-                        'id_permiso' => $permisoId,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
-                }
-            }
-
-            if (!empty($rolesPermisosData)) {
-                DB::table('roles_permisos')->insert($rolesPermisosData);
-            }
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw new \Exception('Error al configurar el sistema: ' . $e->getMessage());
-        }
-    }
+     
 
     public function registerFirstAdmin(Request $request)
     {

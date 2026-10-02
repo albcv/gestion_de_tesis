@@ -1,0 +1,358 @@
+/* ============================================================
+   CAMBIAR TESIS (Estudiante) — Estilos
+   ============================================================ */
+
+:root {
+    --ct-primary:        #2563eb;
+    --ct-primary-dark:   #1d4ed8;
+    --ct-primary-light:  #dbeafe;
+    --ct-success:        #16a34a;
+    --ct-success-bg:     #dcfce7;
+    --ct-warning:        #d97706;
+    --ct-warning-bg:     #fef3c7;
+    --ct-danger:         #dc2626;
+    --ct-danger-bg:      #fee2e2;
+    --ct-info:           #0ea5e9;
+    --ct-info-bg:        #e0f2fe;
+    --ct-text:           #1f2937;
+    --ct-text-muted:     #6b7280;
+    --ct-border:         #e5e7eb;
+    --ct-bg:             #f9fafb;
+    --ct-white:          #ffffff;
+    --ct-radius:         12px;
+    --ct-radius-sm:      8px;
+    --ct-shadow:         0 1px 3px rgba(0, 0, 0, .08);
+    --ct-shadow-lg:      0 10px 30px rgba(37, 99, 235, .08);
+    --ct-transition:     .18s ease;
+}
+
+/* ============================================================
+   WRAPPER PRINCIPAL
+   ============================================================ */
+.cambiar-tesis-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    background:
+        radial-gradient(circle at 0% 0%, #eef2ff 0%, transparent 45%),
+        radial-gradient(circle at 100% 100%, #f0f9ff 0%, transparent 45%),
+        var(--ct-bg);
+    min-height: calc(100vh - 60px);
+    animation: ctFadeUp .3s ease;
+}
+
+.cambiar-tesis-content {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+@keyframes ctFadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ctFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   TÍTULO
+   ============================================================ */
+.page-title {
+    text-align: center;
+    margin: 0 0 4px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ct-text);
+    letter-spacing: -.01em;
+}
+
+/* ============================================================
+   TARJETAS
+   ============================================================ */
+.card-container {
+    background: var(--ct-white);
+    border: 1px solid var(--ct-border);
+    border-radius: var(--ct-radius);
+    box-shadow: var(--ct-shadow-lg);
+    overflow: hidden;
+    animation: ctFadeIn .25s ease;
+}
+
+.card-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--ct-border);
+    background: #f8fafc;
+}
+
+.card-header.primary-header {
+    background: linear-gradient(135deg, var(--ct-primary-light), #eff6ff);
+    border-bottom: 1px solid rgba(37, 99, 235, .2);
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ct-text);
+}
+
+.card-body {
+    padding: 24px;
+}
+
+/* ============================================================
+   FILAS / COLUMNAS
+   ============================================================ */
+.card-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.card-row:last-child { margin-bottom: 0; }
+
+.card-column { display: flex; flex-direction: column; gap: 4px; }
+
+.label-text {
+    margin: 0;
+    font-size: .78rem;
+    color: var(--ct-text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.content-text {
+    margin: 0;
+    font-size: .96rem;
+    color: var(--ct-text);
+    font-weight: 500;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+/* ============================================================
+   CAJA "TESIS ACTUAL"
+   ============================================================ */
+.tesis-actual-box {
+    margin-top: 8px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-left: 4px solid var(--ct-primary);
+    border-radius: var(--ct-radius-sm);
+    font-size: 1.02rem;
+    font-weight: 600;
+    color: var(--ct-primary-dark);
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+/* ============================================================
+   FORMULARIO
+   ============================================================ */
+.form-cambiar-tesis {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--ct-text);
+    font-size: .95rem;
+}
+
+/* ---------- Textarea ---------- */
+.textarea-container {
+    position: relative;
+    border: 1.5px solid var(--ct-border);
+    border-radius: var(--ct-radius-sm);
+    background: var(--ct-white);
+    transition: border-color var(--ct-transition), box-shadow var(--ct-transition);
+    overflow: hidden;
+}
+
+.textarea-container:focus-within {
+    border-color: var(--ct-primary);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
+}
+
+.textarea-container textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 16px 18px;
+    font-family: inherit;
+    font-size: .96rem;
+    line-height: 1.6;
+    color: var(--ct-text);
+    resize: vertical;
+    min-height: 120px;
+    display: block;
+}
+
+.textarea-container textarea::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+.textarea-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 14px;
+    background: #f8fafc;
+    border-top: 1px solid var(--ct-border);
+    font-size: .78rem;
+}
+
+.char-count {
+    color: var(--ct-text-muted);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    transition: color var(--ct-transition);
+}
+
+.ayuda-campo {
+    color: var(--ct-text-muted);
+    font-size: .82rem;
+    line-height: 1.4;
+}
+
+/* ============================================================
+   ALERTAS
+   ============================================================ */
+.alert-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 18px;
+    border-radius: var(--ct-radius-sm);
+    font-size: .93rem;
+    line-height: 1.5;
+    border: 1px solid transparent;
+    border-left: 4px solid transparent;
+    animation: ctFadeIn .25s ease;
+}
+
+.alert-message ul { margin: 0; padding-left: 20px; }
+
+.success-message {
+    background: var(--ct-success-bg);
+    color: #14532d;
+    border-left-color: var(--ct-success);
+    border-color: rgba(22, 163, 74, .3);
+}
+
+.error-message {
+    background: var(--ct-danger-bg);
+    color: #7f1d1d;
+    border-left-color: var(--ct-danger);
+    border-color: rgba(220, 38, 38, .3);
+}
+
+.warning-message {
+    background: var(--ct-warning-bg);
+    color: #78350f;
+    border-left-color: var(--ct-warning);
+    border-color: rgba(217, 119, 6, .35);
+}
+
+.info-message {
+    background: var(--ct-info-bg);
+    color: #0c4a6e;
+    border-left-color: var(--ct-info);
+    border-color: rgba(14, 165, 233, .3);
+}
+
+.warning-message strong { color: #92400e; }
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+.form-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid var(--ct-border);
+}
+
+.btn-guardar,
+.btn-cancelar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 26px;
+    font-size: .95rem;
+    font-family: inherit;
+    font-weight: 600;
+    border-radius: var(--ct-radius-sm);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background var(--ct-transition), transform .1s, box-shadow var(--ct-transition);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.btn-guardar {
+    background: var(--ct-primary);
+    color: var(--ct-white);
+    box-shadow: 0 1px 2px rgba(37, 99, 235, .3);
+}
+
+.btn-guardar:hover:not(:disabled) {
+    background: var(--ct-primary-dark);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, .35);
+    transform: translateY(-1px);
+}
+
+.btn-guardar:active:not(:disabled) {
+    transform: translateY(0) scale(.98);
+}
+
+.btn-cancelar {
+    background: #f3f4f6;
+    color: var(--ct-text);
+    border: 1px solid var(--ct-border);
+}
+
+.btn-cancelar:hover { background: #e5e7eb; border-color: #d1d5db; }
+.btn-cancelar:active { transform: scale(.97); }
+
+/* ============================================================
+   FOCUS VISIBLE
+   ============================================================ */
+.btn-guardar:focus-visible,
+.btn-cancelar:focus-visible,
+.textarea-container textarea:focus-visible {
+    outline: 2px solid var(--ct-primary);
+    outline-offset: 2px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+    .cambiar-tesis-container { padding: 20px 14px; }
+    .card-body { padding: 18px; }
+    .card-header { padding: 14px 18px; }
+    .page-title { font-size: 1.4rem; }
+    .card-row { grid-template-columns: 1fr; }
+    .form-buttons { flex-direction: column-reverse; }
+    .btn-guardar, .btn-cancelar { width: 100%; }
+    .textarea-container textarea { font-size: .93rem; padding: 14px; }
+}

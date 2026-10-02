@@ -13,6 +13,22 @@
                 <span id="ícono_crear">+</span> Crear Usuario
             </a>
 
+            {{-- 👇 Botón Posibles Usuarios --}}
+            <a href="{{ route('posiblesUsuarios') }}"
+               class="btn-crear"
+               style="background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+                      border-color: #c2410c;
+                      color: #ffffff;">
+                👤 Posibles Usuarios
+                @if(!empty($posiblesPendientes))
+                    <span style="display:inline-block; background:#ffffff; color:#c2410c;
+                                 border-radius:999px; padding:1px 8px; font-size:.75rem;
+                                 margin-left:6px; font-weight:700;">
+                        {{ $posiblesPendientes }}
+                    </span>
+                @endif
+            </a>
+
             @if (count($usuarios) > 0)
                 <a href="{{ route('exportarUsuariosCsv') }}" class="btn-exportar-csv">
                     📄 Exportar a CSV
@@ -24,6 +40,10 @@
 
         @if (session('error'))
             <div class="alerta alerta-error">{{ session('error') }}</div>
+        @endif
+
+        @if (session('success'))
+            <div class="alerta alerta-exito">{{ session('success') }}</div>
         @endif
 
         @php
