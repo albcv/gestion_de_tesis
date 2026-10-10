@@ -1118,3 +1118,571 @@ hr.my-4 {
         font-size: 1.2rem;
     }
 }
+
+
+
+/* ====== Documento de revisión (profesor oponente) ====== */
+.documento-revision-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    background: #eef6ff;
+    border: 1px solid #b6d4fe;
+    border-radius: 8px;
+}
+
+.documento-revision-box.small {
+    padding: 8px 12px;
+    margin-top: 8px;
+}
+
+.documento-revision-icono {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.documento-revision-texto {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.documento-revision-texto strong {
+    color: #0b4f9e;
+    font-size: 14px;
+}
+
+.documento-revision-texto small {
+    color: #4a5568;
+    font-size: 12px;
+}
+
+.documento-revision-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: #0d6efd;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+
+.documento-revision-btn:hover {
+    background: #0b5ed7;
+    color: #fff;
+}
+
+.documento-revision-btn.small {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+/* ====== Lista de no conformidades ====== */
+.no-conformidad-texto {
+    margin-bottom: 4px;
+}
+
+
+/* ============================================================
+   DOCUMENTO DE REVISIÓN (bloque compartido)
+   ============================================================ */
+
+.documento-revision-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    margin-top: 12px;
+    background: linear-gradient(135deg, #eef6ff 0%, #e3efff 100%);
+    border: 1px solid #b6d4fe;
+    border-left: 4px solid #0d6efd;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(13, 110, 253, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.documento-revision-box:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+}
+
+.documento-revision-box.small {
+    padding: 10px 14px;
+    gap: 10px;
+    margin-top: 8px;
+    border-left-width: 3px;
+}
+
+.documento-revision-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    font-size: 22px;
+    background: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.15);
+}
+
+.documento-revision-box.small .documento-revision-icono {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    font-size: 18px;
+}
+
+.documento-revision-texto {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.documento-revision-texto strong {
+    color: #0b4f9e;
+    font-size: 14px;
+    font-weight: 600;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+}
+
+.documento-revision-texto small {
+    color: #4a5568;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.documento-revision-box.small .documento-revision-texto strong {
+    font-size: 13px;
+}
+
+.documento-revision-box.small .documento-revision-texto small {
+    font-size: 11px;
+}
+
+.documento-revision-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    color: #ffffff !important;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 6px rgba(13, 110, 253, 0.25);
+}
+
+.documento-revision-btn:hover {
+    background: linear-gradient(135deg, #0b5ed7, #0849a8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.35);
+    color: #ffffff !important;
+}
+
+.documento-revision-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(13, 110, 253, 0.3);
+}
+
+.documento-revision-btn.small {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+/* ============================================================
+   CHECKBOX "ELIMINAR DOCUMENTO ACTUAL"
+   ============================================================ */
+
+.form-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #fff8f0;
+    border: 1px solid #ffe1b8;
+    border-left: 4px solid #f39c12;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.form-check:hover {
+    background: #fff3e0;
+}
+
+.form-check-input {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: #e74c3c;
+    flex-shrink: 0;
+}
+
+.form-check-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #b94a00;
+    cursor: pointer;
+    user-select: none;
+}
+
+.form-check .form-text {
+    display: block;
+    font-size: 11px;
+    color: #7f8c8d;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+/* ============================================================
+   INPUT DE ARCHIVO
+   ============================================================ */
+
+input[type="file"].form-control {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    background: #fdfdfd;
+    border: 2px dashed #c9d6e8;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+input[type="file"].form-control:hover {
+    border-color: #0d6efd;
+    background: #f4f9ff;
+}
+
+input[type="file"].form-control:focus {
+    outline: none;
+    border-color: #0d6efd;
+    border-style: solid;
+    background: #f4f9ff;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+input[type="file"].form-control::file-selector-button {
+    padding: 6px 14px;
+    margin-right: 12px;
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+input[type="file"].form-control::file-selector-button:hover {
+    background: linear-gradient(135deg, #0b5ed7, #0849a8);
+}
+
+/* ============================================================
+   LISTA DE NO CONFORMIDADES (mejorada)
+   ============================================================ */
+
+.list-group-item {
+    padding: 14px 16px;
+    border: 1px solid #e0e6ed;
+    border-radius: 10px !important;
+    margin-bottom: 10px;
+    background: #ffffff;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.list-group-item:hover {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+}
+
+.list-group-item .btn-outline-danger {
+    padding: 4px 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.list-group-item .btn-outline-danger:hover {
+    background: #e74c3c;
+    color: #ffffff;
+    border-color: #e74c3c;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 576px) {
+    .documento-revision-box {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .documento-revision-icono {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        font-size: 20px;
+    }
+
+    .documento-revision-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+
+/* ============================================================
+   PANEL LATERAL DE NO CONFORMIDADES (col-md-4)
+   ============================================================ */
+
+/* Headers más compactos dentro del panel */
+.info-card .col-md-4 h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e8eef6;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Separador entre secciones más sutil */
+.info-card .col-md-4 hr {
+    border: none;
+    border-top: 1px dashed #d0dae8;
+    margin: 20px 0;
+}
+
+/* Bloques de sección */
+.info-card .col-md-4 .mb-4 {
+    margin-bottom: 0 !important;
+}
+
+.info-card .col-md-4 > div + div {
+    margin-top: 20px;
+}
+
+/* ============================================================
+   SELECT (Agregar No Conformidad Existente)
+   ============================================================ */
+
+.info-card .col-md-4 .form-select {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #2c3e50;
+    background-color: #fbfdff;
+    border: 2px solid #d0dae8;
+    border-radius: 8px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.info-card .col-md-4 .form-select:hover {
+    border-color: #b6d4fe;
+}
+
+.info-card .col-md-4 .form-select:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+    background-color: #ffffff;
+}
+
+/* ============================================================
+   TEXTAREA (Crear Nueva No Conformidad)
+   ============================================================ */
+
+.info-card .col-md-4 .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #2c3e50;
+    background-color: #fbfdff;
+    border: 2px solid #d0dae8;
+    border-radius: 8px;
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.info-card .col-md-4 textarea.form-control:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+    background-color: #ffffff;
+}
+
+/* ============================================================
+   LABELS DEL FORMULARIO
+   ============================================================ */
+
+.info-card .col-md-4 .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ============================================================
+   INPUT FILE (compacto y prolijo)
+   ============================================================ */
+
+.info-card .col-md-4 input[type="file"].form-control {
+    padding: 8px 12px;
+    font-size: 12px;
+    background: #f8fbff;
+    border: 2px dashed #b6d4fe;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.info-card .col-md-4 input[type="file"].form-control:hover {
+    border-color: #0d6efd;
+    background: #eef6ff;
+}
+
+.info-card .col-md-4 input[type="file"].form-control::file-selector-button {
+    padding: 6px 14px;
+    margin-right: 10px;
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.info-card .col-md-4 input[type="file"].form-control::file-selector-button:hover {
+    background: linear-gradient(135deg, #0b5ed7, #0849a8);
+}
+
+/* Texto de ayuda más pequeño */
+.info-card .col-md-4 .form-text {
+    display: block;
+    font-size: 10.5px;
+    color: #95a5a6;
+    margin-top: 5px;
+    line-height: 1.4;
+    font-style: italic;
+}
+
+/* ============================================================
+   BOTONES: compactos, alineados a la derecha, no full-width feo
+   ============================================================ */
+
+.info-card .col-md-4 .action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+.info-card .col-md-4 .action-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.info-card .col-md-4 .action-button:active {
+    transform: translateY(0);
+}
+
+/* Botón "Agregar Existente" - azul en lugar de verde para diferenciar */
+.info-card .col-md-4 .action-button.button-primary {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(13, 110, 253, 0.2);
+}
+
+.info-card .col-md-4 .action-button.button-primary:hover {
+    background: linear-gradient(135deg, #0b5ed7, #0849a8);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.35);
+}
+
+/* Botón "Crear y Asignar" - verde */
+.info-card .col-md-4 .action-button.button-success {
+    background: linear-gradient(135deg, #27ae60, #1e8449);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(39, 174, 96, 0.2);
+}
+
+.info-card .col-md-4 .action-button.button-success:hover {
+    background: linear-gradient(135deg, #1e8449, #166638);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.35);
+}
+
+/* ============================================================
+   SEPARACIÓN ENTRE CAMPOS DENTRO DEL FORM
+   ============================================================ */
+
+.info-card .col-md-4 form > div:not(:last-child),
+.info-card .col-md-4 form > .mb-3:not(:last-child) {
+    margin-bottom: 14px;
+}
+
+/* ============================================================
+   PANEL IZQUIERDO: LISTA DE NO CONFORMIDADES
+   ============================================================ */
+
+/* Cuando no hay no conformidades */
+.info-card .col-md-8 > p.text-muted {
+    padding: 20px;
+    text-align: center;
+    background: #f8f9fa;
+    border: 1px dashed #d0dae8;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #95a5a6;
+    font-style: italic;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .info-card .col-md-4 {
+        margin-top: 24px;
+    }
+}

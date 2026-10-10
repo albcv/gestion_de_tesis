@@ -52,21 +52,20 @@ class UserController extends Controller
     // Nombres de columnas
     protected $columnaName;
     protected $columnaEmail;
-    protected $columnaRol;
     protected $columnaPassword;
 
-    // IDs de roles
+    // IDs de roles (nombres)
     protected $rolEstudianteId;
     protected $rolProfesorId;
     protected $rolAdministradorId;
 
-    // Rutas
-    protected $rutaVistaPrincipal = 'gestionarUsuarios';
-
     // Nombres de roles
     const ROL_ADMINISTRADOR = 'Administrador';
-    const ROL_PROFESOR = 'Profesor';
-    const ROL_ESTUDIANTE = 'Estudiante';
+    const ROL_PROFESOR      = 'Profesor';
+    const ROL_ESTUDIANTE    = 'Estudiante';
+
+    // Rutas
+    protected $rutaVistaPrincipal = 'gestionarUsuarios';
 
     public function __construct()
     {
@@ -108,7 +107,6 @@ class UserController extends Controller
 
         $this->columnaName = 'name';
         $this->columnaEmail = 'email';
-        $this->columnaRol = 'id_rol';
         $this->columnaPassword = 'password';
 
         $this->obtenerIdsDeRoles();
@@ -126,9 +124,10 @@ class UserController extends Controller
         $this->rolEstudianteId = $rolEstudiante ? $rolEstudiante->id : null;
     }
 
-    /**
-     * Elimina los documentos físicos asociados a una tesis.
-     */
+    /* ============================================================
+       HELPERS DE LIMPIEZA DE DOCUMENTOS
+       ============================================================ */
+
     private function eliminarDocumentosTesis($tesis): void
     {
         if (!$tesis) {
@@ -140,7 +139,6 @@ class UserController extends Controller
             'cortes.versiones',
         ]);
 
-        // ----- Fundamentación -----
         if ($tesis->fundamentacion) {
             $idFund = $tesis->fundamentacion->id_fundamentacion;
 
@@ -156,7 +154,6 @@ class UserController extends Controller
             }
         }
 
-        // ----- Cortes -----
         foreach ($tesis->cortes as $corte) {
             foreach ($corte->versiones as $v) {
                 if (!empty($v->ruta_documento) && Storage::exists($v->ruta_documento)) {
@@ -171,9 +168,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Helper: a partir de un estudiante, localiza su tesis y limpia los documentos.
-     */
     private function eliminarDocumentosDeEstudiante($estudiante): void
     {
         if (!$estudiante) {
@@ -188,21 +182,19 @@ class UserController extends Controller
     }
 
     /**
-     * Listado, formulario de creación/edición o detalles según query param.
-     *
-     *  /gestionarUsuarios                                        → listado
-     *  /gestionarUsuarios?accion=crear                           → formulario crear
-     *  /gestionarUsuarios?accion=editar&id=X                     → formulario editar
-     *  /gestionarUsuarios?accion=detalles&id=X                   → detalles
-     *
-     *  Filtros:
-     *    buscar              → texto
-     *    filtro_rol          → estudiante|profesor|{id_rol}
-     *    filtro_carrera      → id_carrera  (solo si filtro_rol = estudiante)
-     *    filtro_modalidad    → idModalidad (solo si filtro_rol = estudiante)
-     *    filtro_grupo        → id_grupo    (solo si filtro_rol = estudiante)
+     * Determina si un arreglo de IDs de rol contiene el rol Estudiante o Profesor.
      */
-       public function mostrar(Request $request)
+    private function contieneRol(array $idsRoles, ?int $rolId): bool
+    {
+        if (!$rolId) return false;
+        return in_array((int) $rolId, array_map('intval', $idsRoles), true);
+    }
+
+    /* ============================================================
+       LISTADO
+       ============================================================ */
+
+    public function mostrar(Request $request)
     {
         $accion = $request->query('accion');
         $id     = $request->query('id');
@@ -219,16 +211,15 @@ class UserController extends Controller
             return $this->ver($id);
         }
 
-        // ---------- Listado ----------
         try {
-            $buscar           = $request->input('buscar');
-            $filtroRol        = $request->input('filtro_rol');
-            $filtroCarrera    = $request->input('filtro_carrera');
-            $filtroModalidad  = $request->input('filtro_modalidad');
-            $filtroGrupo      = $request->input('filtro_grupo');
-            $porPagina        = $request->input('por_pagina', 10);
+            $buscar          = $request->input('buscar');
+            $filtroRol       = $request->input('filtro_rol');
+            $filtroCarrera   = $request->input('filtro_carrera');
+            $filtroModalidad = $request->input('filtro_modalidad');
+            $filtroGrupo     = $request->input('filtro_grupo');
+            $porPagina       = $request->input('por_pagina', 10);
 
-            $query = $this->modelo::with(['rol', 'estudiante', 'profesor']);
+            $query = $this->modelo::with(['roles', 'estudiante', 'profesor']);
 
             if ($buscar) {
                 $query->where(function ($q) use ($buscar) {
@@ -249,62 +240,51 @@ class UserController extends Controller
                 });
             }
 
+            // ---------- Filtro por rol (relación many-to-many) ----------
+            // ⚠️ Se califica con 'roles.id' para evitar el error "Column 'id' in where clause is ambiguous"
             if ($filtroRol) {
                 if (strtolower($filtroRol) === strtolower(self::ROL_ESTUDIANTE)) {
-                    $query->where($this->columnaRol, $this->rolEstudianteId);
+                    $query->whereHas('roles', fn($q) => $q->where('roles.id', $this->rolEstudianteId));
                 } elseif (strtolower($filtroRol) === strtolower(self::ROL_PROFESOR)) {
-                    $query->where($this->columnaRol, $this->rolProfesorId);
+                    $query->whereHas('roles', fn($q) => $q->where('roles.id', $this->rolProfesorId));
                 } elseif (strtolower($filtroRol) === strtolower(self::ROL_ADMINISTRADOR)) {
-                    $query->where($this->columnaRol, $this->rolAdministradorId);
+                    $query->whereHas('roles', fn($q) => $q->where('roles.id', $this->rolAdministradorId));
+                } elseif (is_numeric($filtroRol)) {
+                    $query->whereHas('roles', fn($q) => $q->where('roles.id', $filtroRol));
                 } else {
-                    if (is_numeric($filtroRol)) {
-                        $query->where($this->columnaRol, $filtroRol);
-                    } else {
-                        $rol = $this->modeloRol::where('rol', 'LIKE', "%{$filtroRol}%")->first();
-                        if ($rol) {
-                            $query->where($this->columnaRol, $rol->id);
-                        }
+                    $rol = $this->modeloRol::where('rol', 'LIKE', "%{$filtroRol}%")->first();
+                    if ($rol) {
+                        $query->whereHas('roles', fn($q) => $q->where('roles.id', $rol->id));
                     }
                 }
             }
 
-            // ---- Filtros exclusivos de estudiantes ----
+            // ---------- Filtros exclusivos de estudiantes ----------
             $esFiltroEstudiante = strtolower((string) $filtroRol) === strtolower(self::ROL_ESTUDIANTE);
 
             if ($esFiltroEstudiante
                 && ($filtroCarrera || $filtroModalidad || $filtroGrupo)) {
 
                 $query->whereHas('estudiante', function ($q) use ($filtroCarrera, $filtroModalidad, $filtroGrupo) {
-                    if ($filtroCarrera) {
-                        $q->where('id_carrera', $filtroCarrera);
-                    }
-                    if ($filtroModalidad) {
-                        $q->where('id_modalidad', $filtroModalidad);
-                    }
-                    if ($filtroGrupo) {
-                        $q->where('id_grupo', $filtroGrupo);
-                    }
+                    if ($filtroCarrera)    $q->where('id_carrera', $filtroCarrera);
+                    if ($filtroModalidad)  $q->where('id_modalidad', $filtroModalidad);
+                    if ($filtroGrupo)      $q->where('id_grupo', $filtroGrupo);
                 });
             }
 
             $usuarios = $query->paginate($porPagina)->appends($request->query());
 
-            // ---- Catálogos para la vista ----
-            $roles       = $this->modeloRol::all();
+            // Catálogos
+            $roles       = $this->modeloRol::orderBy('rol')->get();
             $carreras    = $this->modeloCarrera::orderBy('Nombre_carrera')->get();
             $modalidades = $this->modeloModalidad::orderBy('Nombre_modalidad')->get();
             $grupos      = $this->modeloGrupo::orderBy('número')->get();
 
-            // ---- Contador de solicitudes pendientes (Posibles Usuarios) ----
+            // Contador de solicitudes pendientes
             $posiblesPendientes = \App\Models\PosibleUsuario::count();
 
             return view('gestionar.usuario.index', compact(
-                'usuarios',
-                'roles',
-                'carreras',
-                'modalidades',
-                'grupos',
-                'posiblesPendientes'
+                'usuarios', 'roles', 'carreras', 'modalidades', 'grupos', 'posiblesPendientes'
             ));
 
         } catch (\Exception $e) {
@@ -313,17 +293,18 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Formulario de creación.
-     */
+    /* ============================================================
+       CREAR
+       ============================================================ */
+
     public function crearUsuario()
     {
         try {
-            $roles = $this->modeloRol::all();
-            $grupos = $this->modeloGrupo::all();
-            $modalidades = $this->modeloModalidad::all();
+            $roles         = $this->modeloRol::orderBy('rol')->get();
+            $grupos        = $this->modeloGrupo::all();
+            $modalidades   = $this->modeloModalidad::all();
             $departamentos = $this->modeloDepartamento::all();
-            $carreras = $this->modeloCarrera::all();
+            $carreras      = $this->modeloCarrera::all();
 
             return view('gestionar.usuario.formulario', compact(
                 'roles', 'grupos', 'modalidades', 'departamentos', 'carreras'
@@ -334,9 +315,10 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Agrega un nuevo usuario.
-     */
+        /* ============================================================
+       AGREGAR
+       ============================================================ */
+
     public function agregar(Request $request)
     {
         $urlFormCrear = route($this->rutaVistaPrincipal, ['accion' => 'crear']);
@@ -346,40 +328,51 @@ class UserController extends Controller
 
         try {
             $validator = Validator::make($request->all(), [
-                'name' => ['required', 'string', 'min:3', 'max:40', 'unique:' . $this->tablaUsuario . ',' . $this->columnaName],
-                'email' => ['required', 'email', 'max:255', 'unique:' . $this->tablaUsuario . ',' . $this->columnaEmail],
+                'name'     => ['required', 'string', 'min:3', 'max:40', 'unique:' . $this->tablaUsuario . ',' . $this->columnaName],
+                'email'    => ['required', 'email', 'max:255', 'unique:' . $this->tablaUsuario . ',' . $this->columnaEmail],
                 'password' => ['required', 'string', 'min:6', 'max:255'],
-                'rol' => ['required', 'exists:' . $this->tablaRol . ',' . $this->columnaIdRol],
+                'roles'    => ['required', 'array', 'min:1'],
+                'roles.*'  => ['integer', 'exists:' . $this->tablaRol . ',' . $this->columnaIdRol],
             ], [
-                'name.required' => 'El nombre de usuario es obligatorio',
-                'name.min' => 'El nombre de usuario debe tener al menos 3 caracteres',
-                'name.max' => 'El nombre de usuario no puede exceder los 40 caracteres',
-                'name.unique' => 'Este nombre de usuario ya está registrado',
-                'email.required' => 'El correo electrónico es obligatorio',
-                'email.email' => 'El correo electrónico debe ser válido',
-                'email.max' => 'El correo electrónico no puede exceder los 255 caracteres',
-                'email.unique' => 'Este correo electrónico ya está registrado',
-                'password.required' => 'La contraseña es obligatoria',
-                'password.min' => 'La contraseña debe tener al menos 6 caracteres',
-                'password.max' => 'La contraseña no puede exceder los 255 caracteres',
-                'rol.required' => 'El rol es obligatorio',
-                'rol.exists' => 'El rol seleccionado no existe',
+                'name.required'      => 'El nombre de usuario es obligatorio',
+                'name.min'           => 'El nombre de usuario debe tener al menos 3 caracteres',
+                'name.max'           => 'El nombre de usuario no puede exceder los 40 caracteres',
+                'name.unique'        => '❌ El nombre de usuario "' . $request->input('name') . '" ya está registrado en el sistema.',
+                'email.required'     => 'El correo electrónico es obligatorio',
+                'email.email'        => 'El correo electrónico debe ser válido',
+                'email.max'          => 'El correo electrónico no puede exceder los 255 caracteres',
+                'email.unique'       => '❌ El correo electrónico "' . $request->input('email') . '" ya está registrado en el sistema.',
+                'password.required'  => 'La contraseña es obligatoria',
+                'password.min'       => 'La contraseña debe tener al menos 6 caracteres',
+                'password.max'       => 'La contraseña no puede exceder los 255 caracteres',
+                'roles.required'     => 'Debe seleccionar al menos un rol',
+                'roles.min'          => 'Debe seleccionar al menos un rol',
+                'roles.*.exists'     => 'Uno de los roles seleccionados no existe',
             ]);
 
             if ($validator->fails()) {
-                return redirect($urlFormCrear)->withErrors($validator)->withInput();
+                return redirect($urlFormCrear)
+                    ->withErrors($validator)
+                    ->withInput()
+                    ->with('error', 'No se pudo crear el usuario. Revise los errores a continuación.');
             }
 
+            $idsRoles = array_map('intval', $request->input('roles', []));
+
+            // ----- 1. Crear el User -----
             $user = new $this->modelo();
-            $user->{$this->columnaName} = $request->name;
-            $user->{$this->columnaEmail} = $request->email;
-            $user->{$this->columnaRol} = $request->rol;
+            $user->{$this->columnaName}     = $request->name;
+            $user->{$this->columnaEmail}    = $request->email;
             $user->{$this->columnaPassword} = Hash::make($request->password);
             $user->save();
 
-            if ($request->rol == $this->rolEstudianteId) {
+            // ----- 2. Sincronizar roles en la tabla pivote -----
+            $user->roles()->sync($idsRoles);
+
+            // ----- 3. Perfil específico según rol -----
+            if ($this->contieneRol($idsRoles, $this->rolEstudianteId)) {
                 $this->agregarEstudiante($request, $user);
-            } elseif ($request->rol == $this->rolProfesorId) {
+            } elseif ($this->contieneRol($idsRoles, $this->rolProfesorId)) {
                 $this->agregarProfesor($request, $user);
             }
 
@@ -390,11 +383,15 @@ class UserController extends Controller
                     ->with('success', 'Usuario creado correctamente. Puede seguir agregando.');
             }
 
-            return redirect()->route($this->rutaVistaPrincipal);
+            return redirect()->route($this->rutaVistaPrincipal)
+                ->with('success', 'Usuario creado correctamente.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollback();
-            return redirect($urlFormCrear)->withErrors($e->validator)->withInput();
+            return redirect($urlFormCrear)
+                ->withErrors($e->validator)
+                ->withInput()
+                ->with('error', 'No se pudo crear el usuario. Revise los errores a continuación.');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect($urlFormCrear)
@@ -411,8 +408,7 @@ class UserController extends Controller
                 function ($attribute, $value, $fail) {
                     $fecha = substr($value, 0, 6);
                     $month = (int) substr($fecha, 2, 2);
-                    $day = (int) substr($fecha, 4, 2);
-
+                    $day   = (int) substr($fecha, 4, 2);
                     if ($month < 1 || $month > 12) {
                         $fail('Los dígitos 3-4 del CI deben representar un mes válido (01-12).');
                     }
@@ -422,39 +418,14 @@ class UserController extends Controller
                     }
                 }
             ],
-            'nombre_estudiante' => 'required|string|min:3|max:40',
+            'nombre_estudiante'    => 'required|string|min:3|max:40',
             'apellido1_estudiante' => 'required|string|min:3|max:40',
             'apellido2_estudiante' => 'required|string|min:3|max:40',
-            'sexo_estudiante' => 'required|in:Masculino,Femenino',
-            'año_académico' => 'required|integer|min:1|max:6',
-            'id_grupo' => 'required|exists:' . $this->tablaGrupo . ',' . $this->columnaIdGrupo,
-            'id_modalidad' => 'required|exists:' . $this->tablaModalidad . ',' . $this->columnaIdModalidad,
-            'id_carrera' => 'required|exists:' . $this->tablaCarrera . ',' . $this->columnaIdCarrera,
-        ], [
-            'ci_estudiante.required' => 'El carnet de identidad es obligatorio',
-            'ci_estudiante.digits' => 'El carnet de identidad debe tener exactamente 11 dígitos',
-            'ci_estudiante.unique' => 'Este carnet de identidad ya está registrado',
-            'nombre_estudiante.required' => 'El nombre es obligatorio',
-            'nombre_estudiante.min' => 'El nombre debe tener al menos 3 caracteres',
-            'nombre_estudiante.max' => 'El nombre no puede exceder los 40 caracteres',
-            'apellido1_estudiante.required' => 'El primer apellido es obligatorio',
-            'apellido1_estudiante.min' => 'El primer apellido debe tener al menos 3 caracteres',
-            'apellido1_estudiante.max' => 'El primer apellido no puede exceder los 40 caracteres',
-            'apellido2_estudiante.required' => 'El segundo apellido es obligatorio',
-            'apellido2_estudiante.min' => 'El segundo apellido debe tener al menos 3 caracteres',
-            'apellido2_estudiante.max' => 'El segundo apellido no puede exceder los 40 caracteres',
-            'sexo_estudiante.required' => 'El sexo es obligatorio',
-            'sexo_estudiante.in' => 'El sexo debe ser Masculino o Femenino',
-            'año_académico.required' => 'El año académico es obligatorio',
-            'año_académico.integer' => 'El año académico debe ser un número',
-            'año_académico.min' => 'El año académico debe ser al menos 1',
-            'año_académico.max' => 'El año académico no puede exceder 6',
-            'id_grupo.required' => 'El grupo es obligatorio',
-            'id_grupo.exists' => 'El grupo seleccionado no existe',
-            'id_modalidad.required' => 'La modalidad es obligatoria',
-            'id_modalidad.exists' => 'La modalidad seleccionada no existe',
-            'id_carrera.required' => 'La carrera es obligatoria',
-            'id_carrera.exists' => 'La carrera seleccionada no existe',
+            'sexo_estudiante'      => 'required|in:Masculino,Femenino',
+            'año_académico'        => 'required|integer|min:1|max:6',
+            'id_grupo'             => 'required|exists:' . $this->tablaGrupo . ',' . $this->columnaIdGrupo,
+            'id_modalidad'         => 'required|exists:' . $this->tablaModalidad . ',' . $this->columnaIdModalidad,
+            'id_carrera'           => 'required|exists:' . $this->tablaCarrera . ',' . $this->columnaIdCarrera,
         ]);
 
         if ($validator->fails()) {
@@ -462,16 +433,16 @@ class UserController extends Controller
         }
 
         $estudiante = new $this->modeloEstudiante();
-        $estudiante->id_usuario = $user->id;
-        $estudiante->CI_estudiante = $request->ci_estudiante;
+        $estudiante->id_usuario        = $user->id;
+        $estudiante->CI_estudiante     = $request->ci_estudiante;
         $estudiante->Nombre_estudiante = $request->nombre_estudiante;
-        $estudiante->Apellido1 = $request->apellido1_estudiante;
-        $estudiante->Apellido2 = $request->apellido2_estudiante;
-        $estudiante->sexo = $request->sexo_estudiante;
-        $estudiante->year_academico = $request->año_académico;
-        $estudiante->id_grupo = $request->id_grupo;
-        $estudiante->id_modalidad = $request->id_modalidad;
-        $estudiante->id_carrera = $request->id_carrera;
+        $estudiante->Apellido1         = $request->apellido1_estudiante;
+        $estudiante->Apellido2         = $request->apellido2_estudiante;
+        $estudiante->sexo              = $request->sexo_estudiante;
+        $estudiante->year_academico    = $request->año_académico;
+        $estudiante->id_grupo          = $request->id_grupo;
+        $estudiante->id_modalidad      = $request->id_modalidad;
+        $estudiante->id_carrera        = $request->id_carrera;
         $estudiante->save();
     }
 
@@ -483,8 +454,7 @@ class UserController extends Controller
                 function ($attribute, $value, $fail) {
                     $fecha = substr($value, 0, 6);
                     $month = (int) substr($fecha, 2, 2);
-                    $day = (int) substr($fecha, 4, 2);
-
+                    $day   = (int) substr($fecha, 4, 2);
                     if ($month < 1 || $month > 12) {
                         $fail('Los dígitos 3-4 del CI deben representar un mes válido (01-12).');
                     }
@@ -494,12 +464,12 @@ class UserController extends Controller
                     }
                 }
             ],
-            'nombre_profesor' => 'required|string|min:3|max:40',
-            'apellido1_profesor' => 'required|string|min:3|max:40',
-            'apellido2_profesor' => 'required|string|min:3|max:40',
-            'id_departamento' => 'required|exists:' . $this->tablaDepartamento . ',' . $this->columnaIdDepartamento,
-            'categoría_docente' => 'required|string|in:Profesor Titular,Profesor Instructor,Profesor Auxiliar',
-            'categoría_científica' => 'required|string|in:Licenciado,Ingeniero,Máster en Ciencias,Doctor en Ciencias',
+            'nombre_profesor'       => 'required|string|min:3|max:40',
+            'apellido1_profesor'    => 'required|string|min:3|max:40',
+            'apellido2_profesor'    => 'required|string|min:3|max:40',
+            'id_departamento'       => 'required|exists:' . $this->tablaDepartamento . ',' . $this->columnaIdDepartamento,
+            'categoría_docente'     => 'required|string|in:Profesor Titular,Profesor Instructor,Profesor Auxiliar',
+            'categoría_científica'  => 'required|string|in:Licenciado,Ingeniero,Máster en Ciencias,Doctor en Ciencias',
         ]);
 
         if ($validator->fails()) {
@@ -507,16 +477,20 @@ class UserController extends Controller
         }
 
         $profesor = new $this->modeloProfesor();
-        $profesor->id_usuario = $user->id;
-        $profesor->CI_profesor = $request->ci_profesor;
-        $profesor->Nombre_profesor = $request->nombre_profesor;
-        $profesor->Apellido1 = $request->apellido1_profesor;
-        $profesor->Apellido2 = $request->apellido2_profesor;
-        $profesor->id_departamento = $request->id_departamento;
-        $profesor->Categoria_docente = $request->categoría_docente;
+        $profesor->id_usuario           = $user->id;
+        $profesor->CI_profesor          = $request->ci_profesor;
+        $profesor->Nombre_profesor      = $request->nombre_profesor;
+        $profesor->Apellido1            = $request->apellido1_profesor;
+        $profesor->Apellido2            = $request->apellido2_profesor;
+        $profesor->id_departamento      = $request->id_departamento;
+        $profesor->Categoria_docente    = $request->categoría_docente;
         $profesor->Categoria_cientifica = $request->categoría_científica;
         $profesor->save();
     }
+
+    /* ============================================================
+       VER
+       ============================================================ */
 
     public function ver($id)
     {
@@ -530,9 +504,9 @@ class UserController extends Controller
             }
 
             $usuario = $this->modelo::with([
-                'rol',
-                'estudiante' => fn($q) => $q->with(['grupo', 'modalidad', 'carrera']),
-                'profesor' => fn($q) => $q->with(['departamento']),
+                'roles',
+                'estudiante' => fn($q) => $q->with(['grupo', 'modalidad', 'carrera', 'tutores.profesor']),
+                'profesor'   => fn($q) => $q->with(['departamento', 'tutorados']),
             ])->findOrFail($id);
 
             return view('gestionar.usuario.detalles', compact('usuario'));
@@ -542,6 +516,10 @@ class UserController extends Controller
                 ->with('error', 'Error al cargar los datos del usuario: ' . $e->getMessage());
         }
     }
+
+    /* ============================================================
+       EDITAR
+       ============================================================ */
 
     public function editar($id)
     {
@@ -555,16 +533,16 @@ class UserController extends Controller
             }
 
             $usuario = $this->modelo::with([
-                'rol',
+                'roles',
                 'estudiante' => fn($q) => $q->with(['grupo', 'modalidad', 'carrera']),
-                'profesor' => fn($q) => $q->with(['departamento']),
+                'profesor'   => fn($q) => $q->with(['departamento']),
             ])->findOrFail($id);
 
-            $roles = $this->modeloRol::all();
-            $grupos = $this->modeloGrupo::all();
-            $modalidades = $this->modeloModalidad::all();
+            $roles         = $this->modeloRol::orderBy('rol')->get();
+            $grupos        = $this->modeloGrupo::all();
+            $modalidades   = $this->modeloModalidad::all();
             $departamentos = $this->modeloDepartamento::all();
-            $carreras = $this->modeloCarrera::all();
+            $carreras      = $this->modeloCarrera::all();
 
             return view('gestionar.usuario.formulario', compact(
                 'usuario', 'roles', 'grupos', 'modalidades', 'departamentos', 'carreras'
@@ -576,18 +554,23 @@ class UserController extends Controller
         }
     }
 
+    /* ============================================================
+       ACTUALIZAR
+       ============================================================ */
+
     public function actualizar(Request $request)
     {
         DB::beginTransaction();
 
         try {
             $validator = Validator::make($request->all(), [
-                'id' => 'required|exists:' . $this->tablaUsuario . ',' . $this->columnaIdUsuario,
-                'name' => ['required', 'string', 'min:3', 'max:40',
+                'id'       => 'required|exists:' . $this->tablaUsuario . ',' . $this->columnaIdUsuario,
+                'name'     => ['required', 'string', 'min:3', 'max:40',
                     'unique:' . $this->tablaUsuario . ',' . $this->columnaName . ',' . $request->id . ',' . $this->columnaIdUsuario],
-                'email' => ['required', 'email', 'max:255',
+                'email'    => ['required', 'email', 'max:255',
                     'unique:' . $this->tablaUsuario . ',' . $this->columnaEmail . ',' . $request->id . ',' . $this->columnaIdUsuario],
-                'rol' => 'required|exists:' . $this->tablaRol . ',' . $this->columnaIdRol,
+                'roles'    => ['required', 'array', 'min:1'],
+                'roles.*'  => ['integer', 'exists:' . $this->tablaRol . ',' . $this->columnaIdRol],
             ]);
 
             if ($validator->fails()) {
@@ -611,9 +594,8 @@ class UserController extends Controller
 
             $user = $this->modelo::findOrFail($request->id);
 
-            $user->{$this->columnaName} = $request->name;
+            $user->{$this->columnaName}  = $request->name;
             $user->{$this->columnaEmail} = $request->email;
-            $user->{$this->columnaRol} = $request->rol;
 
             if ($request->filled('password')) {
                 $user->{$this->columnaPassword} = Hash::make($request->password);
@@ -621,11 +603,20 @@ class UserController extends Controller
 
             $user->save();
 
-            if ($request->rol == $this->rolEstudianteId) {
+            // ----- Sincronizar roles -----
+            $idsRoles = array_map('intval', $request->input('roles', []));
+            $user->roles()->sync($idsRoles);
+
+            // ----- Ajustar perfil estudiante/profesor -----
+            $esEstudiante = $this->contieneRol($idsRoles, $this->rolEstudianteId);
+            $esProfesor   = $this->contieneRol($idsRoles, $this->rolProfesorId);
+
+            if ($esEstudiante) {
                 $this->actualizarEstudiante($request, $user);
-            } elseif ($request->rol == $this->rolProfesorId) {
+            } elseif ($esProfesor) {
                 $this->actualizarProfesor($request, $user);
             } else {
+                // Ya no es estudiante ni profesor → eliminar perfiles
                 if ($user->estudiante) {
                     $this->eliminarDocumentosDeEstudiante($user->estudiante);
                     $user->estudiante->delete();
@@ -663,14 +654,14 @@ class UserController extends Controller
                 'required', 'digits:11',
                 'unique:' . $this->tablaEstudiante . ',CI_estudiante,' . $estudianteId . ',id',
             ],
-            'nombre_estudiante' => 'required|string|min:3|max:40',
+            'nombre_estudiante'    => 'required|string|min:3|max:40',
             'apellido1_estudiante' => 'required|string|min:3|max:40',
             'apellido2_estudiante' => 'required|string|min:3|max:40',
-            'sexo_estudiante' => 'required|in:Masculino,Femenino',
-            'año_académico' => 'required|integer|min:1|max:6',
-            'id_grupo' => 'required|exists:' . $this->tablaGrupo . ',' . $this->columnaIdGrupo,
-            'id_modalidad' => 'required|exists:' . $this->tablaModalidad . ',' . $this->columnaIdModalidad,
-            'id_carrera' => 'required|exists:' . $this->tablaCarrera . ',' . $this->columnaIdCarrera,
+            'sexo_estudiante'      => 'required|in:Masculino,Femenino',
+            'año_académico'        => 'required|integer|min:1|max:6',
+            'id_grupo'             => 'required|exists:' . $this->tablaGrupo . ',' . $this->columnaIdGrupo,
+            'id_modalidad'         => 'required|exists:' . $this->tablaModalidad . ',' . $this->columnaIdModalidad,
+            'id_carrera'           => 'required|exists:' . $this->tablaCarrera . ',' . $this->columnaIdCarrera,
         ]);
 
         if ($validator->fails()) {
@@ -688,15 +679,15 @@ class UserController extends Controller
             $estudiante->id_usuario = $user->id;
         }
 
-        $estudiante->CI_estudiante = $request->ci_estudiante;
+        $estudiante->CI_estudiante     = $request->ci_estudiante;
         $estudiante->Nombre_estudiante = $request->nombre_estudiante;
-        $estudiante->Apellido1 = $request->apellido1_estudiante;
-        $estudiante->Apellido2 = $request->apellido2_estudiante;
-        $estudiante->sexo = $request->sexo_estudiante;
-        $estudiante->year_academico = $request->año_académico;
-        $estudiante->id_grupo = $request->id_grupo;
-        $estudiante->id_modalidad = $request->id_modalidad;
-        $estudiante->id_carrera = $request->id_carrera;
+        $estudiante->Apellido1         = $request->apellido1_estudiante;
+        $estudiante->Apellido2         = $request->apellido2_estudiante;
+        $estudiante->sexo              = $request->sexo_estudiante;
+        $estudiante->year_academico    = $request->año_académico;
+        $estudiante->id_grupo          = $request->id_grupo;
+        $estudiante->id_modalidad      = $request->id_modalidad;
+        $estudiante->id_carrera        = $request->id_carrera;
         $estudiante->save();
     }
 
@@ -709,12 +700,12 @@ class UserController extends Controller
                 'required', 'digits:11',
                 'unique:' . $this->tablaProfesor . ',CI_profesor,' . $profesorId . ',id',
             ],
-            'nombre_profesor' => 'required|string|min:3|max:40',
-            'apellido1_profesor' => 'required|string|min:3|max:40',
-            'apellido2_profesor' => 'required|string|min:3|max:40',
-            'id_departamento' => 'required|exists:' . $this->tablaDepartamento . ',' . $this->columnaIdDepartamento,
-            'categoría_docente' => 'required|string|in:Profesor Titular,Profesor Instructor,Profesor Auxiliar',
-            'categoría_científica' => 'required|string|in:Licenciado,Ingeniero,Máster en Ciencias,Doctor en Ciencias',
+            'nombre_profesor'       => 'required|string|min:3|max:40',
+            'apellido1_profesor'    => 'required|string|min:3|max:40',
+            'apellido2_profesor'    => 'required|string|min:3|max:40',
+            'id_departamento'       => 'required|exists:' . $this->tablaDepartamento . ',' . $this->columnaIdDepartamento,
+            'categoría_docente'     => 'required|string|in:Profesor Titular,Profesor Instructor,Profesor Auxiliar',
+            'categoría_científica'  => 'required|string|in:Licenciado,Ingeniero,Máster en Ciencias,Doctor en Ciencias',
         ]);
 
         if ($validator->fails()) {
@@ -733,15 +724,19 @@ class UserController extends Controller
             $profesor->id_usuario = $user->id;
         }
 
-        $profesor->CI_profesor = $request->ci_profesor;
-        $profesor->Nombre_profesor = $request->nombre_profesor;
-        $profesor->Apellido1 = $request->apellido1_profesor;
-        $profesor->Apellido2 = $request->apellido2_profesor;
-        $profesor->id_departamento = $request->id_departamento;
-        $profesor->Categoria_docente = $request->categoría_docente;
+        $profesor->CI_profesor          = $request->ci_profesor;
+        $profesor->Nombre_profesor      = $request->nombre_profesor;
+        $profesor->Apellido1            = $request->apellido1_profesor;
+        $profesor->Apellido2            = $request->apellido2_profesor;
+        $profesor->id_departamento      = $request->id_departamento;
+        $profesor->Categoria_docente    = $request->categoría_docente;
         $profesor->Categoria_cientifica = $request->categoría_científica;
         $profesor->save();
     }
+
+    /* ============================================================
+       ELIMINAR
+       ============================================================ */
 
     public function eliminar(Request $request)
     {
@@ -775,6 +770,9 @@ class UserController extends Controller
                 $this->eliminarDocumentosTesis($user->estudiante->tesis);
             }
 
+            // Detach roles antes de eliminar (por si no hay cascada en la pivote)
+            $user->roles()->detach();
+
             if ($user->estudiante) $user->estudiante->delete();
             if ($user->profesor)   $user->profesor->delete();
 
@@ -790,9 +788,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Elimina varios usuarios a la vez (recibe ids[]).
-     */
     public function eliminarVarios(Request $request)
     {
         $ids = $request->input('ids', []);
@@ -826,6 +821,8 @@ class UserController extends Controller
                     $this->eliminarDocumentosTesis($u->estudiante->tesis);
                 }
 
+                $u->roles()->detach();
+
                 if ($u->estudiante) $u->estudiante->delete();
                 if ($u->profesor)   $u->profesor->delete();
                 $u->delete();
@@ -841,12 +838,13 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Exporta los usuarios a CSV.
-     */
+    /* ============================================================
+       EXPORTAR CSV
+       ============================================================ */
+
     public function exportarCsv()
     {
-        $usuarios = $this->modelo::with(['rol', 'estudiante', 'profesor'])
+        $usuarios = $this->modelo::with(['roles', 'estudiante', 'profesor'])
             ->orderBy($this->columnaName)
             ->get();
 
@@ -864,7 +862,7 @@ class UserController extends Controller
             $out = fopen('php://output', 'w');
             fwrite($out, "\xEF\xBB\xBF");
 
-            fputcsv($out, ['Usuario', 'Email', 'Rol', 'Nombre completo'], ';');
+            fputcsv($out, ['Usuario', 'Email', 'Roles', 'Nombre completo'], ';');
 
             foreach ($usuarios as $u) {
                 $nombreCompleto = '—';
@@ -878,10 +876,12 @@ class UserController extends Controller
                         $u->profesor->Apellido2);
                 }
 
+                $rolesTexto = $u->roles->pluck('rol')->join(', ');
+
                 fputcsv($out, [
                     $u->{$this->columnaName},
                     $u->{$this->columnaEmail},
-                    $u->rol->rol ?? 'Sin rol',
+                    $rolesTexto ?: 'Sin rol',
                     $nombreCompleto,
                 ], ';');
             }
@@ -891,6 +891,10 @@ class UserController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    /* ============================================================
+       PERFIL
+       ============================================================ */
 
     public function perfil()
     {
@@ -907,6 +911,10 @@ class UserController extends Controller
         }
     }
 
+    /* ============================================================
+       REGISTRO INICIAL DEL ADMINISTRADOR
+       ============================================================ */
+
     public function showAdminRegistrationForm()
     {
         if ($this->modelo::count() > 0) {
@@ -916,8 +924,6 @@ class UserController extends Controller
         return view('registrarAdmin');
     }
 
-     
-
     public function registerFirstAdmin(Request $request)
     {
         if ($this->modelo::count() > 0) {
@@ -926,8 +932,8 @@ class UserController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'min:3', 'max:40', 'unique:' . $this->tablaUsuario . ',' . $this->columnaName],
-            'email' => ['required', 'email', 'max:255', 'unique:' . $this->tablaUsuario . ',' . $this->columnaEmail],
+            'name'     => ['required', 'string', 'min:3', 'max:40', 'unique:' . $this->tablaUsuario . ',' . $this->columnaName],
+            'email'    => ['required', 'email', 'max:255', 'unique:' . $this->tablaUsuario . ',' . $this->columnaEmail],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
 
@@ -945,11 +951,13 @@ class UserController extends Controller
             }
 
             $user = new $this->modelo();
-            $user->{$this->columnaName} = $request->name;
-            $user->{$this->columnaEmail} = $request->email;
-            $user->{$this->columnaRol} = $adminRole->id;
+            $user->{$this->columnaName}     = $request->name;
+            $user->{$this->columnaEmail}    = $request->email;
             $user->{$this->columnaPassword} = Hash::make($request->password);
             $user->save();
+
+            // Asignar el rol Administrador en la pivote
+            $user->roles()->sync([$adminRole->id]);
 
             DB::commit();
 
@@ -961,6 +969,102 @@ class UserController extends Controller
             return redirect()->back()
                 ->with('error', 'Error al crear el administrador: ' . $e->getMessage())
                 ->withInput();
+        }
+    }
+
+    /* ============================================================
+       SETUP INICIAL
+       ============================================================ */
+
+    private function setupInitialSystem(): void
+    {
+        if ($this->modelo::count() > 0) return;
+
+        DB::beginTransaction();
+        try {
+            $adminRoleId = DB::table('roles')->insertGetId([
+                'rol' => 'Administrador',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $permisos = [
+                ['permiso' => 'gestionarFacultad'], ['permiso' => 'gestionarCarrera'],
+                ['permiso' => 'gestionarModalidad'], ['permiso' => 'gestionarGrupos'],
+                ['permiso' => 'gestionarDepartamento'], ['permiso' => 'gestionarTesis'],
+                ['permiso' => 'gestionarCortes'], ['permiso' => 'gestionarNoConformidades'],
+                ['permiso' => 'subirCorte'], ['permiso' => 'revisarCorte'],
+                ['permiso' => 'revisarFundamentación'], ['permiso' => 'gestionarUsuarios'],
+                ['permiso' => 'gestionarRoles'], ['permiso' => 'gestionarPermisos'],
+                ['permiso' => 'inicio'], ['permiso' => 'consultas'],
+                ['permiso' => 'estudiantes'], ['permiso' => 'profesores'],
+                ['permiso' => 'buscarEstudiante'], ['permiso' => 'estudiantes_sin_tutor'],
+                ['permiso' => 'estudiantesAtrasadosFundamentación'], ['permiso' => 'estudiantesCursoDiurno'],
+                ['permiso' => 'estudiantesCursoEncuentro'], ['permiso' => 'estudiantesFacultad'],
+                ['permiso' => 'buscarProfesor'], ['permiso' => 'profesoresDepartamento'],
+                ['permiso' => 'profesoresDoctores'], ['permiso' => 'profesoresMáster'],
+                ['permiso' => 'profesoresNoTutores'], ['permiso' => 'mostrar_estudiante'],
+                ['permiso' => 'mostrar_profesor'], ['permiso' => 'crearUsuario'],
+                ['permiso' => 'perfil'], ['permiso' => 'verUsuario'],
+                ['permiso' => 'editarUsuario'], ['permiso' => 'crearFundamentación'],
+                ['permiso' => 'editarFundamentación'], ['permiso' => 'crearCorte'],
+                ['permiso' => 'editarCorte'], ['permiso' => 'verCorte'],
+                ['permiso' => 'verFundamentación'], ['permiso' => 'agregarRecomendacionFundamentacion'],
+                ['permiso' => 'editarRecomendacionFundamentacion'], ['permiso' => 'agregarNoConformidadCorte'],
+                ['permiso' => 'editarNoConformidadCorte'], ['permiso' => 'vincularProfesorCorte'],
+                ['permiso' => 'vincularProfesorFundamentación'], ['permiso' => 'asignarTutor'],
+                ['permiso' => 'agregarCarrera'], ['permiso' => 'verCarrera'],
+                ['permiso' => 'editarCarrera'], ['permiso' => 'crearTesis'],
+                ['permiso' => 'editarTesis'], ['permiso' => 'verTesis'],
+                ['permiso' => 'gestionarFundamentaciones'], ['permiso' => 'subirFundamentación'],
+                ['permiso' => 'fechaEntrega'], ['permiso' => 'revisarFundamentaciónEstudiante'],
+                ['permiso' => 'revisarCorteEstudiante'], ['permiso' => 'estudiantesTutorados'],
+                ['permiso' => 'revisarEstudianteTutorado'],
+                ['permiso' => 'cambiarTesis'],
+            ];
+
+            $permisoIds = [];
+            $id = 1;
+            foreach ($permisos as $permiso) {
+                $existing = DB::table('permisos')->where('permiso', $permiso['permiso'])->first();
+                if ($existing) {
+                    $permisoIds[] = $existing->id;
+                } else {
+                    DB::table('permisos')->insert([
+                        'id' => $id,
+                        'permiso' => $permiso['permiso'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                    $permisoIds[] = $id;
+                    $id++;
+                }
+            }
+
+            $rolesPermisosData = [];
+            foreach ($permisoIds as $permisoId) {
+                $exists = DB::table('roles_permisos')
+                    ->where('id_rol', $adminRoleId)
+                    ->where('id_permiso', $permisoId)
+                    ->exists();
+                if (!$exists) {
+                    $rolesPermisosData[] = [
+                        'id_rol' => $adminRoleId,
+                        'id_permiso' => $permisoId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+            }
+
+            if (!empty($rolesPermisosData)) {
+                DB::table('roles_permisos')->insert($rolesPermisosData);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new \Exception('Error al configurar el sistema: ' . $e->getMessage());
         }
     }
 }

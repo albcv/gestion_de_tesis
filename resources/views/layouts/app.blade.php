@@ -17,35 +17,58 @@
             abort(403, 'Acceso denegado');
         }
 
+        /** @var \App\Models\User $usuario */
         $usuario = Auth::user();
+
+        // Garantizar que la relación many-to-many de roles esté cargada
+        $usuario->loadMissing('roles');
+
         $ruta = Route::currentRouteName();
         if (!$usuario->tienePermiso($ruta)) {
             abort(403, 'Acceso denegado');
         }
 
-        // Menús del sidebar (gestión)
+        /* ============================================================
+           MENÚS DEL SIDEBAR — AGRUPADOS POR ROL
+           ============================================================
+           Cada clave es el nombre del rol tal como está en la tabla `roles`
+           (case-insensitive). Cada grupo contiene los ítems que le
+           corresponden a ese rol.
+
+           Un usuario con varios roles verá varios grupos.
+           ============================================================ */
         $sidebarMenus = [
-            ['nombre' => 'Facultad',                'url' => route('gestionarFacultad'),          'permiso' => 'gestionarFacultad',         'icono' => '🏛️'],
-            ['nombre' => 'Carrera',                 'url' => route('gestionarCarrera'),           'permiso' => 'gestionarCarrera',          'icono' => '🎓'],
-            ['nombre' => 'Modalidad',               'url' => route('gestionarModalidad'),         'permiso' => 'gestionarModalidad',        'icono' => '📚'],
-            ['nombre' => 'Grupo',                   'url' => route('gestionarGrupos'),            'permiso' => 'gestionarGrupos',           'icono' => '👥'],
-            ['nombre' => 'Departamento',            'url' => route('gestionarDepartamento'),      'permiso' => 'gestionarDepartamento',     'icono' => '🏢'],
-             ['nombre' => 'Asignar Tutor',          'url' => route('asignarTutor'),                'permiso' => 'asignarTutor',              'icono' => '👨‍🏫'],
-            ['nombre' => 'Trabajo de diploma',      'url' => route('gestionarTesis'),             'permiso' => 'gestionarTesis',            'icono' => '📝'],
-            ['nombre' => 'Fundamentación de tesis', 'url' => route('gestionarFundamentaciones'),  'permiso' => 'gestionarFundamentaciones', 'icono' => '📖'],
-            ['nombre' => 'Cortes de tesis',         'url' => route('gestionarCortes'),            'permiso' => 'gestionarCortes',           'icono' => '📝'],
-            ['nombre' => 'No conformidades',        'url' => route('gestionarNoConformidades'),   'permiso' => 'gestionarNoConformidades',  'icono' => '⚠️'],
-            ['nombre' => 'Fechas de entrega',       'url' => route('fechaEntrega'),               'permiso' => 'fechaEntrega',              'icono' => '📅'],
-            ['nombre' => 'Subir Fundamentación',    'url' => route('subirFundamentación'),        'permiso' => 'subirFundamentación',       'icono' => '⬆️'],
-            ['nombre' => 'Subir Corte',             'url' => route('subirCorte'),                 'permiso' => 'subirCorte',                'icono' => '⬆️'],
-            ['nombre' => 'Cambiar Tesis',           'url' => route('cambiarTesis'),               'permiso' => 'cambiarTesis',              'icono' => '📝'],
-            ['nombre' => 'Revisar Fundamentación',  'url' => route('revisarFundamentación'),      'permiso' => 'revisarFundamentación',     'icono' => '🔍'],
-            ['nombre' => 'Revisar Corte',           'url' => route('revisarCorte'),               'permiso' => 'revisarCorte',              'icono' => '🔍'],
-            ['nombre' => 'Estudiantes tutorados',   'url' => route('estudiantesTutorados'),       'permiso' => 'estudiantesTutorados',      'icono' => '🧑‍🎓'],
-            ['nombre' => 'Tesis Histórico',   'url' => route('gestionarTesisHistorico'),          'permiso' => 'gestionarTesisHistorico',    'icono' => '📜'],
+            'Administrador' => [
+                ['nombre' => 'Facultad',                'url' => route('gestionarFacultad'),          'permiso' => 'gestionarFacultad',         'icono' => '🏛️'],
+                ['nombre' => 'Carrera',                 'url' => route('gestionarCarrera'),           'permiso' => 'gestionarCarrera',          'icono' => '🎓'],
+                ['nombre' => 'Modalidad',               'url' => route('gestionarModalidad'),         'permiso' => 'gestionarModalidad',        'icono' => '📚'],
+                ['nombre' => 'Grupo',                   'url' => route('gestionarGrupos'),            'permiso' => 'gestionarGrupos',           'icono' => '👥'],
+                ['nombre' => 'Departamento',            'url' => route('gestionarDepartamento'),      'permiso' => 'gestionarDepartamento',     'icono' => '🏢'],
+                ['nombre' => 'Asignar Tutor',           'url' => route('asignarTutor'),               'permiso' => 'asignarTutor',              'icono' => '👨‍🏫'],
+                ['nombre' => 'Trabajo de diploma',      'url' => route('gestionarTesis'),             'permiso' => 'gestionarTesis',            'icono' => '📝'],
+                ['nombre' => 'Fundamentación de tesis', 'url' => route('gestionarFundamentaciones'),  'permiso' => 'gestionarFundamentaciones', 'icono' => '📖'],
+                ['nombre' => 'Cortes de tesis',         'url' => route('gestionarCortes'),            'permiso' => 'gestionarCortes',           'icono' => '📝'],
+                ['nombre' => 'No conformidades',        'url' => route('gestionarNoConformidades'),   'permiso' => 'gestionarNoConformidades',  'icono' => '⚠️'],
+                ['nombre' => 'Fechas de entrega',       'url' => route('fechaEntrega'),               'permiso' => 'fechaEntrega',              'icono' => '📅'],
+                ['nombre' => 'Tesis Histórico',         'url' => route('gestionarTesisHistorico'),    'permiso' => 'gestionarTesisHistorico',   'icono' => '📜'],
+            ],
+
+            'Estudiante' => [
+                ['nombre' => 'Cambiar Tesis',           'url' => route('cambiarTesis'),               'permiso' => 'cambiarTesis',              'icono' => '📝'],
+                ['nombre' => 'Subir Fundamentación',    'url' => route('subirFundamentación'),        'permiso' => 'subirFundamentación',       'icono' => '⬆️'],
+                ['nombre' => 'Subir Corte',             'url' => route('subirCorte'),                 'permiso' => 'subirCorte',                'icono' => '⬆️'],
+            ],
+
+            'Profesor' => [
+                ['nombre' => 'Revisar Fundamentación',  'url' => route('revisarFundamentación'),      'permiso' => 'revisarFundamentación',     'icono' => '🔍'],
+                ['nombre' => 'Revisar Corte',           'url' => route('revisarCorte'),               'permiso' => 'revisarCorte',              'icono' => '🔎'],
+                ['nombre' => 'Estudiantes tutorados',   'url' => route('estudiantesTutorados'),       'permiso' => 'estudiantesTutorados',      'icono' => '🧑‍🎓'],
+            ],
         ];
 
-        // Menús del header (navegación general)
+        /* ============================================================
+           MENÚS DEL HEADER (navegación general)
+           ============================================================ */
         $headerMenus = [
             ['nombre' => 'Inicio',    'url' => route('inicio'),            'permiso' => 'inicio',            'icono' => '🏠'],
             ['nombre' => 'Usuarios',  'url' => route('gestionarUsuarios'),  'permiso' => 'gestionarUsuarios', 'icono' => '👤'],
@@ -54,11 +77,46 @@
             ['nombre' => 'Permisos',  'url' => route('gestionarPermisos'),  'permiso' => 'gestionarPermisos', 'icono' => '🔑'],
         ];
 
-        $sidebarMenusFiltrados = array_filter($sidebarMenus, function ($menu) use ($usuario) {
-            return is_array($menu['permiso'])
-                ? $usuario->tieneAlgunPermiso($menu['permiso'])
-                : $usuario->tienePermiso($menu['permiso']);
-        });
+        /* ============================================================
+           OBTENER ROLES DEL USUARIO (por nombre, en minúsculas)
+           ============================================================
+           Se usa la relación many-to-many `roles()`.
+           Si por alguna razón viene vacía, se devuelve un array vacío.
+           ============================================================ */
+        $rolesUsuario = $usuario->roles
+            ->pluck('rol')
+            ->map(fn ($r) => strtolower(trim((string) $r)))
+            ->filter()
+            ->values()
+            ->toArray();
+
+        /* ============================================================
+           FILTRAR MENÚS DEL SIDEBAR SEGÚN EL ROL DEL USUARIO
+           ============================================================
+           - Solo se muestran los grupos de roles que el usuario tiene.
+           - Dentro de cada grupo, se filtran los ítems por permiso.
+           - Se descartan los grupos que queden vacíos.
+           ============================================================ */
+        $sidebarGruposFiltrados = [];
+
+        foreach ($sidebarMenus as $nombreRol => $items) {
+            // ¿El usuario tiene este rol? (comparación case-insensitive)
+            if (!in_array(strtolower($nombreRol), $rolesUsuario, true)) {
+                continue;
+            }
+
+            // Filtrar ítems por permiso
+            $itemsFiltrados = array_filter($items, function ($menu) use ($usuario) {
+                return is_array($menu['permiso'])
+                    ? $usuario->tieneAlgunPermiso($menu['permiso'])
+                    : $usuario->tienePermiso($menu['permiso']);
+            });
+
+            // Solo agregar el grupo si tiene ítems visibles
+            if (count($itemsFiltrados) > 0) {
+                $sidebarGruposFiltrados[$nombreRol] = array_values($itemsFiltrados);
+            }
+        }
 
         $headerMenusFiltrados = array_filter($headerMenus, function ($menu) use ($usuario) {
             return is_array($menu['permiso'])
@@ -75,7 +133,7 @@
 
             <!-- Izquierda: hamburguesa + marca -->
             <div class="nav-left">
-                @if(count($sidebarMenusFiltrados) > 0)
+                @if(count($sidebarGruposFiltrados) > 0)
                     <button id="menuToggle"
                             class="menu-toggle"
                             aria-label="Abrir menú de gestión"
@@ -136,31 +194,53 @@
     <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
 
     <!-- ==============================
-         Sidebar (drawer)
+         Sidebar (drawer) — agrupado por rol
          ============================== -->
     <nav class="sidebar" id="sidebar" aria-hidden="true">
         <button class="sidebar-close" id="sidebarClose" aria-label="Cerrar menú">×</button>
 
         <div class="sidebar-menu-container">
 
-            @if(count($sidebarMenusFiltrados) > 0)
-                <h2 class="sidebar-section-title">Gestionar</h2>
-                <ul class="sidebar-menu">
-                    @foreach($sidebarMenusFiltrados as $menu)
-                        <li class="menu_item">
-                            <a class="menu_link" href="{{ $menu['url'] }}" title="{{ $menu['nombre'] }}">
-                                <span class="menu_icon">{{ $menu['icono'] ?? '📄' }}</span>
-                                <span class="menu_text">{{ $menu['nombre'] }}</span>
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
+            @if(count($sidebarGruposFiltrados) > 0)
+                @foreach($sidebarGruposFiltrados as $nombreRol => $items)
+                    @php
+                        $rolLower = strtolower($nombreRol);
+                        $iconoRol = match(true) {
+                            $rolLower === 'administrador' => '🛡️',
+                            $rolLower === 'estudiante'    => '🎓',
+                            $rolLower === 'profesor'      => '👨‍🏫',
+                            default                        => '📌',
+                        };
+                    @endphp
+
+                    <div class="sidebar-rol-group" data-rol="{{ $rolLower }}">
+                        <h2 class="sidebar-section-title">
+                            <span class="sidebar-section-icon">{{ $iconoRol }}</span>
+                            {{ $nombreRol }}
+                        </h2>
+                        <ul class="sidebar-menu">
+                            @foreach($items as $menu)
+                                <li class="menu_item">
+                                    <a class="menu_link"
+                                       href="{{ $menu['url'] }}"
+                                       title="{{ $menu['nombre'] }}">
+                                        <span class="menu_icon">{{ $menu['icono'] ?? '📄' }}</span>
+                                        <span class="menu_text">{{ $menu['nombre'] }}</span>
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endforeach
             @endif
 
             <!-- Navegación general: solo visible en móvil -->
             @if(count($headerMenusFiltrados) > 0)
                 <div class="sidebar-mobile-only">
-                    <h2 class="sidebar-section-title">Navegación</h2>
+                    <h2 class="sidebar-section-title">
+                        <span class="sidebar-section-icon">🧭</span>
+                        Navegación
+                    </h2>
                     <ul class="sidebar-menu">
                         @foreach($headerMenusFiltrados as $menu)
                             <li class="menu_item">
@@ -204,9 +284,6 @@
     <script>
         /**
          * Muestra una notificación flotante en la esquina superior derecha.
-         * @param {string} mensaje - Texto a mostrar
-         * @param {string} tipo - 'success' | 'error' | 'info' | 'warning'
-         * @param {number} duracion - ms antes de desaparecer (por defecto 4000)
          */
         function mostrarNotificacion(mensaje, tipo = 'info', duracion = 4000) {
             const contenedor = document.getElementById('notificaciones-container');
@@ -229,16 +306,13 @@
 
             contenedor.appendChild(noti);
 
-            // Forzar reflow para que la animación de entrada funcione
             requestAnimationFrame(() => noti.classList.add('visible'));
 
-            // Botón cerrar
             noti.querySelector('.notificacion-cerrar').addEventListener('click', () => {
                 noti.classList.remove('visible');
                 setTimeout(() => noti.remove(), 300);
             });
 
-            // Auto-cierre
             if (duracion > 0) {
                 setTimeout(() => {
                     noti.classList.remove('visible');
@@ -247,9 +321,6 @@
             }
         }
 
-        // ==============================
-        // Notificaciones desde Laravel
-        // ==============================
         document.addEventListener('DOMContentLoaded', function () {
 
             @if(session('success'))

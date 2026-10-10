@@ -22,6 +22,7 @@
             <p class="page-subtitle">Corte {{ $corte->Numero_corte }} - {{ $corte->tesis->estudiante->Nombre_estudiante }} {{ $corte->tesis->estudiante->Apellido1 }}</p>
         </div>
 
+        {{-- Mensajes de sesión --}}
         @if (session('success'))
             <div class="alert-message alert-success alert-dismissible">
                 ✅ <span>{{ session('success') }}</span>
@@ -32,6 +33,19 @@
         @if (session('error'))
             <div class="alert-message alert-error alert-dismissible">
                 ❌ <span>{{ session('error') }}</span>
+                <button type="button" class="alert-close" aria-label="Close">&times;</button>
+            </div>
+        @endif
+
+        {{-- Errores de validación --}}
+        @if ($errors->any())
+            <div class="alert-message alert-error alert-dismissible">
+                ❌ <strong>Errores de validación:</strong>
+                <ul style="margin: 8px 0 0 20px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
                 <button type="button" class="alert-close" aria-label="Close">&times;</button>
             </div>
         @endif
@@ -81,7 +95,7 @@
                                 <span class="status-badge status-pending">⏰ Pendiente</span>
                             @endif
                         </div>
-                        
+
                         <div class="actions-container">
                             @if (!$corte->aprobado && !$corte->desaprobado)
                                 <form action="{{ route('corte.aprobar') }}" method="POST" class="d-inline">
@@ -182,17 +196,54 @@
                         @if ($corte->noConformidades && $corte->noConformidades->count() > 0)
                             <ul class="list-group mb-3">
                                 @foreach ($corte->noConformidades as $noConformidad)
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        {{ $noConformidad->Deficiencias_detectadas }}
-                                        <form action="{{ route('corte.eliminarNoConformidad') }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <input type="hidden" name="id_corte" value="{{ $corte->idCortes_de_tesis }}">
-                                            <input type="hidden" name="no_conformidad_id" value="{{ $noConformidad->idNoConformidades }}">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                🗑️
-                                            </button>
-                                        </form>
+                                    @php
+                                        /*
+                                         * El documento de revisión ahora vive en la tabla PIVOTE
+                                         * (corte_tesis_no_conformidades), no en no_conformidades.
+                                         * Esto permite que la misma no conformidad tenga documentos
+                                         * distintos según el corte al que esté asociada.
+                                         */
+                                        $relacion = \App\Models\Cortes_de_tesis_has_NoConformidades::where('corte_tesis_id', $corte->idCortes_de_tesis)
+                                            ->where('no_conformidad_id', $noConformidad->idNoConformidades)
+                                            ->first();
+
+                                        $docRevision  = $relacion->documento_revision ?? null;
+                                        $existeDoc    = $docRevision && \Illuminate\Support\Facades\Storage::disk('local')->exists($docRevision);
+                                        $nombreDoc    = $existeDoc ? basename($docRevision) : null;
+                                        $tamanioDoc   = $existeDoc ? \Illuminate\Support\Facades\Storage::disk('local')->size($docRevision) : 0;
+                                    @endphp
+
+                                    <li class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <div>{{ $noConformidad->Deficiencias_detectadas }}</div>
+
+                                                @if ($existeDoc)
+                                                    <div class="documento-revision-box small" style="margin-top: 8px;">
+                                                        <span class="documento-revision-icono">📄</span>
+                                                        <div class="documento-revision-texto">
+                                                            <strong>{{ $nombreDoc }}</strong>
+                                                            <small>
+                                                                Tamaño: {{ number_format($tamanioDoc / 1024, 2) }} KB
+                                                            </small>
+                                                        </div>
+                                                        <a href="{{ route('descargarRevisionNoConformidad', $noConformidad->idNoConformidades) }}"
+                                                           class="documento-revision-btn small">
+                                                            📥 Ver documento
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <form action="{{ route('corte.eliminarNoConformidad') }}" method="POST" class="d-inline ms-2">
+                                                @csrf
+                                                @method('DELETE')
+                                                <input type="hidden" name="id_corte" value="{{ $corte->idCortes_de_tesis }}">
+                                                <input type="hidden" name="no_conformidad_id" value="{{ $noConformidad->idNoConformidades }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    🗑️
+                                                </button>
+                                            </form>
+                                        </div>
                                     </li>
                                 @endforeach
                             </ul>
@@ -229,13 +280,27 @@
                         <!-- Sección para crear nueva no conformidad -->
                         <div>
                             <h3>Crear Nueva No Conformidad:</h3>
-                            <form action="{{ route('corte.crearNuevaNoConformidad') }}" method="POST">
+                            <form action="{{ route('corte.crearNuevaNoConformidad') }}" method="POST"
+                                  enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" name="id_corte" value="{{ $corte->idCortes_de_tesis }}">
                                 <div class="mb-3">
                                     <textarea class="form-control" id="nueva_no_conformidad" name="nueva_no_conformidad" 
                                               rows="4" placeholder="Describe la no conformidad detectada..." 
-                                              required></textarea>
+                                              required>{{ old('nueva_no_conformidad') }}</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="documento_revision_corte" class="form-label">
+                                        📎 Documento de revisión (opcional)
+                                    </label>
+                                    <input type="file"
+                                           class="form-control"
+                                           id="documento_revision_corte"
+                                           name="documento_revision"
+                                           accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar">
+                                    <small class="form-text text-muted">
+                                        Formatos permitidos: PDF, Word, Excel, PowerPoint, ZIP, RAR (máx. 10 MB)
+                                    </small>
                                 </div>
                                 <button type="submit" class="action-button button-success w-100">
                                     ➕ Crear y Asignar
@@ -252,41 +317,58 @@
 
 @section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-            document.querySelectorAll('.alert-message').forEach(function(alert) {
+    document.addEventListener('DOMContentLoaded', function () {
+        // Ocultar alertas automáticamente después de 8 segundos
+        setTimeout(function () {
+            document.querySelectorAll('.alert-message').forEach(function (alert) {
                 alert.style.opacity = '0';
                 alert.style.transform = 'translateY(-10px)';
-                setTimeout(function() {
+                setTimeout(function () {
                     alert.style.display = 'none';
                 }, 300);
             });
-        }, 5000);
+        }, 8000);
 
-        document.querySelectorAll('.alert-close').forEach(function(button) {
-            button.addEventListener('click', function() {
+        // Cerrar alertas al hacer clic en la X
+        document.querySelectorAll('.alert-close').forEach(function (button) {
+            button.addEventListener('click', function () {
                 const alert = this.closest('.alert-message');
                 alert.style.opacity = '0';
                 alert.style.transform = 'translateY(-10px)';
-                setTimeout(function() {
+                setTimeout(function () {
                     alert.style.display = 'none';
                 }, 300);
             });
         });
 
+        // Animación de entrada de las cards
         const cards = document.querySelectorAll('.info-card');
         cards.forEach((card, index) => {
             card.style.animationDelay = `${index * 0.1}s`;
         });
 
+        // Validar formulario de nueva no conformidad
         const nuevaNoConformidadForm = document.querySelector('form[action*="crearNuevaNoConformidad"]');
         if (nuevaNoConformidadForm) {
-            nuevaNoConformidadForm.addEventListener('submit', function(e) {
+            nuevaNoConformidadForm.addEventListener('submit', function (e) {
                 const textarea = this.querySelector('#nueva_no_conformidad');
                 if (textarea.value.trim().length < 5) {
                     e.preventDefault();
                     alert('La descripción de la no conformidad debe tener al menos 5 caracteres.');
                     textarea.focus();
+                }
+            });
+        }
+
+        // Validación en cliente del tamaño del archivo de revisión
+        const inputDocumentoRevision = document.getElementById('documento_revision_corte');
+        if (inputDocumentoRevision) {
+            inputDocumentoRevision.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                const maxSize = 10 * 1024 * 1024; // 10 MB
+                if (file && file.size > maxSize) {
+                    alert('El archivo excede el tamaño máximo de 10 MB.');
+                    e.target.value = '';
                 }
             });
         }

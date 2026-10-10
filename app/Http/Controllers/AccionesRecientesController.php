@@ -16,16 +16,30 @@ class AccionesRecientesController extends Controller
     public function index(Request $request)
     {
         try {
-            // Verificar que sea administrador
+            // ------------------------------------------------------------
+            // 1. Verificar que sea administrador usando la relación many-to-many
+            // ------------------------------------------------------------
             $user = Auth::user();
-            $rol = DB::table('roles')->where('id', $user->id_rol)->first();
 
-            if (!$rol || strtolower($rol->rol) !== 'administrador') {
+            if (!$user) {
+                return redirect()->route('login')
+                    ->with('error', 'Debes iniciar sesión.');
+            }
+
+            // Obtener los nombres de los roles del usuario (en minúsculas)
+            $rolesUsuario = $user->roles()
+                ->pluck('rol')
+                ->map(fn ($r) => strtolower($r))
+                ->toArray();
+
+            if (!in_array('administrador', $rolesUsuario, true)) {
                 return redirect()->route('inicio')
                     ->with('error', 'No tienes permisos para acceder a esta sección.');
             }
 
-            // Días configurables (por defecto 3)
+            // ------------------------------------------------------------
+            // 2. Días configurables (por defecto 3)
+            // ------------------------------------------------------------
             $dias = (int) $request->input('dias', 3);
             if ($dias < 1) $dias = 1;
             if ($dias > 30) $dias = 30;
@@ -142,7 +156,7 @@ class AccionesRecientesController extends Controller
                         // Para tesis: si created_at == updated_at (o muy cercanos),
                         // es "creó"; si updated_at es posterior, es "actualizó"
                         $diff = abs($fechaUpdated - $fechaCreated);
-                        $item->es_creacion = ($diff < 60); // menos de 60s de diferencia
+                        $item->es_creacion = ($diff < 60);
                     } else {
                         // Para versiones: v1 = subió, v>1 = actualizó
                         $item->es_creacion = ((int) $item->version_numero === 1);
@@ -156,6 +170,10 @@ class AccionesRecientesController extends Controller
             return view('acciones_recientes', compact('acciones', 'dias'));
 
         } catch (\Exception $e) {
+            \Log::error('Error en AccionesRecientes: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return redirect()->route('inicio')
                 ->with('error', 'Error al cargar las acciones recientes: ' . $e->getMessage());
         }

@@ -20,8 +20,14 @@
         </div>
 
         <div class="campo">
-            <label>🛡️ Rol</label>
-            <span>{{ $user->rol->rol }}</span>
+            <label>🛡️ Roles</label>
+            <span>
+                @if ($user->roles && $user->roles->count() > 0)
+                    {{ $user->roles->pluck('rol')->join(', ') }}
+                @else
+                    Sin rol asignado
+                @endif
+            </span>
         </div>
 
         <div class="campo">

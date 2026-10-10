@@ -13,7 +13,6 @@
                 <span id="ícono_crear">+</span> Crear Usuario
             </a>
 
-            {{-- 👇 Botón Posibles Usuarios --}}
             <a href="{{ route('posiblesUsuarios') }}"
                class="btn-crear"
                style="background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
@@ -57,7 +56,6 @@
                        ));
         @endphp
 
-        <!-- Filtros -->
         <form method="GET" action="{{ route('gestionarUsuarios') }}" class="form-filtros-usuarios">
             <div class="filtros-fila">
                 <input type="text" name="buscar" placeholder="Buscar usuario..."
@@ -76,7 +74,6 @@
                     @endforeach
                 </select>
 
-                {{-- Filtros exclusivos para estudiantes --}}
                 @if ($esFiltroEstudiante)
                     <select name="filtro_carrera" class="input-filtro">
                         <option value="">Todas las carreras</option>
@@ -159,7 +156,7 @@
                         <th>Nombre completo</th>
                         <th>Usuario</th>
                         <th>Email</th>
-                        <th>Rol</th>
+                        <th>Roles</th>
                         <th class="col-acciones">Acciones</th>
                     </tr>
                 </thead>
@@ -185,7 +182,13 @@
                             <td>{{ $perfilInfo }}</td>
                             <td>{{ $usuario->name }}</td>
                             <td>{{ $usuario->email }}</td>
-                            <td>{{ $usuario->rol->rol ?? 'Sin rol' }}</td>
+                            <td>
+                                @forelse($usuario->roles as $rol)
+                                    <span class="badge-rol-detalle">{{ $rol->rol }}</span>
+                                @empty
+                                    <span class="sin-informacion">Sin rol</span>
+                                @endforelse
+                            </td>
                             <td>
                                 <div class="acciones-td">
                                     <a href="{{ route('gestionarUsuarios', ['accion' => 'detalles', 'id' => $usuario->id]) }}"
@@ -281,11 +284,8 @@
         document.getElementById('formEliminarVarias').submit();
     }
 
-    /* ============ AUTO-SUBMIT FILTROS ============ */
     document.querySelectorAll('.form-filtros-usuarios select').forEach(sel => {
         sel.addEventListener('change', function () {
-            // Si el usuario cambia el rol y ya no es estudiante,
-            // nos aseguramos de no arrastrar filtros de estudiante en la URL.
             if (this.name === 'filtro_rol' && this.value !== 'estudiante') {
                 const form = this.closest('form');
                 ['filtro_carrera', 'filtro_modalidad', 'filtro_grupo'].forEach(n => {

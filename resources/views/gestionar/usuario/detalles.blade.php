@@ -22,7 +22,6 @@
     <div class="detalle-seccion">
         <h2>🔐 Información de Cuenta</h2>
         <div class="detalle-grid">
-            
             <div class="detalle-campo">
                 <label>Nombre de Usuario:</label>
                 <span>{{ $usuario->name }}</span>
@@ -31,9 +30,15 @@
                 <label>Email:</label>
                 <span>{{ $usuario->email }}</span>
             </div>
-            <div class="detalle-campo">
-                <label>Rol:</label>
-                <span class="badge-rol-detalle">{{ $usuario->rol->rol ?? 'Sin rol' }}</span>
+            <div class="detalle-campo detalle-campo-full">
+                <label>Roles:</label>
+                <div class="roles-lista-detalle">
+                    @forelse($usuario->roles as $rol)
+                        <span class="badge-rol-detalle">{{ $rol->rol }}</span>
+                    @empty
+                        <span class="sin-datos">Sin rol asignado</span>
+                    @endforelse
+                </div>
             </div>
             <div class="detalle-campo">
                 <label>Fecha de Creación:</label>
@@ -210,8 +215,14 @@
             <h2>ℹ️ Información Adicional</h2>
             <div class="detalle-grid">
                 <div class="detalle-campo">
-                    <label>Tipo de Usuario:</label>
-                    <span>{{ $usuario->rol->rol ?? 'Sin rol' }}</span>
+                    <label>Roles asignados:</label>
+                    <div class="roles-lista-detalle">
+                        @forelse($usuario->roles as $rol)
+                            <span class="badge-rol-detalle">{{ $rol->rol }}</span>
+                        @empty
+                            <span class="sin-datos">Sin rol asignado</span>
+                        @endforelse
+                    </div>
                 </div>
                 <div class="detalle-campo detalle-campo-full">
                     <label>Perfil asociado:</label>
@@ -237,5 +248,21 @@
         </form>
     </div>
 </div>
+
+<style>
+/* ============================================================
+   LISTA DE ROLES EN EL DETALLE
+   ============================================================ */
+.roles-lista-detalle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.detalle-campo-full {
+    grid-column: 1 / -1;
+}
+</style>
 
 @endsection

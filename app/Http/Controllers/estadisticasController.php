@@ -21,45 +21,68 @@ class estadisticasController extends Controller
         try {
             // Verificar si el usuario está autenticado
             if (!Auth::check()) {
-                return redirect()->route('login');
+                return response()->json([
+                    'error'   => 'No autenticado',
+                    'message' => 'Debes iniciar sesión para ver las estadísticas.',
+                ], 401);
             }
 
-            // Obtener el rol del usuario autenticado
             $usuario = Auth::user();
-            $id_rol = $usuario->id_rol;
 
-            // Verificar si el rol tiene permiso para ver estadísticas
+            // ============================================================
+            // Verificar permiso usando la relación many-to-many
+            // ============================================================
+            // IDs de los roles del usuario autenticado
+            $idsRoles = $usuario->roles()->pluck('roles.id')->toArray();
+
+            if (empty($idsRoles)) {
+                return response()->json([
+                    'error'   => 'Sin rol asignado',
+                    'message' => 'El usuario no tiene roles asignados.',
+                ], 403);
+            }
+
             $tienePermiso = DB::table('roles_permisos as rp')
                 ->join('permisos as p', 'rp.id_permiso', '=', 'p.id')
-                ->where('rp.id_rol', $id_rol)
+                ->whereIn('rp.id_rol', $idsRoles)
                 ->where('p.permiso', 'estadisticas')
                 ->exists();
 
-            // Si no tiene permiso, redirigir al login
             if (!$tienePermiso) {
-                return redirect()->route('login');
+                return response()->json([
+                    'error'   => 'Sin permiso',
+                    'message' => 'No tienes permisos para ver las estadísticas.',
+                ], 403);
             }
 
+            // ============================================================
             // Estadísticas de fundamentaciones
+            // ============================================================
             $totalFundamentaciones = fundamentaciones::count();
-            $fundAprobadas = fundamentaciones_aprobadas::count();
-            $fundDesaprobadas = fundamentaciones_desaprobadas::count();
-            $fundPendientes = $totalFundamentaciones - ($fundAprobadas + $fundDesaprobadas);
+            $fundAprobadas         = fundamentaciones_aprobadas::count();
+            $fundDesaprobadas      = fundamentaciones_desaprobadas::count();
+            $fundPendientes        = max(0, $totalFundamentaciones - ($fundAprobadas + $fundDesaprobadas));
 
+            // ============================================================
             // Estadísticas de cortes
-            $totalCortes = Cortes_de_tesis::count();
-            $cortesAprobados = cortes_aprobados::count();
-            $cortesDesaprobados = cortes_desaprobados::count();
-            $cortesPendientes = $totalCortes - ($cortesAprobados + $cortesDesaprobados);
+            // ============================================================
+            $totalCortes         = Cortes_de_tesis::count();
+            $cortesAprobados     = cortes_aprobados::count();
+            $cortesDesaprobados  = cortes_desaprobados::count();
+            $cortesPendientes    = max(0, $totalCortes - ($cortesAprobados + $cortesDesaprobados));
 
+            // ============================================================
             // Estadísticas de estudiantes
-            $totalEstudiantes = Estudiante::count();
+            // ============================================================
+            $totalEstudiantes    = Estudiante::count();
             $estudiantesConTutor = tutor_estudiante::distinct('id_estudiante')->count('id_estudiante');
-            $estudiantesSinTutor = $totalEstudiantes - $estudiantesConTutor;
+            $estudiantesSinTutor = max(0, $totalEstudiantes - $estudiantesConTutor);
 
+            // ============================================================
             // Estadísticas de estudiantes de año culminante
+            // ============================================================
             $estudiantesAnioCulminante = Estudiante::select('estudiantes.*', 'carrera_modalidad.cantidad_years')
-                ->join('carrera_modalidad', function($join) {
+                ->join('carrera_modalidad', function ($join) {
                     $join->on('estudiantes.id_carrera', '=', 'carrera_modalidad.Carrera_idCarrera')
                          ->on('estudiantes.id_modalidad', '=', 'carrera_modalidad.Modalidad_idModalidad');
                 })
@@ -67,48 +90,54 @@ class estadisticasController extends Controller
                 ->get();
 
             $totalEstudiantesCulminante = $estudiantesAnioCulminante->count();
-            
-            // Estudiantes de año culminante con y sin tutor
-            $estudiantesCulminanteIds = $estudiantesAnioCulminante->pluck('id')->toArray();
-            
+            $estudiantesCulminanteIds   = $estudiantesAnioCulminante->pluck('id')->toArray();
+
             $estudiantesCulminanteConTutor = 0;
             $estudiantesCulminanteSinTutor = $totalEstudiantesCulminante;
-            
+
             if (count($estudiantesCulminanteIds) > 0) {
                 $estudiantesCulminanteConTutor = tutor_estudiante::whereIn('id_estudiante', $estudiantesCulminanteIds)
                     ->distinct('id_estudiante')
                     ->count('id_estudiante');
-                
-                $estudiantesCulminanteSinTutor = $totalEstudiantesCulminante - $estudiantesCulminanteConTutor;
+
+                $estudiantesCulminanteSinTutor = max(0, $totalEstudiantesCulminante - $estudiantesCulminanteConTutor);
             }
 
+            // ============================================================
+            // Respuesta JSON
+            // ============================================================
             return response()->json([
                 'fundamentaciones' => [
-                    'total' => $totalFundamentaciones,
-                    'aprobadas' => $fundAprobadas,
+                    'total'        => $totalFundamentaciones,
+                    'aprobadas'    => $fundAprobadas,
                     'desaprobadas' => $fundDesaprobadas,
-                    'pendientes' => $fundPendientes
+                    'pendientes'   => $fundPendientes,
                 ],
                 'cortes' => [
-                    'total' => $totalCortes,
-                    'aprobados' => $cortesAprobados,
+                    'total'        => $totalCortes,
+                    'aprobados'    => $cortesAprobados,
                     'desaprobados' => $cortesDesaprobados,
-                    'pendientes' => $cortesPendientes
+                    'pendientes'   => $cortesPendientes,
                 ],
                 'estudiantes' => [
-                    'total' => $totalEstudiantes,
-                    'sin_tutor' => $estudiantesSinTutor
+                    'total'     => $totalEstudiantes,
+                    'sin_tutor' => $estudiantesSinTutor,
                 ],
                 'estudiantes_culminante' => [
-                    'total' => $totalEstudiantesCulminante,
+                    'total'     => $totalEstudiantesCulminante,
                     'sin_tutor' => $estudiantesCulminanteSinTutor,
-                    'con_tutor' => $estudiantesCulminanteConTutor
-                ]
+                    'con_tutor' => $estudiantesCulminanteConTutor,
+                ],
             ]);
+
         } catch (\Exception $e) {
+            \Log::error('Error en estadísticas: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
-                'error' => 'Error al obtener estadísticas',
-                'message' => $e->getMessage()
+                'error'   => 'Error al obtener estadísticas',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

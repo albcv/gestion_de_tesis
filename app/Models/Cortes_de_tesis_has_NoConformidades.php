@@ -9,14 +9,19 @@ class Cortes_de_tesis_has_NoConformidades extends Model
     protected $table = 'corte_tesis_no_conformidades';
     protected $primaryKey = 'id';
 
+    protected $fillable = [
+        'corte_tesis_id',
+        'no_conformidad_id',
+        'documento_revision',
+    ];
+
     public function corte()
-{
-    return $this->belongsTo(Cortes_de_tesis::class, 'corte_tesis_id', 'idCortes_de_tesis');
-}
+    {
+        return $this->belongsTo(Cortes_de_tesis::class, 'corte_tesis_id', 'idCortes_de_tesis');
+    }
 
-public function noConformidad()
-{
-    return $this->belongsTo(NoConformidades::class, 'no_conformidad_id');
-}
-
+    public function noConformidad()
+    {
+        return $this->belongsTo(NoConformidades::class, 'no_conformidad_id');
+    }
 }

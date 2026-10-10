@@ -178,7 +178,7 @@ class PosiblesUsuariosController extends Controller
         }
     }
 
-       /**
+    /**
      * Acepta una solicitud → crea User + Estudiante/Profesor y borra la solicitud.
      * El rol se asigna automáticamente según `rol_solicitado`.
      */
@@ -209,13 +209,15 @@ class PosiblesUsuariosController extends Controller
                     ->with('error', "No se encontró el rol \"{$nombreRol}\" en el sistema. Contacte al administrador.");
             }
 
-            // ----- 3. Crear el User con el rol correspondiente -----
+            // ----- 3. Crear el User (sin id_rol, ya no existe esa columna) -----
             $user = new User();
             $user->name     = $posible->name;
             $user->email    = $posible->email;
-            $user->id_rol   = $rol->id;
             $user->password = $posible->password; // ya viene hasheada
             $user->save();
+
+            // ----- 3.1 Asignar el rol en la tabla pivote (many-to-many) -----
+            $user->roles()->sync([$rol->id]);
 
             // ----- 4. Crear el registro específico según el rol -----
             if ($posible->rol_solicitado === 'estudiante') {

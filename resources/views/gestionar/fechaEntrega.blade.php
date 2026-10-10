@@ -79,7 +79,6 @@
                 <form action="{{ route('fechas.fundamentacion.actualizar') }}" method="POST" class="fecha-form">
                     @csrf
                     @if ($fechaFundamentacion)
-                        @method('PUT')
                         <input type="hidden" name="id" value="{{ $fechaFundamentacion->id }}">
                     @endif
                     
@@ -182,7 +181,6 @@
                                         <form action="{{ route('fechas.corte.actualizar', $i) }}" method="POST" class="fecha-corte-form">
                                             @csrf
                                             @if ($corte)
-                                                @method('PUT')
                                                 <input type="hidden" name="id" value="{{ $corte->id }}">
                                             @endif
                                             

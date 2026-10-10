@@ -408,6 +408,15 @@ Route::get('/estadisticas', [estadisticasController::class, 'obtenerEstadisticas
         [DocumentoRevisionController::class, 'descargarRevisionCorte'])
         ->name('estudiante.descargarRevisionCorte');
 
+    // Documentos de revisión del profesor oponente (recomendaciones y no conformidades)
+    Route::get('/fundamentacion/{id}/descargar-revision-recomendacion',
+        [DocumentoRevisionController::class, 'descargarRevisionRecomendacionFundamentacion'])
+        ->name('descargarRevisionRecomendacionFundamentacion');
+
+    Route::get('/no-conformidad/{id}/descargar-revision',
+        [DocumentoRevisionController::class, 'descargarRevisionNoConformidad'])
+        ->name('descargarRevisionNoConformidad');
+
     Route::get('/estudiante/cambiar-tesis',
     [CambiarTesisController::class, 'index'])
     ->name('cambiarTesis');

@@ -8,6 +8,13 @@
     $esEdicion = isset($usuario) && $usuario !== null;
     $accion    = $esEdicion ? route('actualizarUsuario') : route('agregarUsuario');
     $titulo    = $esEdicion ? 'Editar Usuario' : 'Crear Usuario';
+
+    // Roles seleccionados (edición o old())
+    $rolesSeleccionados = old('roles');
+    if ($rolesSeleccionados === null && $esEdicion) {
+        $rolesSeleccionados = $usuario->roles->pluck('id')->toArray();
+    }
+    $rolesSeleccionados = array_map('intval', (array) $rolesSeleccionados);
 @endphp
 
 <div class="contenido-principal">
@@ -19,12 +26,29 @@
 
         <h1>{{ $titulo }}</h1>
 
+        {{-- ============================
+             MENSAJES DE SESIÓN
+             ============================ --}}
         @if (session('error'))
             <div class="alerta alerta-error">{{ session('error') }}</div>
         @endif
 
         @if (session('success'))
             <div class="alerta alerta-exito">{{ session('success') }}</div>
+        @endif
+
+        {{-- ============================
+             ERRORES DE VALIDACIÓN (RESUMEN)
+             ============================ --}}
+        @if ($errors->any())
+            <div class="alerta alerta-error">
+                <strong>⚠️ No se pudo guardar el usuario:</strong>
+                <ul style="margin: 8px 0 0 0; padding-left: 22px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
         @endif
 
         <div class="card-formulario">
@@ -60,19 +84,39 @@
                             @error('email') <small class="mensaje-error">{{ $message }}</small> @enderror
                         </div>
 
-                        <div class="campo-formulario">
-                            <label for="rol">Rol *</label>
-                            <select name="rol" id="rol"
-                                    class="atributo @error('rol') atributo-error @enderror" required>
-                                <option value="">Seleccione un rol</option>
+                        <!-- ===================== ROLES (multi-selección) ===================== -->
+                        <div class="campo-formulario campo-formulario-full">
+                            <label>Roles * <small style="font-weight:400; color:#666;">(puede seleccionar varios)</small></label>
+
+                            <div class="roles-checkbox-grid">
                                 @foreach ($roles as $rol)
-                                    <option value="{{ $rol->id }}"
-                                        {{ old('rol', $esEdicion ? $usuario->id_rol : '') == $rol->id ? 'selected' : '' }}>
-                                        {{ $rol->rol }}
-                                    </option>
+                                    @php
+                                        $rolNombre = strtolower($rol->rol);
+                                        $checked   = in_array((int) $rol->id, $rolesSeleccionados, true);
+                                    @endphp
+                                    <label class="rol-checkbox-item {{ $checked ? 'checked' : '' }}"
+                                           data-rol="{{ $rolNombre }}">
+                                        <input type="checkbox"
+                                               name="roles[]"
+                                               value="{{ $rol->id }}"
+                                               {{ $checked ? 'checked' : '' }}>
+                                        <span class="rol-checkbox-texto">
+                                            @if($rolNombre === 'estudiante')
+                                                🎓 {{ $rol->rol }}
+                                            @elseif($rolNombre === 'profesor')
+                                                👨‍🏫 {{ $rol->rol }}
+                                            @elseif($rolNombre === 'administrador')
+                                                🛡️ {{ $rol->rol }}
+                                            @else
+                                                📌 {{ $rol->rol }}
+                                            @endif
+                                        </span>
+                                    </label>
                                 @endforeach
-                            </select>
-                            @error('rol') <small class="mensaje-error">{{ $message }}</small> @enderror
+                            </div>
+
+                            @error('roles') <small class="mensaje-error">{{ $message }}</small> @enderror
+                            @error('roles.*') <small class="mensaje-error">{{ $message }}</small> @enderror
                         </div>
 
                         <div class="campo-formulario">
@@ -293,11 +337,66 @@
     </div>
 </div>
 
+<style>
+/* ============================================================
+   ROLES CHECKBOX GRID
+   ============================================================ */
+.campo-formulario-full {
+    grid-column: 1 / -1;
+}
+
+.roles-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.rol-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+    user-select: none;
+    font-size: .95rem;
+    font-weight: 500;
+}
+
+.rol-checkbox-item:hover {
+    border-color: #93c5fd;
+    background: #eff6ff;
+}
+
+.rol-checkbox-item.checked {
+    border-color: #2563eb;
+    background: #eff6ff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+}
+
+.rol-checkbox-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #2563eb;
+    flex-shrink: 0;
+}
+
+.rol-checkbox-texto {
+    color: #1f2937;
+    font-weight: 600;
+}
+</style>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const rolSelect = document.getElementById('rol');
-    const datosEstudiante = document.getElementById('datos_estudiante');
-    const datosProfesor = document.getElementById('datos_profesor');
+    const checkboxes       = document.querySelectorAll('input[name="roles[]"]');
+    const datosEstudiante  = document.getElementById('datos_estudiante');
+    const datosProfesor    = document.getElementById('datos_profesor');
 
     function habilitarCampos(seccion, habilitar) {
         seccion.querySelectorAll('input, select, textarea').forEach(c => {
@@ -306,26 +405,53 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function mostrarSeccionSegunRol() {
-        const opcion = rolSelect.options[rolSelect.selectedIndex];
-        const nombreRol = opcion ? opcion.textContent.trim().toLowerCase() : '';
+    function rolEstaSeleccionado(nombreRol) {
+        let seleccionado = false;
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                const label = cb.closest('.rol-checkbox-item');
+                const texto = label ? label.textContent.toLowerCase() : '';
+                if (texto.includes(nombreRol)) {
+                    seleccionado = true;
+                }
+            }
+        });
+        return seleccionado;
+    }
 
+    function mostrarSeccionesSegunRoles() {
+        // Actualizar clase visual del label
+        checkboxes.forEach(cb => {
+            const label = cb.closest('.rol-checkbox-item');
+            if (label) {
+                label.classList.toggle('checked', cb.checked);
+            }
+        });
+
+        const esEstudiante = rolEstaSeleccionado('estudiante');
+        const esProfesor   = rolEstaSeleccionado('profesor');
+
+        // Ocultar y deshabilitar ambos
         datosEstudiante.style.display = 'none';
         datosProfesor.style.display = 'none';
         habilitarCampos(datosEstudiante, false);
         habilitarCampos(datosProfesor, false);
 
-        if (nombreRol.includes('estudiante')) {
+        // Mostrar según roles marcados
+        if (esEstudiante) {
             datosEstudiante.style.display = 'block';
             habilitarCampos(datosEstudiante, true);
-        } else if (nombreRol.includes('profesor')) {
+        }
+
+        if (esProfesor) {
             datosProfesor.style.display = 'block';
             habilitarCampos(datosProfesor, true);
         }
     }
 
-    mostrarSeccionSegunRol();
-    rolSelect.addEventListener('change', mostrarSeccionSegunRol);
+    checkboxes.forEach(cb => cb.addEventListener('change', mostrarSeccionesSegunRoles));
+
+    mostrarSeccionesSegunRoles();
 });
 </script>
 

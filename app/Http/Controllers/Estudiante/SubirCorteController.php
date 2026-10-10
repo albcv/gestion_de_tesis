@@ -18,14 +18,14 @@ class SubirCorteController extends Controller
         try {
             $user = Auth::user();
             $estudiante = $user->estudiante;
-            
+
             if (!$estudiante) {
                 return redirect()->route('login')
                     ->with('error', 'No se encontró información del estudiante');
             }
 
             $tesis = Tesis::where('id_estudiante', $estudiante->id)->first();
-            
+
             if (!$tesis) {
                 return view('subirCorte', compact('tesis'))
                     ->with('info', 'No tienes una tesis registrada aún');
@@ -40,11 +40,11 @@ class SubirCorteController extends Controller
             $cortes = Cortes_de_tesis::where('id_tesis', $tesis->id)
                 ->with(['versiones', 'aprobado', 'desaprobado', 'noConformidades'])
                 ->get();
-            
+
             $fechasEntrega = FechaEntregaCorte::all()->keyBy('numero_corte');
-            
+
             return view('estudiante.subirCorte', compact('tesis', 'cortes', 'fechasEntrega'));
-            
+
         } catch (\Exception $e) {
             return redirect()->route('inicio')
                 ->with('error', 'Error al cargar la página: ' . $e->getMessage());
@@ -56,14 +56,14 @@ class SubirCorteController extends Controller
         try {
             $user = Auth::user();
             $estudiante = $user->estudiante;
-            
+
             if (!$estudiante) {
                 return redirect()->back()
                     ->with('error', 'No se encontró información del estudiante');
             }
 
             $tesis = Tesis::where('id_estudiante', $estudiante->id)->first();
-            
+
             if (!$tesis) {
                 return redirect()->back()
                     ->with('error', 'No tienes una tesis registrada');
@@ -79,7 +79,7 @@ class SubirCorteController extends Controller
             $corte = Cortes_de_tesis::where('id_tesis', $tesis->id)
                 ->where('Numero_corte', $numeroCorte)
                 ->first();
-            
+
             if (!$corte) {
                 // Si no existe el corte, crearlo
                 $corte = new Cortes_de_tesis();
@@ -101,18 +101,27 @@ class SubirCorteController extends Controller
                     ->with('error', "La fecha de entrega del corte {$numeroCorte} ha pasado. No puedes subir nuevas versiones.");
             }
 
+            // ---------- VALIDACIÓN ----------
+            // Se usa 'extensions' (Laravel 9+) en lugar de 'mimes' porque los
+            // archivos .docx son ZIP internamente y PHP puede detectarlos como
+            // application/zip en vez del MIME correcto.
             $validator = Validator::make($request->all(), [
-                'documento' => 'required|file|mimes:pdf,doc,docx|max:10240',
-                'enlace' => 'nullable|url|max:500',
+                'documento' => [
+                    'required',
+                    'file',
+                    'extensions:pdf,doc,docx',
+                    'max:10240',
+                ],
+                'enlace'      => 'nullable|url|max:500',
                 'descripcion' => 'nullable|string|max:500',
             ], [
-                'documento.required' => 'El documento es obligatorio',
-                'documento.file' => 'El documento debe ser un archivo',
-                'documento.mimes' => 'Solo se permiten archivos PDF, DOC y DOCX',
-                'documento.max' => 'El documento no puede exceder los 10MB',
-                'enlace.url' => 'El enlace de GitHub debe ser una URL válida',
-                'enlace.max' => 'El enlace no puede exceder los 500 caracteres',
-                'descripcion.max' => 'La descripción no puede exceder los 500 caracteres'
+                'documento.required'    => 'El documento es obligatorio',
+                'documento.file'        => 'El documento debe ser un archivo válido',
+                'documento.extensions'  => 'Solo se permiten archivos PDF, DOC y DOCX',
+                'documento.max'         => 'El documento no puede exceder los 10MB',
+                'enlace.url'            => 'El enlace de GitHub debe ser una URL válida',
+                'enlace.max'            => 'El enlace no puede exceder los 500 caracteres',
+                'descripcion.max'       => 'La descripción no puede exceder los 500 caracteres',
             ]);
 
             if ($validator->fails()) {
@@ -124,10 +133,10 @@ class SubirCorteController extends Controller
             $file = $request->file('documento');
             $extension = strtolower($file->getClientOriginalExtension());
             $allowedExtensions = ['pdf', 'doc', 'docx'];
-            
+
             if (!in_array($extension, $allowedExtensions)) {
                 return redirect()->back()
-                    ->with('error', 'Solo se permiten archivos PDF, DOC y DOCX')
+                    ->with('error', 'La extensión del archivo no es válida. Solo se aceptan: PDF, DOC, DOCX.')
                     ->withInput();
             }
 
@@ -135,26 +144,26 @@ class SubirCorteController extends Controller
             $ultimaVersion = version_corte::where('id_corte', $corte->idCortes_de_tesis)
                 ->orderBy('version_numero', 'desc')
                 ->first();
-            
+
             $nuevaVersionNumero = $ultimaVersion ? $ultimaVersion->version_numero + 1 : 1;
 
             // Preparar nombre del archivo
             $nombreOriginal = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $nombreArchivo = "corte_{$corte->idCortes_de_tesis}_v{$nuevaVersionNumero}_{$nombreOriginal}.{$extension}";
-            
+
             // Almacenar el archivo
             $path = $file->storeAs("cortes/{$corte->idCortes_de_tesis}", $nombreArchivo);
 
             // Crear registro de versión
             $version = new version_corte();
-            $version->id_corte = $corte->idCortes_de_tesis;
+            $version->id_corte       = $corte->idCortes_de_tesis;
             $version->version_numero = $nuevaVersionNumero;
             $version->nombre_archivo = $nombreArchivo;
             $version->ruta_documento = $path;
-            $version->Enlace_Github = $request->enlace ?? '';
-            $version->tamanio = $file->getSize();
-            $version->tipo = $extension;
-            $version->descripcion = $request->descripcion;
+            $version->Enlace_Github  = $request->enlace ?? '';
+            $version->tamanio        = $file->getSize();
+            $version->tipo           = $extension;
+            $version->descripcion    = $request->descripcion;
             $version->save();
 
             return redirect()->route('subirCorte')

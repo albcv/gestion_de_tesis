@@ -28,7 +28,7 @@
 
         @if (!$tesis)
             <div class="alert-message warning-message">
-                No tienes una tesis registrada. Contacta con el administrador.
+                No tienes una tesis registrada. 
             </div>
         @elseif (!$tesis->fundamentacion || !$tesis->fundamentacion->aprobada)
             <div class="alert-message warning-message">
@@ -119,8 +119,40 @@
                                                 <p class="corte-label"><strong>No conformidades:</strong></p>
                                                 <ul class="corte-list">
                                                     @foreach ($corte->noConformidades as $noConformidad)
+                                                        @php
+                                                            /*
+                                                             * El documento de revisión ahora vive en la tabla PIVOTE
+                                                             * (corte_tesis_no_conformidades), no en no_conformidades.
+                                                             * Esto permite que la misma no conformidad tenga documentos
+                                                             * distintos según el corte al que esté asociada.
+                                                             */
+                                                            $relacion = \App\Models\Cortes_de_tesis_has_NoConformidades::where('corte_tesis_id', $corte->idCortes_de_tesis)
+                                                                ->where('no_conformidad_id', $noConformidad->idNoConformidades)
+                                                                ->first();
+
+                                                            $docRevision = $relacion->documento_revision ?? null;
+                                                            $existeDoc   = $docRevision && \Illuminate\Support\Facades\Storage::disk('local')->exists($docRevision);
+                                                        @endphp
+
                                                         <li class="corte-list-item no-conformidad">
-                                                            {{ $noConformidad->Deficiencias_detectadas }}
+                                                            <div class="no-conformidad-texto">
+                                                                {{ $noConformidad->Deficiencias_detectadas }}
+                                                            </div>
+
+                                                            {{-- Documento de revisión adjunto por el profesor oponente (desde la pivote) --}}
+                                                            @if ($existeDoc)
+                                                                <div class="documento-revision-box small">
+                                                                    <span class="documento-revision-icono">📎</span>
+                                                                    <div class="documento-revision-texto">
+                                                                        <strong>Documento de revisión</strong>
+                                                                        <small>El profesor oponente adjuntó un archivo</small>
+                                                                    </div>
+                                                                    <a href="{{ route('descargarRevisionNoConformidad', $noConformidad->idNoConformidades) }}"
+                                                                       class="documento-revision-btn small">
+                                                                        📥 Descargar
+                                                                    </a>
+                                                                </div>
+                                                            @endif
                                                         </li>
                                                     @endforeach
                                                 </ul>

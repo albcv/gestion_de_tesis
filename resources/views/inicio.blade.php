@@ -8,7 +8,6 @@
 
     @php
         use Illuminate\Support\Facades\Auth;
-        use Illuminate\Support\Facades\DB;
         use App\Models\Estudiante;
         use App\Models\Profesor;
 
@@ -26,11 +25,11 @@
         $cantidadTutorados = 0;
 
         if ($user) {
-            // Obtener el nombre del rol desde la base de datos
-            $rol = DB::table('roles')->where('id', $user->id_rol)->first();
+            // Obtener el primer rol del usuario desde la relación many-to-many
+            $primerRol = $user->roles()->first();
 
-            if ($rol) {
-                $rolNombre = strtolower($rol->rol); // Convertir a minúsculas
+            if ($primerRol) {
+                $rolNombre = strtolower($primerRol->rol); // Convertir a minúsculas
 
                 // Verificar si tiene acceso a esta vista
                 $allowedRoles = ['administrador', 'profesor', 'estudiante'];
@@ -415,7 +414,7 @@
             @endif
         @endif
     @else
-        @if ($user && is_null($user->id_rol))
+        @if ($user && $user->roles()->count() === 0)
             <div class="alert alert-danger">
                 <p>No tiene un rol asignado. Por favor, contacte al administrador del sistema.</p>
             </div>

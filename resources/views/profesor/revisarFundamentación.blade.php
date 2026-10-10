@@ -21,6 +21,7 @@
             <h1 class="page-title">Revisar Fundamentación</h1>
         </div>
 
+        {{-- Mensajes de sesión --}}
         @if (session('success'))
             <div class="alert-message alert-success alert-dismissible">
                 ✅ <span>{{ session('success') }}</span>
@@ -31,6 +32,19 @@
         @if (session('error'))
             <div class="alert-message alert-error alert-dismissible">
                 ❌ <span>{{ session('error') }}</span>
+                <button type="button" class="alert-close" aria-label="Close">&times;</button>
+            </div>
+        @endif
+
+        {{-- Errores de validación --}}
+        @if ($errors->any())
+            <div class="alert-message alert-error alert-dismissible">
+                ❌ <strong>Errores de validación:</strong>
+                <ul style="margin: 8px 0 0 20px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
                 <button type="button" class="alert-close" aria-label="Close">&times;</button>
             </div>
         @endif
@@ -80,7 +94,7 @@
                                 <span class="status-badge status-pending">⏰ Pendiente</span>
                             @endif
                         </div>
-                        
+
                         <div class="actions-container">
                             @if (!$fundamentacion->aprobada && !$fundamentacion->desaprobada)
                                 <form action="{{ route('fundamentacion.aprobar') }}" method="POST" class="d-inline">
@@ -139,7 +153,7 @@
                                     @endif
                                 </div>
                                 <div class="version-footer">
-                                    <a href="{{ route('ver-documento-version', $version->id) }}" 
+                                    <a href="{{ route('ver-documento-version', $version->id) }}"
                                        class="action-button button-outline">
                                         📥 Descargar
                                     </a>
@@ -165,17 +179,84 @@
                 <h3>💬 Recomendaciones</h3>
             </div>
             <div class="card-body">
-                <form class="recommendation-form" action="{{ route('fundamentacion.guardarRecomendacion') }}" method="POST">
+                <form class="recommendation-form"
+                      action="{{ route('fundamentacion.guardarRecomendacion') }}"
+                      method="POST"
+                      enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="id_fundamentacion" value="{{ $fundamentacion->id_fundamentacion }}">
+
                     <div class="form-group">
                         <label for="recomendacion" class="form-label">
                             ✏️ Escribe tus recomendaciones para el estudiante:
                         </label>
-                        <textarea class="form-textarea" id="recomendacion" name="recomendacion" 
-                                  placeholder="Escribe aquí las recomendaciones, observaciones o comentarios sobre la fundamentación...">{{ $fundamentacion->recomendacion->recomendacion ?? '' }}</textarea>
+                        <textarea class="form-textarea" id="recomendacion" name="recomendacion"
+                                  placeholder="Escribe aquí las recomendaciones, observaciones o comentarios sobre la fundamentación..."
+                                  required>{{ old('recomendacion', $fundamentacion->recomendacion->recomendacion ?? '') }}</textarea>
                     </div>
-                    <div class="form-actions">
+
+                    {{-- ==================== DOCUMENTO DE REVISIÓN ==================== --}}
+                    @php
+                        $docActual  = $fundamentacion->recomendacion->documento_revision ?? null;
+                        $existeDoc  = $docActual && \Illuminate\Support\Facades\Storage::disk('local')->exists($docActual);
+                        $nombreDoc  = $existeDoc ? basename($docActual) : null;
+                        $tamanioDoc = $existeDoc ? \Illuminate\Support\Facades\Storage::disk('local')->size($docActual) : 0;
+                    @endphp
+
+                    @if ($existeDoc)
+                        <div class="form-group mt-3">
+                            <span class="info-label">📎 Documento actual:</span>
+
+                            <div class="documento-revision-box" style="margin-top: 8px;">
+                                <span class="documento-revision-icono">📄</span>
+                                <div class="documento-revision-texto">
+                                    <strong>{{ $nombreDoc }}</strong>
+                                    <small>
+                                        Tamaño:
+                                        {{ number_format($tamanioDoc / 1024, 2) }} KB
+                                    </small>
+                                </div>
+                                <a href="{{ route('descargarRevisionRecomendacionFundamentacion', $fundamentacion->id_fundamentacion) }}"
+                                   class="documento-revision-btn">
+                                    📥 Descargar
+                                </a>
+                            </div>
+
+                            <div class="form-check mt-2">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="eliminar_documento"
+                                       name="eliminar_documento"
+                                       value="1"
+                                       {{ old('eliminar_documento') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="eliminar_documento">
+                                    🗑️ Eliminar el documento actual al guardar
+                                </label>
+                                <small class="form-text text-muted d-block">
+                                    Si marcas esta opción y no subes un archivo nuevo, el documento se eliminará.
+                                </small>
+                            </div>
+                        </div>
+                    @endif
+
+                    <div class="form-group mt-3">
+                        <label for="documento_revision_fundamentacion" class="form-label">
+                            {{ $existeDoc ? '🔄 Reemplazar documento de revisión (opcional)' : '📎 Documento de revisión (opcional)' }}
+                        </label>
+                        <input type="file"
+                               class="form-control"
+                               id="documento_revision_fundamentacion"
+                               name="documento_revision"
+                               accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar">
+                        <small class="form-text text-muted">
+                            Formatos permitidos: PDF, Word, Excel, PowerPoint, ZIP, RAR (máx. 10 MB).
+                            @if ($existeDoc)
+                                <strong>Subir un nuevo archivo reemplazará al actual.</strong>
+                            @endif
+                        </small>
+                    </div>
+
+                    <div class="form-actions mt-3">
                         <button type="submit" class="action-button button-primary">
                             💾 Guardar Recomendación
                         </button>
@@ -189,32 +270,76 @@
 
 @section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-            document.querySelectorAll('.alert-message').forEach(function(alert) {
+    document.addEventListener('DOMContentLoaded', function () {
+        // Ocultar alertas automáticamente después de 8 segundos
+        setTimeout(function () {
+            document.querySelectorAll('.alert-message').forEach(function (alert) {
                 alert.style.opacity = '0';
                 alert.style.transform = 'translateY(-10px)';
-                setTimeout(function() {
+                setTimeout(function () {
                     alert.style.display = 'none';
                 }, 300);
             });
-        }, 5000);
+        }, 8000);
 
-        document.querySelectorAll('.alert-close').forEach(function(button) {
-            button.addEventListener('click', function() {
+        // Cerrar alertas al hacer clic en la X
+        document.querySelectorAll('.alert-close').forEach(function (button) {
+            button.addEventListener('click', function () {
                 const alert = this.closest('.alert-message');
                 alert.style.opacity = '0';
                 alert.style.transform = 'translateY(-10px)';
-                setTimeout(function() {
+                setTimeout(function () {
                     alert.style.display = 'none';
                 }, 300);
             });
         });
 
+        // Animación de entrada de las cards
         const cards = document.querySelectorAll('.info-card');
         cards.forEach((card, index) => {
             card.style.animationDelay = `${index * 0.1}s`;
         });
+
+        // Validación en cliente del tamaño del archivo
+        const inputArchivo = document.getElementById('documento_revision_fundamentacion');
+        if (inputArchivo) {
+            inputArchivo.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                const maxSize = 10 * 1024 * 1024; // 10 MB
+                if (file && file.size > maxSize) {
+                    alert('El archivo excede el tamaño máximo de 10 MB.');
+                    e.target.value = '';
+                }
+            });
+        }
+
+        // ==================== Lógica de eliminación/reemplazo ====================
+        const checkboxEliminar = document.getElementById('eliminar_documento');
+
+        if (checkboxEliminar && inputArchivo) {
+            // Si el usuario sube un archivo nuevo, desmarcar "Eliminar"
+            // (porque el archivo nuevo tiene prioridad sobre el checkbox)
+            inputArchivo.addEventListener('change', function () {
+                if (this.files.length > 0 && checkboxEliminar.checked) {
+                    checkboxEliminar.checked = false;
+                }
+            });
+
+            // Si el usuario marca "Eliminar" y ya hay un archivo seleccionado,
+            // preguntar si desea descartar el archivo nuevo
+            checkboxEliminar.addEventListener('change', function () {
+                if (this.checked && inputArchivo.files.length > 0) {
+                    const confirmar = confirm(
+                        'Has seleccionado un archivo nuevo. Si marcas "Eliminar", se ignorará el archivo nuevo. ¿Deseas continuar?'
+                    );
+                    if (!confirmar) {
+                        this.checked = false;
+                    } else {
+                        inputArchivo.value = '';
+                    }
+                }
+            });
+        }
     });
 </script>
 @endsection

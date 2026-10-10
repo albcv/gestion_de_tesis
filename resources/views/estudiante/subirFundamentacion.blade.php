@@ -28,7 +28,7 @@
 
         @if (!$tesis)
             <div class="alert-message warning-message">
-                No tienes una tesis registrada. Contacta con el administrador.
+                No tienes una tesis registrada
             </div>
         @else
             <!-- Información de la Tesis -->
@@ -93,6 +93,21 @@
                                 <div class="alert-box info">
                                     {{ $fundamentacion->recomendacion->recomendacion }}
                                 </div>
+
+                                {{-- Documento de revisión adjunto por el profesor oponente --}}
+                                @if ($fundamentacion->recomendacion->documento_revision)
+                                    <div class="documento-revision-box">
+                                        <span class="documento-revision-icono">📎</span>
+                                        <div class="documento-revision-texto">
+                                            <strong>Documento de revisión del profesor</strong>
+                                            <small>El profesor oponente adjuntó un archivo con observaciones detalladas</small>
+                                        </div>
+                                        <a href="{{ route('descargarRevisionRecomendacionFundamentacion', $fundamentacion->id_fundamentacion) }}"
+                                           class="documento-revision-btn">
+                                            📥 Descargar
+                                        </a>
+                                    </div>
+                                @endif
                             </div>
                         @endif
 
