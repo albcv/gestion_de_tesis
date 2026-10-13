@@ -173,7 +173,7 @@ class SubirCorteController extends Controller
      *  - El corte NO debe estar aprobado ni desaprobado.
      *  - Debe existir más de una versión (no se puede borrar la única).
      *  - Se elimina el archivo físico y el registro en la BD.
-     *  - Se reordenan las versiones restantes (v1, v2, ...).
+     *  - NO se reordenan las versiones restantes: se conservan sus números.
      */
     public function eliminarVersion(Request $request, $idVersion)
     {
@@ -225,8 +225,7 @@ class SubirCorteController extends Controller
             // Eliminar el registro
             $version->delete();
 
-            // Reordenar versiones restantes
-            $this->reordenarVersiones($corte->idCortes_de_tesis);
+            // ⚠️ NO reordenar: se conservan los números originales de las versiones restantes
 
             DB::commit();
 
@@ -241,26 +240,6 @@ class SubirCorteController extends Controller
             DB::rollBack();
             return redirect()->back()
                 ->with('error', 'Error al eliminar la versión: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Reordena las versiones de un corte asignando números consecutivos
-     * (1, 2, 3...) según su fecha de creación.
-     */
-    private function reordenarVersiones($idCorte)
-    {
-        $versiones = version_corte::where('id_corte', $idCorte)
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        $numero = 1;
-        foreach ($versiones as $v) {
-            if ((int) $v->version_numero !== $numero) {
-                $v->version_numero = $numero;
-                $v->save();
-            }
-            $numero++;
         }
     }
 }

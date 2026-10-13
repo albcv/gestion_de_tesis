@@ -33,7 +33,6 @@ class SubirFundamentacionController extends Controller
                     ->with('info', 'No tienes una tesis registrada aún. Contacta con el administrador.');
             }
 
-            // Obtener o crear la fundamentación
             $fundamentacion = $tesis->fundamentacion;
             if (!$fundamentacion) {
                 $fundamentacion = new fundamentaciones();
@@ -71,7 +70,6 @@ class SubirFundamentacionController extends Controller
                     ->with('error', 'No tienes una tesis registrada');
             }
 
-            // Obtener o crear la fundamentación
             $fundamentacion = $tesis->fundamentacion;
             if (!$fundamentacion) {
                 $fundamentacion = new fundamentaciones();
@@ -79,13 +77,11 @@ class SubirFundamentacionController extends Controller
                 $fundamentacion->save();
             }
 
-            // Verificar si ya está aprobada
             if ($fundamentacion->aprobada) {
                 return redirect()->back()
                     ->with('error', 'Tu fundamentación ya está aprobada. No puedes subir nuevas versiones.');
             }
 
-            // Verificar fecha de entrega
             $fechaEntrega = FechaEntregaFundamentacion::first();
             if ($fechaEntrega && now()->greaterThan($fechaEntrega->fecha_entrega)) {
                 return redirect()->back()
@@ -93,9 +89,6 @@ class SubirFundamentacionController extends Controller
             }
 
             // ---------- VALIDACIÓN ----------
-            // Se usa 'extensions' (Laravel 9+) en lugar de 'mimes' porque los
-            // archivos .docx son ZIP internamente y PHP puede detectarlos como
-            // application/zip en vez del MIME correcto.
             $validator = Validator::make($request->all(), [
                 'documento' => [
                     'required',
@@ -128,21 +121,17 @@ class SubirFundamentacionController extends Controller
                     ->withInput();
             }
 
-            // Obtener la última versión
             $ultimaVersion = version_fundamentacion::where('id_fundamentacion', $fundamentacion->id_fundamentacion)
                 ->orderBy('version_numero', 'desc')
                 ->first();
 
             $nuevaVersionNumero = $ultimaVersion ? $ultimaVersion->version_numero + 1 : 1;
 
-            // Preparar nombre del archivo
             $nombreOriginal = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $nombreArchivo = "fundamentacion_{$fundamentacion->id_fundamentacion}_v{$nuevaVersionNumero}_{$nombreOriginal}.{$extension}";
 
-            // Almacenar el archivo
             $path = $file->storeAs("fundamentaciones/{$fundamentacion->id_fundamentacion}", $nombreArchivo);
 
-            // Crear registro de versión
             $version = new version_fundamentacion();
             $version->id_fundamentacion = $fundamentacion->id_fundamentacion;
             $version->version_numero    = $nuevaVersionNumero;
@@ -171,7 +160,7 @@ class SubirFundamentacionController extends Controller
      *  - La fundamentación NO debe estar aprobada.
      *  - Debe existir más de una versión (no se puede borrar la única).
      *  - Se elimina el archivo físico y el registro en la BD.
-     *  - Se reordenan las versiones restantes (v1, v2, ...).
+     *  - NO se reordenan las versiones restantes: se conservan sus números.
      */
     public function eliminarVersion(Request $request, $idVersion)
     {
@@ -184,14 +173,11 @@ class SubirFundamentacionController extends Controller
                     ->with('error', 'No se encontró información del estudiante');
             }
 
-            // Buscar la versión
             $version = version_fundamentacion::findOrFail($idVersion);
 
-            // Cargar la fundamentación asociada con la tesis y el estudiante
             $fundamentacion = fundamentaciones::with(['tesis.estudiante'])
                 ->findOrFail($version->id_fundamentacion);
 
-            // Verificar que el estudiante autenticado sea dueño de la tesis
             if (!$fundamentacion->tesis
                 || !$fundamentacion->tesis->estudiante
                 || (int) $fundamentacion->tesis->estudiante->id !== (int) $estudiante->id) {
@@ -199,13 +185,11 @@ class SubirFundamentacionController extends Controller
                     ->with('error', 'No tienes permisos para eliminar esta versión');
             }
 
-            // No se puede eliminar si la fundamentación está aprobada
             if ($fundamentacion->aprobada) {
                 return redirect()->back()
                     ->with('error', 'No puedes eliminar versiones de una fundamentación aprobada');
             }
 
-            // Verificar que no sea la única versión
             $totalVersiones = version_fundamentacion::where('id_fundamentacion', $version->id_fundamentacion)->count();
 
             if ($totalVersiones <= 1) {
@@ -223,8 +207,7 @@ class SubirFundamentacionController extends Controller
             // Eliminar el registro
             $version->delete();
 
-            // Reordenar versiones restantes
-            $this->reordenarVersiones($fundamentacion->id_fundamentacion);
+            // ⚠️ NO reordenar: se conservan los números originales de las versiones restantes
 
             DB::commit();
 
@@ -239,26 +222,6 @@ class SubirFundamentacionController extends Controller
             DB::rollBack();
             return redirect()->back()
                 ->with('error', 'Error al eliminar la versión: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Reordena las versiones de una fundamentación asignando
-     * números consecutivos (1, 2, 3...) según su fecha de creación.
-     */
-    private function reordenarVersiones($idFundamentacion)
-    {
-        $versiones = version_fundamentacion::where('id_fundamentacion', $idFundamentacion)
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        $numero = 1;
-        foreach ($versiones as $v) {
-            if ((int) $v->version_numero !== $numero) {
-                $v->version_numero = $numero;
-                $v->save();
-            }
-            $numero++;
         }
     }
 }

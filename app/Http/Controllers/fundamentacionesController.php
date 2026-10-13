@@ -521,7 +521,7 @@ class fundamentacionesController extends Controller
             }
 
             $version->delete();
-            $this->reordenarVersiones($fundamentacionId);
+           
 
             return redirect()->route($this->rutaVista, ['accion' => 'detalles', 'id' => $fundamentacionId]);
 

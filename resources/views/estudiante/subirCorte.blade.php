@@ -74,11 +74,18 @@
                                 } elseif ($corte) {
                                     $headerClass = 'pendiente';
                                 }
+
+                                // Nombre visible según el número de corte
+                                $nombreCorte = match ($i) {
+                                    3 => 'Predefensa',
+                                    4 => 'Defensa de Tesis',
+                                    default => 'Corte ' . $i,
+                                };
                             @endphp
 
                             <div class="corte-card">
                                 <div class="corte-header {{ $headerClass }}">
-                                    <span>Corte {{ $i }}</span>
+                                    <span>{{ $nombreCorte }}</span>
                                     @if ($corte && $corte->aprobado)
                                         <span class="status-badge badge-aprobado">Aprobado</span>
                                     @elseif ($corte && $corte->desaprobado)
@@ -179,8 +186,7 @@
                                         <!-- Versiones -->
                                         @if ($corte && $corte->versiones && $corte->versiones->count() > 0)
                                             @php
-                                                // Ordenar y calcular la versión más reciente
-                                                $maxVersionNumero   = $corte->versiones->max('version_numero');
+                                                // Ordenar versiones de mayor a menor
                                                 $versionesOrdenadas = $corte->versiones->sortByDesc('version_numero')->values();
 
                                                 // ¿Puede el estudiante eliminar versiones?
@@ -197,12 +203,6 @@
                                                             <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                                                                 <div style="flex:1; min-width:0;">
                                                                     <strong>v{{ $version->version_numero }}</strong>
-                                                                    @if((int) $version->version_numero === (int) $maxVersionNumero)
-                                                                        <span class="badge-actual"
-                                                                              style="display:inline-block; background:linear-gradient(135deg,#2563eb,#1e40af); color:#fff; font-size:10px; padding:2px 8px; border-radius:999px; margin-left:6px;">
-                                                                            Actual
-                                                                        </span>
-                                                                    @endif
                                                                     —
                                                                     <a href="{{ route('ver-documento-version-corte', $version->id) }}"
                                                                        class="version-link">
@@ -234,16 +234,6 @@
                                                         </li>
                                                     @endforeach
                                                 </ul>
-
-                                                @if (!$puedeEliminarVersion && $corte->versiones->count() === 1)
-                                                    <p class="empty-message" style="font-size:12px; color:#6c757d; margin-top:6px;">
-                                                        ℹ️ No puedes eliminar la única versión. Sube una nueva para poder eliminar esta.
-                                                    </p>
-                                                @elseif ($corte->aprobado || $corte->desaprobado)
-                                                    <p class="empty-message" style="font-size:12px; color:#6c757d; margin-top:6px;">
-                                                        🔒 Este corte está {{ $corte->aprobado ? 'aprobado' : 'desaprobado' }}. No puedes modificar sus versiones.
-                                                    </p>
-                                                @endif
                                             </div>
                                         @endif
                                     </div>
@@ -279,7 +269,7 @@
                                                           rows="3" placeholder="Breve descripción de los cambios"></textarea>
                                             </div>
                                             <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-upload"></i> Subir Corte {{ $i }}
+                                                <i class="fas fa-upload"></i> Subir {{ $nombreCorte }}
                                             </button>
                                         </form>
                                     @endif

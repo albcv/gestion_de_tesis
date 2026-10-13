@@ -577,7 +577,7 @@ class cortesController extends Controller
                 Storage::delete($version->ruta_documento);
             }
             $version->delete();
-            $this->reordenarVersionesCorte($corteId);
+          
 
             return redirect()->route($this->rutaVista, ['accion' => 'detalles', 'id' => $corteId]);
 

@@ -142,8 +142,7 @@
 
                             @if ($fundamentacion->versiones && $fundamentacion->versiones->count() > 0)
                                 @php
-                                    // Ordenar y calcular la versión más reciente
-                                    $maxVersionNumero   = $fundamentacion->versiones->max('version_numero');
+                                    // Ordenar las versiones de mayor a menor
                                     $versionesOrdenadas = $fundamentacion->versiones->sortByDesc('version_numero')->values();
 
                                     // Determinar si el estudiante puede eliminar versiones
@@ -167,12 +166,6 @@
                                                 <tr>
                                                     <td>
                                                         <strong>v{{ $version->version_numero }}</strong>
-                                                        @if((int) $version->version_numero === (int) $maxVersionNumero)
-                                                            <span class="badge-actual"
-                                                                  style="display:inline-block; background:linear-gradient(135deg,#2563eb,#1e40af); color:#fff; font-size:11px; padding:2px 8px; border-radius:999px; margin-left:6px;">
-                                                                Actual
-                                                            </span>
-                                                        @endif
                                                     </td>
                                                     <td>{{ $version->nombre_archivo }}</td>
                                                     <td>{{ $version->created_at->format('d/m/Y H:i') }}</td>
@@ -210,16 +203,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-
-                                @if (!$puedeEliminar && $fundamentacion->versiones->count() === 1)
-                                    <p class="empty-message" style="font-size:13px; color:#6c757d; margin-top:8px;">
-                                        ℹ️ No puedes eliminar la única versión. Sube una nueva para poder eliminar esta.
-                                    </p>
-                                @elseif ($fundamentacion->aprobada)
-                                    <p class="empty-message" style="font-size:13px; color:#6c757d; margin-top:8px;">
-                                        🔒 Tu fundamentación está aprobada. No puedes modificar ni eliminar versiones.
-                                    </p>
-                                @endif
                             @else
                                 <p class="empty-message">No hay versiones subidas aún.</p>
                             @endif
