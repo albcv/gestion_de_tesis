@@ -139,7 +139,18 @@
                         <!-- Versiones -->
                         <div class="section-container">
                             <h4 class="section-title">Versiones Subidas:</h4>
+
                             @if ($fundamentacion->versiones && $fundamentacion->versiones->count() > 0)
+                                @php
+                                    // Ordenar y calcular la versión más reciente
+                                    $maxVersionNumero   = $fundamentacion->versiones->max('version_numero');
+                                    $versionesOrdenadas = $fundamentacion->versiones->sortByDesc('version_numero')->values();
+
+                                    // Determinar si el estudiante puede eliminar versiones
+                                    $puedeEliminar = !$fundamentacion->aprobada
+                                                  && $fundamentacion->versiones->count() > 1;
+                                @endphp
+
                                 <div class="table-wrapper">
                                     <table class="data-table">
                                         <thead>
@@ -152,23 +163,63 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($fundamentacion->versiones as $version)
+                                            @foreach ($versionesOrdenadas as $version)
                                                 <tr>
-                                                    <td>v{{ $version->version_numero }}</td>
+                                                    <td>
+                                                        <strong>v{{ $version->version_numero }}</strong>
+                                                        @if((int) $version->version_numero === (int) $maxVersionNumero)
+                                                            <span class="badge-actual"
+                                                                  style="display:inline-block; background:linear-gradient(135deg,#2563eb,#1e40af); color:#fff; font-size:11px; padding:2px 8px; border-radius:999px; margin-left:6px;">
+                                                                Actual
+                                                            </span>
+                                                        @endif
+                                                    </td>
                                                     <td>{{ $version->nombre_archivo }}</td>
                                                     <td>{{ $version->created_at->format('d/m/Y H:i') }}</td>
                                                     <td>{{ $version->descripcion ?? 'Sin descripción' }}</td>
                                                     <td>
-                                                        <a href="{{ route('ver-documento-version', $version->id) }}"
-                                                           class="action-btn download-btn" style="font-size: 45px;padding:20px;background: #0f4">
-                                                            📥
-                                                        </a>
+                                                        <div style="display:flex; gap:10px; align-items:center; justify-content:center;">
+                                                            {{-- Botón Descargar --}}
+                                                            <a href="{{ route('ver-documento-version', $version->id) }}"
+                                                               class="action-btn download-btn"
+                                                               style="font-size: 32px; padding:8px; background:#0f4; text-decoration:none; border-radius:8px; line-height:1;"
+                                                               title="Descargar versión {{ $version->version_numero }}">
+                                                                📥
+                                                            </a>
+
+                                                            {{-- Botón Eliminar (solo si puede eliminar) --}}
+                                                            @if ($puedeEliminar)
+                                                                <form method="POST"
+                                                                      action="{{ route('eliminar-version-fundamentacion-estudiante', $version->id) }}"
+                                                                      style="display:inline; margin:0;"
+                                                                      onsubmit="return confirm('¿Estás seguro de eliminar la versión {{ $version->version_numero }}? Esta acción no se puede deshacer.');">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit"
+                                                                            class="action-btn delete-btn"
+                                                                            style="font-size: 32px; padding:8px; background:#fee2e2; border:none; border-radius:8px; cursor:pointer; line-height:1;"
+                                                                            title="Eliminar versión {{ $version->version_numero }}">
+                                                                        🗑️
+                                                                    </button>
+                                                                </form>
+                                                            @endif
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
                                 </div>
+
+                                @if (!$puedeEliminar && $fundamentacion->versiones->count() === 1)
+                                    <p class="empty-message" style="font-size:13px; color:#6c757d; margin-top:8px;">
+                                        ℹ️ No puedes eliminar la única versión. Sube una nueva para poder eliminar esta.
+                                    </p>
+                                @elseif ($fundamentacion->aprobada)
+                                    <p class="empty-message" style="font-size:13px; color:#6c757d; margin-top:8px;">
+                                        🔒 Tu fundamentación está aprobada. No puedes modificar ni eliminar versiones.
+                                    </p>
+                                @endif
                             @else
                                 <p class="empty-message">No hay versiones subidas aún.</p>
                             @endif

@@ -13,7 +13,6 @@
                 <span id="ícono_crear">+</span> Crear Fundamentación
             </a>
 
-            {{-- Botón en ROJO: Estudiantes sin fundamentación --}}
             <a href="/estudiantesAtrasadosFundamentación"
                class="btn-crear"
                title="Ver estudiantes que no han subido su fundamentación de tesis"
@@ -35,6 +34,15 @@
         @if (session('error'))
             <div class="alerta alerta-error">{{ session('error') }}</div>
         @endif
+
+        @php
+            $hayFiltros = request('buscar')
+                       || request('filtro_facultad')
+                       || request('filtro_carrera')
+                       || request('filtro_modalidad')
+                       || request('filtro_año')
+                       || request('filtro_estado');
+        @endphp
 
         <!-- Filtros -->
         <form method="GET" action="{{ route('gestionarFundamentaciones') }}" class="form-filtros-usuarios">
@@ -62,6 +70,28 @@
                     @endforeach
                 </select>
 
+                {{-- NUEVO: filtro por modalidad --}}
+                <select name="filtro_modalidad" class="input-filtro">
+                    <option value="">Todas las modalidades</option>
+                    @foreach($modalidades as $modalidad)
+                        <option value="{{ $modalidad->idModalidad }}"
+                            {{ (string) request('filtro_modalidad') === (string) $modalidad->idModalidad ? 'selected' : '' }}>
+                            {{ $modalidad->Nombre_modalidad }}
+                        </option>
+                    @endforeach
+                </select>
+
+                {{-- NUEVO: filtro por año académico --}}
+                <select name="filtro_año" class="input-filtro">
+                    <option value="">Todos los años</option>
+                    @foreach($aniosAcademicos as $anio)
+                        <option value="{{ $anio }}"
+                            {{ (string) request('filtro_año') === (string) $anio ? 'selected' : '' }}>
+                            {{ $anio }}º año
+                        </option>
+                    @endforeach
+                </select>
+
                 <select name="filtro_estado" class="input-filtro">
                     <option value="">Todos los estados</option>
                     <option value="pendiente" {{ request('filtro_estado') == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
@@ -77,7 +107,7 @@
                 </select>
 
                 <button type="submit" class="btn-guardar-filtro">Aplicar</button>
-                @if(request('buscar') || request('filtro_facultad') || request('filtro_carrera') || request('filtro_estado'))
+                @if ($hayFiltros)
                     <a href="{{ route('gestionarFundamentaciones') }}" class="btn-limpiar-filtro">Limpiar</a>
                 @endif
             </div>
@@ -87,7 +117,7 @@
             <p>
                 Mostrando {{ $fundamentaciones->firstItem() ?? 0 }} - {{ $fundamentaciones->lastItem() ?? 0 }}
                 de {{ $fundamentaciones->total() }} fundamentaciones
-                @if(request('buscar') || request('filtro_facultad') || request('filtro_carrera') || request('filtro_estado')) (filtradas) @endif
+                @if ($hayFiltros) (filtradas) @endif
             </p>
 
             <button type="button" id="btn_eliminar_seleccionados"
@@ -208,7 +238,6 @@
                             </td>
                             <td>
                                 <div class="acciones-td">
-                                    {{-- 🔗 Asignar Oponente (vincular profesores a la fundamentación) --}}
                                     <a href="{{ route('vincularProfesorFundamentación', ['id' => $fundamentacion->id_fundamentacion]) }}"
                                        class="btn-asignar-oponente"
                                        title="Asignar oponente(s) a esta fundamentación">
@@ -232,7 +261,7 @@
                     @empty
                         <tr>
                             <td colspan="9" class="sin-registros">
-                                @if(request('buscar') || request('filtro_facultad') || request('filtro_carrera') || request('filtro_estado'))
+                                @if ($hayFiltros)
                                     No se encontraron fundamentaciones con los criterios de búsqueda
                                 @else
                                     No hay fundamentaciones registradas

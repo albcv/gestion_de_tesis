@@ -159,6 +159,17 @@
         @endif
 
         @if($corte->versiones && $corte->versiones->count() > 0)
+            @php
+                /* ============================================================
+                 * Calcular la versión más reciente comparando version_numero,
+                 * sin depender del orden en que vengan las versiones.
+                 * Así, si las versiones vienen ASC o DESC, siempre se
+                 * marcará como "Actual" solo la de mayor version_numero.
+                 * ============================================================ */
+                $maxVersionNumero   = $corte->versiones->max('version_numero');
+                $versionesOrdenadas = $corte->versiones->sortByDesc('version_numero')->values();
+            @endphp
+
             <div style="overflow-x:auto;">
                 <table style="width:100%; border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden;">
                     <thead>
@@ -173,12 +184,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($corte->versiones as $version)
+                        @foreach($versionesOrdenadas as $version)
                             <tr style="border-bottom:1px solid #e8f5e9;">
                                 <td style="padding:10px 14px;">
                                     <strong>v{{ $version->version_numero }}</strong>
-                                    @if($loop->first)
-                                        <span class="badge-rol-detalle" style="background:linear-gradient(135deg,#2563eb,#1e40af); font-size:11px;">Actual</span>
+
+                                    {{-- Marcar como "Actual" SOLO la versión de mayor número --}}
+                                    @if((int) $version->version_numero === (int) $maxVersionNumero)
+                                        <span class="badge-rol-detalle"
+                                              style="background:linear-gradient(135deg,#2563eb,#1e40af); font-size:11px;">
+                                            Actual
+                                        </span>
                                     @endif
                                 </td>
                                 <td style="padding:10px 14px;">{{ $version->nombre_archivo }}</td>

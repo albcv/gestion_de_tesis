@@ -6,6 +6,7 @@ use App\Models\Tesis;
 use App\Models\Estudiante;
 use App\Models\Carrera;
 use App\Models\Facultad;
+use App\Models\Modalidad;  
 use App\Models\tutor_estudiante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +20,7 @@ class TesisController extends Controller
     protected $modeloEstudiante = Estudiante::class;
     protected $modeloCarrera = Carrera::class;
     protected $modeloFacultad = Facultad::class;
+    protected $modeloModalidad = Modalidad::class;  
 
     protected $rutaVista = 'gestionarTesis';
 
@@ -26,11 +28,13 @@ class TesisController extends Controller
     protected $tablaEstudiante;
     protected $tablaCarrera;
     protected $tablaFacultad;
+    protected $tablaModalidad;  
 
     protected $columnaIdTesis;
     protected $columnaIdEstudiante;
     protected $columnaIdCarrera;
     protected $columnaIdFacultad;
+    protected $columnaIdModalidad; 
 
     protected $columnaEstudiante = 'id_estudiante';
     protected $columnaNombre = 'Nombre_trabajo';
@@ -41,24 +45,23 @@ class TesisController extends Controller
         $instanciaEstudiante = new $this->modeloEstudiante;
         $instanciaCarrera = new $this->modeloCarrera;
         $instanciaFacultad = new $this->modeloFacultad;
+        $instanciaModalidad = new $this->modeloModalidad;  
 
         $this->tablaTesis = $instanciaTesis->getTable();
         $this->tablaEstudiante = $instanciaEstudiante->getTable();
         $this->tablaCarrera = $instanciaCarrera->getTable();
         $this->tablaFacultad = $instanciaFacultad->getTable();
+        $this->tablaModalidad = $instanciaModalidad->getTable();  
 
         $this->columnaIdTesis = $instanciaTesis->getKeyName();
         $this->columnaIdEstudiante = $instanciaEstudiante->getKeyName();
         $this->columnaIdCarrera = $instanciaCarrera->getKeyName();
         $this->columnaIdFacultad = $instanciaFacultad->getKeyName();
+        $this->columnaIdModalidad = $instanciaModalidad->getKeyName();  
     }
 
     /**
-     * Elimina los documentos físicos asociados a una tesis:
-     *  - Versiones de su fundamentación (carpeta fundamentaciones/{id})
-     *  - Versiones de todos sus cortes (carpetas cortes/{id})
-     *
-     * Debe invocarse ANTES de borrar la tesis (la BD borra en cascada).
+     * Elimina los documentos físicos asociados a una tesis.
      */
     private function eliminarDocumentosTesis($tesis): void
     {
@@ -71,7 +74,6 @@ class TesisController extends Controller
             'cortes.versiones',
         ]);
 
-        // ----- Fundamentación -----
         if ($tesis->fundamentacion) {
             $idFund = $tesis->fundamentacion->id_fundamentacion;
 
@@ -87,7 +89,6 @@ class TesisController extends Controller
             }
         }
 
-        // ----- Cortes -----
         foreach ($tesis->cortes as $corte) {
             foreach ($corte->versiones as $v) {
                 if (!empty($v->ruta_documento) && Storage::exists($v->ruta_documento)) {
@@ -123,15 +124,18 @@ class TesisController extends Controller
         }
 
         try {
-            $buscar = $request->input('buscar');
-            $filtroFacultad = $request->input('filtro_facultad');
-            $filtroCarrera = $request->input('filtro_carrera');
-            $porPagina = $request->input('por_pagina', 10);
+            $buscar           = $request->input('buscar');
+            $filtroFacultad   = $request->input('filtro_facultad');
+            $filtroCarrera    = $request->input('filtro_carrera');
+            $filtroModalidad  = $request->input('filtro_modalidad');  
+            $filtroAño        = $request->input('filtro_año');       
+            $porPagina        = $request->input('por_pagina', 10);
 
             $query = $this->modelo::with([
-                'estudiante' => fn($q) => $q->with(['carrera.facultad']),
+                'estudiante' => fn($q) => $q->with(['carrera.facultad', 'modalidad', 'grupo']),
             ]);
 
+            // ---------- Búsqueda ----------
             if ($buscar) {
                 $query->where(function ($q) use ($buscar) {
                     $q->where($this->columnaNombre, 'LIKE', "%{$buscar}%")
@@ -144,20 +148,51 @@ class TesisController extends Controller
                 });
             }
 
+            // ---------- Filtro por Facultad ----------
             if ($filtroFacultad) {
-                $query->whereHas('estudiante.carrera.facultad', fn($q) => $q->where('idFacultad', $filtroFacultad));
+                $query->whereHas('estudiante.carrera.facultad', function ($q) use ($filtroFacultad) {
+                    $q->where('idFacultad', $filtroFacultad);
+                });
             }
 
+            // ---------- Filtro por Carrera ----------
             if ($filtroCarrera) {
-                $query->whereHas('estudiante.carrera', fn($q) => $q->where('id', $filtroCarrera));
+                $query->whereHas('estudiante.carrera', function ($q) use ($filtroCarrera) {
+                    $q->where('id', $filtroCarrera);
+                });
+            }
+
+            // ---------- Filtro por Modalidad ----------
+            if ($filtroModalidad) {
+                $query->whereHas('estudiante', function ($q) use ($filtroModalidad) {
+                    $q->where('id_modalidad', $filtroModalidad);
+                });
+            }
+
+            // ---------- Filtro por Año Académico ----------
+            if ($filtroAño !== null && $filtroAño !== '') {
+                $query->whereHas('estudiante', function ($q) use ($filtroAño) {
+                    $q->where('year_academico', (int) $filtroAño);
+                });
             }
 
             $trabajos = $query->paginate($porPagina)->appends($request->query());
 
-            $carreras = $this->modeloCarrera::all();
-            $facultades = $this->modeloFacultad::all();
+            // ---------- Catálogos para los selects ----------
+            $carreras    = $this->modeloCarrera::orderBy('Nombre_carrera')->get();
+            $facultades  = $this->modeloFacultad::orderBy('Nombre_facultad')->get();
+            $modalidades = $this->modeloModalidad::orderBy('Nombre_modalidad')->get();
 
-            return view('gestionar.tesis.index', compact('trabajos', 'carreras', 'facultades'));
+            // Años académicos disponibles (1..6 típicamente, o extraídos de la BD)
+            $aniosAcademicos = range(1, 6);
+
+            return view('gestionar.tesis.index', compact(
+                'trabajos',
+                'carreras',
+                'facultades',
+                'modalidades',
+                'aniosAcademicos'
+            ));
 
         } catch (\Exception $e) {
             return redirect()->route($this->rutaVista)
@@ -370,7 +405,6 @@ class TesisController extends Controller
 
         DB::beginTransaction();
         try {
-            // Cargar tesis con relaciones para poder limpiar storage antes del DELETE
             $tesis = $this->modelo::with([
                 'fundamentacion.versiones',
                 'cortes.versiones',
@@ -410,7 +444,6 @@ class TesisController extends Controller
 
         DB::beginTransaction();
         try {
-            // Cargar todas las tesis con sus relaciones para limpiar storage
             $tesisList = $this->modelo::with([
                 'fundamentacion.versiones',
                 'cortes.versiones',
@@ -485,7 +518,6 @@ class TesisController extends Controller
     {
         DB::beginTransaction();
         try {
-            // Cargar todas las tesis con sus relaciones para borrar sus documentos
             $tesisList = $this->modelo::with([
                 'fundamentacion.versiones',
                 'cortes.versiones',
@@ -507,9 +539,6 @@ class TesisController extends Controller
         }
     }
 
-    /**
-     * Mueve las tesis seleccionadas al histórico.
-     */
     public function moverAHistorico(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -600,11 +629,6 @@ class TesisController extends Controller
                     'documento_corte'           => $docCorte,
                 ]);
 
-                // ============================================================
-                // LIMPIEZA DE DATOS ORIGINALES
-                // ============================================================
-
-                // --- Fundamentación ---
                 if ($tesis->fundamentacion) {
                     DB::table('profesor_fundamentacion')
                         ->where('id_fundamentacion', $tesis->fundamentacion->id_fundamentacion)
@@ -632,7 +656,6 @@ class TesisController extends Controller
                     $tesis->fundamentacion->delete();
                 }
 
-                // --- Cortes ---
                 foreach ($tesis->cortes as $corte) {
                     DB::table('corte_tesis_profesor')
                         ->where('corte_tesis_id', $corte->idCortes_de_tesis)
@@ -661,7 +684,6 @@ class TesisController extends Controller
                     $corte->delete();
                 }
 
-                // --- Referencias del estudiante ---
                 $estudiante = $tesis->estudiante;
                 $user = $estudiante ? $estudiante->user : null;
 
@@ -671,15 +693,12 @@ class TesisController extends Controller
                         ->delete();
                 }
 
-                // --- Eliminar tesis ---
                 $tesis->delete();
 
-                // --- Eliminar estudiante ---
                 if ($estudiante) {
                     $estudiante->delete();
                 }
 
-                // --- Eliminar usuario ---
                 if ($user) {
                     $user->delete();
                 }
@@ -704,9 +723,6 @@ class TesisController extends Controller
         }
     }
 
-    /**
-     * Copia un archivo al directorio "historico" y devuelve la nueva ruta.
-     */
     private function copiarAHistorico($rutaOriginal)
     {
         if (empty($rutaOriginal) || !Storage::exists($rutaOriginal)) {
@@ -722,9 +738,6 @@ class TesisController extends Controller
         return $nuevaRuta;
     }
 
-    /**
-     * Búsqueda de estudiantes para el datalist (AJAX).
-     */
     public function buscarEstudiantes(Request $request)
     {
         $termino = trim($request->input('q', ''));

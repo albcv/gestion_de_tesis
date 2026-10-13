@@ -120,12 +120,6 @@
                                                 <ul class="corte-list">
                                                     @foreach ($corte->noConformidades as $noConformidad)
                                                         @php
-                                                            /*
-                                                             * El documento de revisión ahora vive en la tabla PIVOTE
-                                                             * (corte_tesis_no_conformidades), no en no_conformidades.
-                                                             * Esto permite que la misma no conformidad tenga documentos
-                                                             * distintos según el corte al que esté asociada.
-                                                             */
                                                             $relacion = \App\Models\Cortes_de_tesis_has_NoConformidades::where('corte_tesis_id', $corte->idCortes_de_tesis)
                                                                 ->where('no_conformidad_id', $noConformidad->idNoConformidades)
                                                                 ->first();
@@ -139,7 +133,6 @@
                                                                 {{ $noConformidad->Deficiencias_detectadas }}
                                                             </div>
 
-                                                            {{-- Documento de revisión adjunto por el profesor oponente (desde la pivote) --}}
                                                             @if ($existeDoc)
                                                                 <div class="documento-revision-box small">
                                                                     <span class="documento-revision-icono">📎</span>
@@ -167,7 +160,6 @@
                                                     {{ $corte->opinionTutor->opinion }}
                                                 </p>
 
-                                                {{-- Documento de revisión adjunto por el tutor --}}
                                                 @if ($corte->opinionTutor->documento_revision)
                                                     <div class="documento-revision-box">
                                                         <span class="documento-revision-icono">📎</span>
@@ -186,30 +178,78 @@
 
                                         <!-- Versiones -->
                                         @if ($corte && $corte->versiones && $corte->versiones->count() > 0)
+                                            @php
+                                                // Ordenar y calcular la versión más reciente
+                                                $maxVersionNumero   = $corte->versiones->max('version_numero');
+                                                $versionesOrdenadas = $corte->versiones->sortByDesc('version_numero')->values();
+
+                                                // ¿Puede el estudiante eliminar versiones?
+                                                $puedeEliminarVersion = !$corte->aprobado
+                                                                     && !$corte->desaprobado
+                                                                     && $corte->versiones->count() > 1;
+                                            @endphp
+
                                             <div class="corte-info-item">
                                                 <p class="corte-label"><strong>Versiones:</strong></p>
                                                 <ul class="corte-list">
-                                                    @foreach ($corte->versiones as $version)
+                                                    @foreach ($versionesOrdenadas as $version)
                                                         <li class="corte-list-item version">
-                                                            v{{ $version->version_numero }} -
-                                                            <a href="{{ route('ver-documento-version-corte', $version->id) }}"
-                                                               class="version-link">
-                                                                {{ $version->nombre_archivo }}
-                                                            </a>
-                                                            ({{ $version->created_at->format('d/m/Y') }})
-                                                            @if ($version->descripcion)
-                                                                <br>
-                                                                <small class="text-muted">{{ $version->descripcion }}</small>
-                                                            @endif
+                                                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                                                                <div style="flex:1; min-width:0;">
+                                                                    <strong>v{{ $version->version_numero }}</strong>
+                                                                    @if((int) $version->version_numero === (int) $maxVersionNumero)
+                                                                        <span class="badge-actual"
+                                                                              style="display:inline-block; background:linear-gradient(135deg,#2563eb,#1e40af); color:#fff; font-size:10px; padding:2px 8px; border-radius:999px; margin-left:6px;">
+                                                                            Actual
+                                                                        </span>
+                                                                    @endif
+                                                                    —
+                                                                    <a href="{{ route('ver-documento-version-corte', $version->id) }}"
+                                                                       class="version-link">
+                                                                        {{ $version->nombre_archivo }}
+                                                                    </a>
+                                                                    ({{ $version->created_at->format('d/m/Y') }})
+                                                                    @if ($version->descripcion)
+                                                                        <br>
+                                                                        <small class="text-muted">{{ $version->descripcion }}</small>
+                                                                    @endif
+                                                                </div>
+
+                                                                {{-- Botón Eliminar (solo si puede) --}}
+                                                                @if ($puedeEliminarVersion)
+                                                                    <form method="POST"
+                                                                          action="{{ route('eliminar-version-corte-estudiante', $version->id) }}"
+                                                                          style="display:inline; margin:0;"
+                                                                          onsubmit="return confirm('¿Estás seguro de eliminar la versión {{ $version->version_numero }}? Esta acción no se puede deshacer.');">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit"
+                                                                                style="background:#fee2e2; border:none; border-radius:6px; cursor:pointer; font-size:18px; padding:4px 8px; line-height:1;"
+                                                                                title="Eliminar versión {{ $version->version_numero }}">
+                                                                            🗑️
+                                                                        </button>
+                                                                    </form>
+                                                                @endif
+                                                            </div>
                                                         </li>
                                                     @endforeach
                                                 </ul>
+
+                                                @if (!$puedeEliminarVersion && $corte->versiones->count() === 1)
+                                                    <p class="empty-message" style="font-size:12px; color:#6c757d; margin-top:6px;">
+                                                        ℹ️ No puedes eliminar la única versión. Sube una nueva para poder eliminar esta.
+                                                    </p>
+                                                @elseif ($corte->aprobado || $corte->desaprobado)
+                                                    <p class="empty-message" style="font-size:12px; color:#6c757d; margin-top:6px;">
+                                                        🔒 Este corte está {{ $corte->aprobado ? 'aprobado' : 'desaprobado' }}. No puedes modificar sus versiones.
+                                                    </p>
+                                                @endif
                                             </div>
                                         @endif
                                     </div>
 
                                     <!-- Formulario para subir versión -->
-                                    @if ((!$corte || !$corte->aprobado) && $fechaEntrega && now()->lte($fechaEntrega->fecha_entrega))
+                                    @if ((!$corte || (!$corte->aprobado && !$corte->desaprobado)) && $fechaEntrega && now()->lte($fechaEntrega->fecha_entrega))
                                         <div class="separator"></div>
                                         <form action="{{ route('subirVersionCorte', $i) }}" method="POST" enctype="multipart/form-data" class="upload-form">
                                             @csrf

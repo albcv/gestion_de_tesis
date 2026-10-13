@@ -9,6 +9,7 @@ use App\Models\fundamentaciones_desaprobadas;
 use App\Models\Tesis;
 use App\Models\Carrera;
 use App\Models\Facultad;
+use App\Models\Modalidad;  
 use App\Models\version_fundamentacion;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -21,6 +22,7 @@ class fundamentacionesController extends Controller
     protected $modeloAprobada = fundamentaciones_aprobadas::class;
     protected $modeloDesaprobada = fundamentaciones_desaprobadas::class;
     protected $modeloVersion = version_fundamentacion::class;
+    protected $modeloModalidad = Modalidad::class;  
     protected $rutaVista = 'gestionarFundamentaciones';
     protected $storageFolder = 'fundamentaciones';
     protected $allowedExtensions = ['pdf', 'doc', 'docx'];
@@ -31,10 +33,12 @@ class fundamentacionesController extends Controller
     protected $tablaTesis;
     protected $tablaAprobada;
     protected $tablaDesaprobada;
+    protected $tablaModalidad;  
     protected $columnaIdFundamentacionPrimaria;
     protected $columnaIdTesisPrimaria;
     protected $columnaIdAprobadaPrimaria;
     protected $columnaIdDesaprobadaPrimaria;
+    protected $columnaIdModalidadPrimaria;  
 
     public function __construct()
     {
@@ -42,25 +46,23 @@ class fundamentacionesController extends Controller
         $instanciaTesis = new $this->modeloTesis;
         $instanciaAprobada = new $this->modeloAprobada;
         $instanciaDesaprobada = new $this->modeloDesaprobada;
+        $instanciaModalidad = new $this->modeloModalidad; 
 
         $this->tablaFundamentacion = $instanciaFundamentacion->getTable();
         $this->tablaTesis = $instanciaTesis->getTable();
         $this->tablaAprobada = $instanciaAprobada->getTable();
         $this->tablaDesaprobada = $instanciaDesaprobada->getTable();
+        $this->tablaModalidad = $instanciaModalidad->getTable();  
 
         $this->columnaIdFundamentacionPrimaria = $instanciaFundamentacion->getKeyName();
         $this->columnaIdTesisPrimaria = $instanciaTesis->getKeyName();
         $this->columnaIdAprobadaPrimaria = $instanciaAprobada->getKeyName();
         $this->columnaIdDesaprobadaPrimaria = $instanciaDesaprobada->getKeyName();
+        $this->columnaIdModalidadPrimaria = $instanciaModalidad->getKeyName(); 
     }
 
     /**
      * Listado, formulario o detalles según query param.
-     *
-     *  /gestionarFundamentaciones                       → listado
-     *  /gestionarFundamentaciones?accion=crear          → formulario crear
-     *  /gestionarFundamentaciones?accion=editar&id=X    → formulario editar
-     *  /gestionarFundamentaciones?accion=detalles&id=X  → detalles
      */
     public function mostrar(Request $request)
     {
@@ -80,20 +82,24 @@ class fundamentacionesController extends Controller
         }
 
         try {
-            $buscar = $request->input('buscar');
-            $filtroFacultad = $request->input('filtro_facultad');
-            $filtroCarrera = $request->input('filtro_carrera');
-            $filtroEstado = $request->input('filtro_estado');
-            $porPagina = $request->input('por_pagina', 10);
+            $buscar          = $request->input('buscar');
+            $filtroFacultad  = $request->input('filtro_facultad');
+            $filtroCarrera   = $request->input('filtro_carrera');
+            $filtroModalidad = $request->input('filtro_modalidad'); 
+            $filtroAño       = $request->input('filtro_año');        
+            $filtroEstado    = $request->input('filtro_estado');
+            $porPagina       = $request->input('por_pagina', 10);
 
             $query = $this->modelo::with([
                 'tesis.estudiante.carrera.facultad',
+                'tesis.estudiante.modalidad',       
                 'aprobada',
                 'desaprobada',
                 'ultimaVersion',
                 'versiones' => fn($q) => $q->orderBy('version_numero', 'asc'),
             ]);
 
+            // ---------- Búsqueda ----------
             if ($buscar) {
                 $query->where(function ($q) use ($buscar) {
                     $q->whereHas('tesis', function ($q) use ($buscar) {
@@ -108,14 +114,35 @@ class fundamentacionesController extends Controller
                 });
             }
 
+            // ---------- Filtro por Facultad ----------
             if ($filtroFacultad) {
-                $query->whereHas('tesis.estudiante.carrera.facultad', fn($q) => $q->where('idFacultad', $filtroFacultad));
+                $query->whereHas('tesis.estudiante.carrera.facultad', function ($q) use ($filtroFacultad) {
+                    $q->where('idFacultad', $filtroFacultad);
+                });
             }
 
+            // ---------- Filtro por Carrera ----------
             if ($filtroCarrera) {
-                $query->whereHas('tesis.estudiante.carrera', fn($q) => $q->where('id', $filtroCarrera));
+                $query->whereHas('tesis.estudiante.carrera', function ($q) use ($filtroCarrera) {
+                    $q->where('id', $filtroCarrera);
+                });
             }
 
+            // ---------- Filtro por Modalidad ----------
+            if ($filtroModalidad) {
+                $query->whereHas('tesis.estudiante', function ($q) use ($filtroModalidad) {
+                    $q->where('id_modalidad', $filtroModalidad);
+                });
+            }
+
+            // ---------- Filtro por Año Académico ----------
+            if ($filtroAño !== null && $filtroAño !== '') {
+                $query->whereHas('tesis.estudiante', function ($q) use ($filtroAño) {
+                    $q->where('year_academico', (int) $filtroAño);
+                });
+            }
+
+            // ---------- Filtro por Estado ----------
             if ($filtroEstado) {
                 if ($filtroEstado === 'aprobada') {
                     $query->whereHas('aprobada');
@@ -128,11 +155,20 @@ class fundamentacionesController extends Controller
 
             $fundamentaciones = $query->paginate($porPagina)->appends($request->query());
 
-            $facultades = Facultad::all();
-            $carreras = Carrera::all();
+            // ---------- Catálogos ----------
+            $facultades  = Facultad::orderBy('Nombre_facultad')->get();
+            $carreras    = Carrera::orderBy('Nombre_carrera')->get();
+            $modalidades = $this->modeloModalidad::orderBy('Nombre_modalidad')->get(); 
+
+            // Años académicos disponibles
+            $aniosAcademicos = range(1, 6);  
 
             return view('gestionar.fundamentacion.index', compact(
-                'fundamentaciones', 'facultades', 'carreras'
+                'fundamentaciones',
+                'facultades',
+                'carreras',
+                'modalidades',      
+                'aniosAcademicos'   
             ));
 
         } catch (\Exception $e) {
@@ -144,7 +180,6 @@ class fundamentacionesController extends Controller
     public function crear(Request $request)
     {
         try {
-            // Excluir tesis que ya tienen fundamentación
             $tesis = $this->modeloTesis::whereDoesntHave('fundamentacion')->get();
 
             $idTesisSeleccionada = $request->query('tesis_id');
@@ -741,23 +776,15 @@ class fundamentacionesController extends Controller
         }
     }
 
-
-        /**
-     * Búsqueda de tesis para el datalist (AJAX).
-     * Solo devuelve tesis SIN fundamentación,
-     * más la tesis actual si estamos editando.
-     */
     public function buscarTesis(Request $request)
     {
         $termino = trim($request->input('q', ''));
-        $idActual = $request->input('id_actual'); // id de la tesis actual en modo edición
+        $idActual = $request->input('id_actual');
 
         try {
             $query = $this->modeloTesis::with(['estudiante'])
                 ->where(function ($q) use ($idActual) {
-                    // Tesis sin fundamentación
                     $q->whereDoesntHave('fundamentacion');
-                    // O la tesis actual (si estamos editando)
                     if ($idActual) {
                         $q->orWhere('id', $idActual);
                     }

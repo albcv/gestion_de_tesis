@@ -8,6 +8,7 @@ use App\Models\cortes_desaprobados;
 use App\Models\Tesis;
 use App\Models\Carrera;
 use App\Models\Facultad;
+use App\Models\Modalidad;   
 use App\Models\version_corte;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,7 @@ class cortesController extends Controller
     protected $modeloAprobado = cortes_aprobados::class;
     protected $modeloDesaprobado = cortes_desaprobados::class;
     protected $modeloVersion = version_corte::class;
+    protected $modeloModalidad = Modalidad::class;  
     protected $rutaVista = 'gestionarCortes';
     protected $storageFolder = 'cortes';
     protected $allowedExtensions = ['pdf', 'doc', 'docx'];
@@ -33,11 +35,13 @@ class cortesController extends Controller
     protected $tablaAprobado;
     protected $tablaDesaprobado;
     protected $tablaVersion;
+    protected $tablaModalidad;   
     protected $columnaIdCortePrimaria;
     protected $columnaIdTesisPrimaria;
     protected $columnaIdAprobadoPrimaria;
     protected $columnaIdDesaprobadoPrimaria;
     protected $columnaIdVersionPrimaria;
+    protected $columnaIdModalidadPrimaria;  
 
     public function __construct()
     {
@@ -46,18 +50,21 @@ class cortesController extends Controller
         $instanciaAprobado = new $this->modeloAprobado;
         $instanciaDesaprobado = new $this->modeloDesaprobado;
         $instanciaVersion = new $this->modeloVersion;
+        $instanciaModalidad = new $this->modeloModalidad;   
 
         $this->tablaCorte = $instanciaCorte->getTable();
         $this->tablaTesis = $instanciaTesis->getTable();
         $this->tablaAprobado = $instanciaAprobado->getTable();
         $this->tablaDesaprobado = $instanciaDesaprobado->getTable();
         $this->tablaVersion = $instanciaVersion->getTable();
+        $this->tablaModalidad = $instanciaModalidad->getTable();  
 
         $this->columnaIdCortePrimaria = $instanciaCorte->getKeyName();
         $this->columnaIdTesisPrimaria = $instanciaTesis->getKeyName();
         $this->columnaIdAprobadoPrimaria = $instanciaAprobado->getKeyName();
         $this->columnaIdDesaprobadoPrimaria = $instanciaDesaprobado->getKeyName();
         $this->columnaIdVersionPrimaria = $instanciaVersion->getKeyName();
+        $this->columnaIdModalidadPrimaria = $instanciaModalidad->getKeyName();   
     }
 
     private function sanitizeFileName($filename)
@@ -91,21 +98,25 @@ class cortesController extends Controller
         }
 
         try {
-            $buscar = $request->input('buscar');
-            $filtroFacultad = $request->input('filtro_facultad');
-            $filtroCarrera = $request->input('filtro_carrera');
-            $filtroEstado = $request->input('filtro_estado');
-            $filtroNumeroCorte = $request->input('filtro_numero_corte');
-            $porPagina = $request->input('por_pagina', 10);
+            $buscar             = $request->input('buscar');
+            $filtroFacultad     = $request->input('filtro_facultad');
+            $filtroCarrera      = $request->input('filtro_carrera');
+            $filtroModalidad    = $request->input('filtro_modalidad');  
+            $filtroAño          = $request->input('filtro_año');         
+            $filtroEstado       = $request->input('filtro_estado');
+            $filtroNumeroCorte  = $request->input('filtro_numero_corte');
+            $porPagina          = $request->input('por_pagina', 10);
 
             $query = $this->modeloCorte::with([
                 'tesis.estudiante.carrera.facultad',
+                'tesis.estudiante.modalidad',  
                 'aprobado',
                 'desaprobado',
                 'ultimaVersion',
                 'versiones' => fn($q) => $q->orderBy('version_numero', 'asc'),
             ]);
 
+            // ---------- Búsqueda ----------
             if ($buscar) {
                 $query->where(function ($q) use ($buscar) {
                     $q->whereHas('tesis', function ($q) use ($buscar) {
@@ -120,14 +131,35 @@ class cortesController extends Controller
                 });
             }
 
+            // ---------- Filtro por Facultad ----------
             if ($filtroFacultad) {
-                $query->whereHas('tesis.estudiante.carrera.facultad', fn($q) => $q->where('idFacultad', $filtroFacultad));
+                $query->whereHas('tesis.estudiante.carrera.facultad', function ($q) use ($filtroFacultad) {
+                    $q->where('idFacultad', $filtroFacultad);
+                });
             }
 
+            // ---------- Filtro por Carrera ----------
             if ($filtroCarrera) {
-                $query->whereHas('tesis.estudiante.carrera', fn($q) => $q->where('id', $filtroCarrera));
+                $query->whereHas('tesis.estudiante.carrera', function ($q) use ($filtroCarrera) {
+                    $q->where('id', $filtroCarrera);
+                });
             }
 
+            // ---------- Filtro por Modalidad ----------
+            if ($filtroModalidad) {
+                $query->whereHas('tesis.estudiante', function ($q) use ($filtroModalidad) {
+                    $q->where('id_modalidad', $filtroModalidad);
+                });
+            }
+
+            // ---------- Filtro por Año Académico ----------
+            if ($filtroAño !== null && $filtroAño !== '') {
+                $query->whereHas('tesis.estudiante', function ($q) use ($filtroAño) {
+                    $q->where('year_academico', (int) $filtroAño);
+                });
+            }
+
+            // ---------- Filtro por Estado ----------
             if ($filtroEstado) {
                 if ($filtroEstado === 'aprobado') {
                     $query->whereHas('aprobado');
@@ -138,16 +170,28 @@ class cortesController extends Controller
                 }
             }
 
+            // ---------- Filtro por Número de Corte ----------
             if ($filtroNumeroCorte) {
                 $query->where($this->columnaNumeroCorte, $filtroNumeroCorte);
             }
 
             $cortes = $query->paginate($porPagina)->appends($request->query());
 
-            $facultades = Facultad::all();
-            $carreras = Carrera::all();
+            // ---------- Catálogos ----------
+            $facultades  = Facultad::orderBy('Nombre_facultad')->get();
+            $carreras    = Carrera::orderBy('Nombre_carrera')->get();
+            $modalidades = $this->modeloModalidad::orderBy('Nombre_modalidad')->get();  
 
-            return view('gestionar.corte.index', compact('cortes', 'facultades', 'carreras'));
+            // Años académicos disponibles
+            $aniosAcademicos = range(1, 6);   
+
+            return view('gestionar.corte.index', compact(
+                'cortes',
+                'facultades',
+                'carreras',
+                'modalidades',     
+                'aniosAcademicos'   
+            ));
 
         } catch (\Exception $e) {
             return redirect()->route($this->rutaVista)
@@ -201,7 +245,7 @@ class cortesController extends Controller
         }
     }
 
-      public function editar($id)
+    public function editar($id)
     {
         try {
             $corte = $this->modeloCorte::with([
@@ -782,10 +826,8 @@ class cortesController extends Controller
         return redirect()->route($this->rutaVista);
     }
 
-
-        /**
+    /**
      * Búsqueda de tesis para el datalist (AJAX).
-     * Solo devuelve tesis con fundamentación aprobada.
      */
     public function buscarTesis(Request $request)
     {
@@ -817,7 +859,6 @@ class cortesController extends Controller
                     ? trim($est->Nombre_estudiante . ' ' . $est->Apellido1)
                     : 'Sin estudiante';
 
-                // Label que verá el usuario (también se usa como value del option)
                 $label = $t->Nombre_trabajo . ' - ' . $nombreEst;
 
                 return [
@@ -836,6 +877,4 @@ class cortesController extends Controller
             ], 500);
         }
     }
-
-
 }

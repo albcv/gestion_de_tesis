@@ -194,104 +194,111 @@ class UserController extends Controller
        LISTADO
        ============================================================ */
 
-    public function mostrar(Request $request)
-    {
-        $accion = $request->query('accion');
-        $id     = $request->query('id');
+   public function mostrar(Request $request)
+{
+    $accion = $request->query('accion');
+    $id     = $request->query('id');
 
-        if ($accion === 'crear') {
-            return $this->crearUsuario();
+    if ($accion === 'crear') {
+        return $this->crearUsuario();
+    }
+
+    if ($accion === 'editar' && $id) {
+        return $this->editar($id);
+    }
+
+    if ($accion === 'detalles' && $id) {
+        return $this->ver($id);
+    }
+
+    try {
+        $buscar          = $request->input('buscar');
+        $filtroRol       = $request->input('filtro_rol');
+        $filtroCarrera   = $request->input('filtro_carrera');
+        $filtroModalidad = $request->input('filtro_modalidad');
+        $filtroGrupo     = $request->input('filtro_grupo');
+        $filtroAño       = $request->input('filtro_año');   // ← NUEVO
+        $porPagina       = $request->input('por_pagina', 10);
+
+        $query = $this->modelo::with(['roles', 'estudiante', 'profesor']);
+
+        if ($buscar) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where($this->columnaName, 'LIKE', "%{$buscar}%")
+                    ->orWhere($this->columnaEmail, 'LIKE', "%{$buscar}%")
+                    ->orWhereHas('estudiante', function ($q) use ($buscar) {
+                        $q->where('Nombre_estudiante', 'LIKE', "%{$buscar}%")
+                            ->orWhere('Apellido1', 'LIKE', "%{$buscar}%")
+                            ->orWhere('Apellido2', 'LIKE', "%{$buscar}%")
+                            ->orWhere('CI_estudiante', 'LIKE', "%{$buscar}%");
+                    })
+                    ->orWhereHas('profesor', function ($q) use ($buscar) {
+                        $q->where('Nombre_profesor', 'LIKE', "%{$buscar}%")
+                            ->orWhere('Apellido1', 'LIKE', "%{$buscar}%")
+                            ->orWhere('Apellido2', 'LIKE', "%{$buscar}%")
+                            ->orWhere('CI_profesor', 'LIKE', "%{$buscar}%");
+                    });
+            });
         }
 
-        if ($accion === 'editar' && $id) {
-            return $this->editar($id);
-        }
-
-        if ($accion === 'detalles' && $id) {
-            return $this->ver($id);
-        }
-
-        try {
-            $buscar          = $request->input('buscar');
-            $filtroRol       = $request->input('filtro_rol');
-            $filtroCarrera   = $request->input('filtro_carrera');
-            $filtroModalidad = $request->input('filtro_modalidad');
-            $filtroGrupo     = $request->input('filtro_grupo');
-            $porPagina       = $request->input('por_pagina', 10);
-
-            $query = $this->modelo::with(['roles', 'estudiante', 'profesor']);
-
-            if ($buscar) {
-                $query->where(function ($q) use ($buscar) {
-                    $q->where($this->columnaName, 'LIKE', "%{$buscar}%")
-                        ->orWhere($this->columnaEmail, 'LIKE', "%{$buscar}%")
-                        ->orWhereHas('estudiante', function ($q) use ($buscar) {
-                            $q->where('Nombre_estudiante', 'LIKE', "%{$buscar}%")
-                                ->orWhere('Apellido1', 'LIKE', "%{$buscar}%")
-                                ->orWhere('Apellido2', 'LIKE', "%{$buscar}%")
-                                ->orWhere('CI_estudiante', 'LIKE', "%{$buscar}%");
-                        })
-                        ->orWhereHas('profesor', function ($q) use ($buscar) {
-                            $q->where('Nombre_profesor', 'LIKE', "%{$buscar}%")
-                                ->orWhere('Apellido1', 'LIKE', "%{$buscar}%")
-                                ->orWhere('Apellido2', 'LIKE', "%{$buscar}%")
-                                ->orWhere('CI_profesor', 'LIKE', "%{$buscar}%");
-                        });
-                });
-            }
-
-            // ---------- Filtro por rol (relación many-to-many) ----------
-            // ⚠️ Se califica con 'roles.id' para evitar el error "Column 'id' in where clause is ambiguous"
-            if ($filtroRol) {
-                if (strtolower($filtroRol) === strtolower(self::ROL_ESTUDIANTE)) {
-                    $query->whereHas('roles', fn($q) => $q->where('roles.id', $this->rolEstudianteId));
-                } elseif (strtolower($filtroRol) === strtolower(self::ROL_PROFESOR)) {
-                    $query->whereHas('roles', fn($q) => $q->where('roles.id', $this->rolProfesorId));
-                } elseif (strtolower($filtroRol) === strtolower(self::ROL_ADMINISTRADOR)) {
-                    $query->whereHas('roles', fn($q) => $q->where('roles.id', $this->rolAdministradorId));
-                } elseif (is_numeric($filtroRol)) {
-                    $query->whereHas('roles', fn($q) => $q->where('roles.id', $filtroRol));
-                } else {
-                    $rol = $this->modeloRol::where('rol', 'LIKE', "%{$filtroRol}%")->first();
-                    if ($rol) {
-                        $query->whereHas('roles', fn($q) => $q->where('roles.id', $rol->id));
-                    }
+        // ---------- Filtro por rol (relación many-to-many) ----------
+        if ($filtroRol) {
+            if (strtolower($filtroRol) === strtolower(self::ROL_ESTUDIANTE)) {
+                $query->whereHas('roles', fn($q) => $q->where('roles.id', $this->rolEstudianteId));
+            } elseif (strtolower($filtroRol) === strtolower(self::ROL_PROFESOR)) {
+                $query->whereHas('roles', fn($q) => $q->where('roles.id', $this->rolProfesorId));
+            } elseif (strtolower($filtroRol) === strtolower(self::ROL_ADMINISTRADOR)) {
+                $query->whereHas('roles', fn($q) => $q->where('roles.id', $this->rolAdministradorId));
+            } elseif (is_numeric($filtroRol)) {
+                $query->whereHas('roles', fn($q) => $q->where('roles.id', $filtroRol));
+            } else {
+                $rol = $this->modeloRol::where('rol', 'LIKE', "%{$filtroRol}%")->first();
+                if ($rol) {
+                    $query->whereHas('roles', fn($q) => $q->where('roles.id', $rol->id));
                 }
             }
-
-            // ---------- Filtros exclusivos de estudiantes ----------
-            $esFiltroEstudiante = strtolower((string) $filtroRol) === strtolower(self::ROL_ESTUDIANTE);
-
-            if ($esFiltroEstudiante
-                && ($filtroCarrera || $filtroModalidad || $filtroGrupo)) {
-
-                $query->whereHas('estudiante', function ($q) use ($filtroCarrera, $filtroModalidad, $filtroGrupo) {
-                    if ($filtroCarrera)    $q->where('id_carrera', $filtroCarrera);
-                    if ($filtroModalidad)  $q->where('id_modalidad', $filtroModalidad);
-                    if ($filtroGrupo)      $q->where('id_grupo', $filtroGrupo);
-                });
-            }
-
-            $usuarios = $query->paginate($porPagina)->appends($request->query());
-
-            // Catálogos
-            $roles       = $this->modeloRol::orderBy('rol')->get();
-            $carreras    = $this->modeloCarrera::orderBy('Nombre_carrera')->get();
-            $modalidades = $this->modeloModalidad::orderBy('Nombre_modalidad')->get();
-            $grupos      = $this->modeloGrupo::orderBy('número')->get();
-
-            // Contador de solicitudes pendientes
-            $posiblesPendientes = \App\Models\PosibleUsuario::count();
-
-            return view('gestionar.usuario.index', compact(
-                'usuarios', 'roles', 'carreras', 'modalidades', 'grupos', 'posiblesPendientes'
-            ));
-
-        } catch (\Exception $e) {
-            return redirect()->route($this->rutaVistaPrincipal)
-                ->with('error', 'Error al cargar la lista de usuarios: ' . $e->getMessage());
         }
+
+        // ---------- Filtros exclusivos de estudiantes ----------
+        $esFiltroEstudiante = strtolower((string) $filtroRol) === strtolower(self::ROL_ESTUDIANTE);
+
+        if ($esFiltroEstudiante
+            && ($filtroCarrera || $filtroModalidad || $filtroGrupo || $filtroAño)) {
+
+            $query->whereHas('estudiante', function ($q) use ($filtroCarrera, $filtroModalidad, $filtroGrupo, $filtroAño) {
+                if ($filtroCarrera)    $q->where('id_carrera', $filtroCarrera);
+                if ($filtroModalidad)  $q->where('id_modalidad', $filtroModalidad);
+                if ($filtroGrupo)      $q->where('id_grupo', $filtroGrupo);
+                if ($filtroAño !== null && $filtroAño !== '') {
+                    $q->where('year_academico', (int) $filtroAño);
+                }
+            });
+        }
+
+        $usuarios = $query->paginate($porPagina)->appends($request->query());
+
+        // Catálogos
+        $roles       = $this->modeloRol::orderBy('rol')->get();
+        $carreras    = $this->modeloCarrera::orderBy('Nombre_carrera')->get();
+        $modalidades = $this->modeloModalidad::orderBy('Nombre_modalidad')->get();
+        $grupos      = $this->modeloGrupo::orderBy('número')->get();
+
+        // Años académicos disponibles (1..6 típicamente)
+        $aniosAcademicos = range(1, 6);
+
+        // Contador de solicitudes pendientes
+        $posiblesPendientes = \App\Models\PosibleUsuario::count();
+
+        return view('gestionar.usuario.index', compact(
+            'usuarios', 'roles', 'carreras', 'modalidades', 'grupos',
+            'aniosAcademicos', 'posiblesPendientes'
+        ));
+
+    } catch (\Exception $e) {
+        return redirect()->route($this->rutaVistaPrincipal)
+            ->with('error', 'Error al cargar la lista de usuarios: ' . $e->getMessage());
     }
+}
 
     /* ============================================================
        CREAR

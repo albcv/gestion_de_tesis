@@ -13,12 +13,16 @@
         use Illuminate\Support\Facades\Auth;
         use Illuminate\Support\Facades\Route;
 
-        if (!Auth::check()) {
-            abort(403, 'Acceso denegado');
-        }
-
-        /** @var \App\Models\User $usuario */
+        /** @var \App\Models\User|null $usuario */
         $usuario = Auth::user();
+
+       
+        // ============================================================
+        if (!$usuario) {
+           
+            echo '<script>window.location.href = "' . route('login') . '";</script>';
+            exit;
+        }
 
         // Garantizar que la relación many-to-many de roles esté cargada
         $usuario->loadMissing('roles');
@@ -79,9 +83,6 @@
 
         /* ============================================================
            OBTENER ROLES DEL USUARIO (por nombre, en minúsculas)
-           ============================================================
-           Se usa la relación many-to-many `roles()`.
-           Si por alguna razón viene vacía, se devuelve un array vacío.
            ============================================================ */
         $rolesUsuario = $usuario->roles
             ->pluck('rol')
@@ -92,27 +93,20 @@
 
         /* ============================================================
            FILTRAR MENÚS DEL SIDEBAR SEGÚN EL ROL DEL USUARIO
-           ============================================================
-           - Solo se muestran los grupos de roles que el usuario tiene.
-           - Dentro de cada grupo, se filtran los ítems por permiso.
-           - Se descartan los grupos que queden vacíos.
            ============================================================ */
         $sidebarGruposFiltrados = [];
 
         foreach ($sidebarMenus as $nombreRol => $items) {
-            // ¿El usuario tiene este rol? (comparación case-insensitive)
             if (!in_array(strtolower($nombreRol), $rolesUsuario, true)) {
                 continue;
             }
 
-            // Filtrar ítems por permiso
             $itemsFiltrados = array_filter($items, function ($menu) use ($usuario) {
                 return is_array($menu['permiso'])
                     ? $usuario->tieneAlgunPermiso($menu['permiso'])
                     : $usuario->tienePermiso($menu['permiso']);
             });
 
-            // Solo agregar el grupo si tiene ítems visibles
             if (count($itemsFiltrados) > 0) {
                 $sidebarGruposFiltrados[$nombreRol] = array_values($itemsFiltrados);
             }
@@ -280,6 +274,68 @@
          Notificaciones flotantes
          ============================== -->
     <div id="notificaciones-container" class="notificaciones-container"></div>
+
+    {{-- ============================================================
+         INTERCEPTOR GLOBAL: 419 (CSRF/sesión) y 401 (no autenticado)
+         Redirige automáticamente al login.
+         ============================================================ --}}
+    <script>
+        (function () {
+            const LOGIN_URL = "{{ route('login') }}";
+            const LOGIN_URL_FALLBACK = "/login";
+
+            function redirigirAlLogin() {
+                // Evitar redirección si ya estamos en el login
+                if (window.location.pathname === "/login") return;
+                window.location.href = LOGIN_URL || LOGIN_URL_FALLBACK;
+            }
+
+            // -------- Interceptar fetch --------
+            const fetchOriginal = window.fetch;
+            window.fetch = function (...args) {
+                return fetchOriginal.apply(this, args).then(function (response) {
+                    if (response.status === 419 || response.status === 401) {
+                        redirigirAlLogin();
+                        return Promise.reject(new Error('Sesión expirada'));
+                    }
+                    return response;
+                });
+            };
+
+            // -------- Interceptar XMLHttpRequest (por si se usa jQuery o vanilla) --------
+            const openOriginal = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function (method, url, ...rest) {
+                this.addEventListener('load', function () {
+                    if (this.status === 419 || this.status === 401) {
+                        redirigirAlLogin();
+                    }
+                });
+                return openOriginal.call(this, method, url, ...rest);
+            };
+
+            // -------- Interceptar axios (si está disponible) --------
+            if (typeof axios !== 'undefined') {
+                axios.interceptors.response.use(
+                    response => response,
+                    error => {
+                        if (error.response
+                            && (error.response.status === 419 || error.response.status === 401)) {
+                            redirigirAlLogin();
+                        }
+                        return Promise.reject(error);
+                    }
+                );
+            }
+
+            // -------- Detectar 419 en el HTML de respuesta (fallback) --------
+            // Si Laravel devuelve la página 419 por navegación normal,
+            // el navegador la muestra antes de que el JS corra.
+            // Este chequeo la detecta al cargar el documento.
+            if (document.title && document.title.includes('419')) {
+                redirigirAlLogin();
+            }
+        })();
+    </script>
 
     <script>
         /**

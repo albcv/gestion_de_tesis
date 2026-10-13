@@ -53,6 +53,7 @@
                               request('filtro_carrera')
                            || request('filtro_modalidad')
                            || request('filtro_grupo')
+                           || request('filtro_año')
                        ));
         @endphp
 
@@ -101,6 +102,17 @@
                             <option value="{{ $grupo->id }}"
                                 {{ request('filtro_grupo') == $grupo->id ? 'selected' : '' }}>
                                 Grupo {{ $grupo->número }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    {{-- NUEVO: filtro por año académico --}}
+                    <select name="filtro_año" class="input-filtro">
+                        <option value="">Todos los años</option>
+                        @foreach ($aniosAcademicos as $anio)
+                            <option value="{{ $anio }}"
+                                {{ (string) request('filtro_año') === (string) $anio ? 'selected' : '' }}>
+                                {{ $anio }}º año
                             </option>
                         @endforeach
                     </select>
@@ -286,9 +298,11 @@
 
     document.querySelectorAll('.form-filtros-usuarios select').forEach(sel => {
         sel.addEventListener('change', function () {
+            // Si se cambia el rol a algo distinto de "estudiante",
+            // limpiar los filtros exclusivos de estudiante.
             if (this.name === 'filtro_rol' && this.value !== 'estudiante') {
                 const form = this.closest('form');
-                ['filtro_carrera', 'filtro_modalidad', 'filtro_grupo'].forEach(n => {
+                ['filtro_carrera', 'filtro_modalidad', 'filtro_grupo', 'filtro_año'].forEach(n => {
                     const el = form.querySelector(`[name="${n}"]`);
                     if (el) el.value = '';
                 });

@@ -9,6 +9,7 @@ use App\Models\Tesis;
 use App\Models\FechaEntregaFundamentacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -35,12 +36,10 @@ class SubirFundamentacionController extends Controller
             // Obtener o crear la fundamentación
             $fundamentacion = $tesis->fundamentacion;
             if (!$fundamentacion) {
-                // Crear una nueva fundamentación automáticamente
                 $fundamentacion = new fundamentaciones();
                 $fundamentacion->id_tesis = $tesis->id;
                 $fundamentacion->save();
 
-                // Reload the fundamentacion with relationships
                 $fundamentacion = $tesis->fundamentacion()->first();
             }
 
@@ -75,7 +74,6 @@ class SubirFundamentacionController extends Controller
             // Obtener o crear la fundamentación
             $fundamentacion = $tesis->fundamentacion;
             if (!$fundamentacion) {
-                // Crear la fundamentación si no existe
                 $fundamentacion = new fundamentaciones();
                 $fundamentacion->id_tesis = $tesis->id;
                 $fundamentacion->save();
@@ -162,6 +160,105 @@ class SubirFundamentacionController extends Controller
             return redirect()->back()
                 ->with('error', 'Error al subir la versión: ' . $e->getMessage())
                 ->withInput();
+        }
+    }
+
+    /**
+     * Elimina una versión de la fundamentación del estudiante autenticado.
+     *
+     * Reglas:
+     *  - El estudiante debe ser dueño de la tesis.
+     *  - La fundamentación NO debe estar aprobada.
+     *  - Debe existir más de una versión (no se puede borrar la única).
+     *  - Se elimina el archivo físico y el registro en la BD.
+     *  - Se reordenan las versiones restantes (v1, v2, ...).
+     */
+    public function eliminarVersion(Request $request, $idVersion)
+    {
+        try {
+            $user = Auth::user();
+            $estudiante = $user->estudiante;
+
+            if (!$estudiante) {
+                return redirect()->back()
+                    ->with('error', 'No se encontró información del estudiante');
+            }
+
+            // Buscar la versión
+            $version = version_fundamentacion::findOrFail($idVersion);
+
+            // Cargar la fundamentación asociada con la tesis y el estudiante
+            $fundamentacion = fundamentaciones::with(['tesis.estudiante'])
+                ->findOrFail($version->id_fundamentacion);
+
+            // Verificar que el estudiante autenticado sea dueño de la tesis
+            if (!$fundamentacion->tesis
+                || !$fundamentacion->tesis->estudiante
+                || (int) $fundamentacion->tesis->estudiante->id !== (int) $estudiante->id) {
+                return redirect()->back()
+                    ->with('error', 'No tienes permisos para eliminar esta versión');
+            }
+
+            // No se puede eliminar si la fundamentación está aprobada
+            if ($fundamentacion->aprobada) {
+                return redirect()->back()
+                    ->with('error', 'No puedes eliminar versiones de una fundamentación aprobada');
+            }
+
+            // Verificar que no sea la única versión
+            $totalVersiones = version_fundamentacion::where('id_fundamentacion', $version->id_fundamentacion)->count();
+
+            if ($totalVersiones <= 1) {
+                return redirect()->route('subirFundamentación')
+                    ->with('error', 'No puedes eliminar la única versión de la fundamentación. Sube una nueva antes de eliminar esta.');
+            }
+
+            DB::beginTransaction();
+
+            // Eliminar el archivo físico si existe
+            if (!empty($version->ruta_documento) && Storage::exists($version->ruta_documento)) {
+                Storage::delete($version->ruta_documento);
+            }
+
+            // Eliminar el registro
+            $version->delete();
+
+            // Reordenar versiones restantes
+            $this->reordenarVersiones($fundamentacion->id_fundamentacion);
+
+            DB::commit();
+
+            return redirect()->route('subirFundamentación')
+                ->with('success', 'Versión eliminada correctamente');
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('subirFundamentación')
+                ->with('error', 'La versión que intentas eliminar no existe');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->with('error', 'Error al eliminar la versión: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reordena las versiones de una fundamentación asignando
+     * números consecutivos (1, 2, 3...) según su fecha de creación.
+     */
+    private function reordenarVersiones($idFundamentacion)
+    {
+        $versiones = version_fundamentacion::where('id_fundamentacion', $idFundamentacion)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $numero = 1;
+        foreach ($versiones as $v) {
+            if ((int) $v->version_numero !== $numero) {
+                $v->version_numero = $numero;
+                $v->save();
+            }
+            $numero++;
         }
     }
 }

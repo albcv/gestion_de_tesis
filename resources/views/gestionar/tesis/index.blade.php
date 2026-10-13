@@ -32,6 +32,14 @@
             <div class="alerta alerta-exito">{{ session('success') }}</div>
         @endif
 
+        @php
+            $hayFiltros = request('buscar')
+                       || request('filtro_facultad')
+                       || request('filtro_carrera')
+                       || request('filtro_modalidad')
+                       || request('filtro_año');
+        @endphp
+
         <!-- Filtros -->
         <form method="GET" action="{{ route('gestionarTesis') }}" class="form-filtros-usuarios">
             <div class="filtros-fila">
@@ -58,6 +66,28 @@
                     @endforeach
                 </select>
 
+                {{-- NUEVO: filtro por modalidad --}}
+                <select name="filtro_modalidad" class="input-filtro">
+                    <option value="">Todas las modalidades</option>
+                    @foreach ($modalidades as $modalidad)
+                        <option value="{{ $modalidad->idModalidad }}"
+                            {{ (string) request('filtro_modalidad') === (string) $modalidad->idModalidad ? 'selected' : '' }}>
+                            {{ $modalidad->Nombre_modalidad }}
+                        </option>
+                    @endforeach
+                </select>
+
+                {{-- NUEVO: filtro por año académico --}}
+                <select name="filtro_año" class="input-filtro">
+                    <option value="">Todos los años</option>
+                    @foreach ($aniosAcademicos as $anio)
+                        <option value="{{ $anio }}"
+                            {{ (string) request('filtro_año') === (string) $anio ? 'selected' : '' }}>
+                            {{ $anio }}º año
+                        </option>
+                    @endforeach
+                </select>
+
                 <select name="por_pagina" class="input-filtro">
                     <option value="10" {{ request('por_pagina', 10) == 10 ? 'selected' : '' }}>10</option>
                     <option value="25" {{ request('por_pagina', 10) == 25 ? 'selected' : '' }}>25</option>
@@ -66,7 +96,7 @@
                 </select>
 
                 <button type="submit" class="btn-guardar-filtro">Aplicar</button>
-                @if(request('buscar') || request('filtro_facultad') || request('filtro_carrera'))
+                @if ($hayFiltros)
                     <a href="{{ route('gestionarTesis') }}" class="btn-limpiar-filtro">Limpiar</a>
                 @endif
             </div>
@@ -76,7 +106,7 @@
             <p>
                 Mostrando {{ $trabajos->firstItem() ?? 0 }} - {{ $trabajos->lastItem() ?? 0 }}
                 de {{ $trabajos->total() }} tesis
-                @if(request('buscar') || request('filtro_facultad') || request('filtro_carrera')) (filtrados) @endif
+                @if ($hayFiltros) (filtrados) @endif
             </p>
 
             <div class="acciones-masivas">
@@ -106,7 +136,6 @@
             <div id="inputs_ids_varias"></div>
         </form>
 
-        <!-- Formulario oculto para mover a histórico -->
         <form id="formMoverHistorico" method="POST" action="{{ route('moverTesisAHistorico') }}" style="display: none;">
             @csrf
             <input type="hidden" name="año" id="input_año_historico">
@@ -143,7 +172,7 @@
                                 @endif
                             </td>
                             <td>{{ $trabajo->Nombre_trabajo }}</td>
-                           
+
                             <td>
                                 <div class="acciones-td">
                                     <a href="{{ route('gestionarTesis', ['accion' => 'detalles', 'id' => $trabajo->id]) }}"
@@ -163,7 +192,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="sin-registros">
-                                @if(request('buscar') || request('filtro_facultad') || request('filtro_carrera'))
+                                @if ($hayFiltros)
                                     No se encontraron tesis con los criterios de búsqueda
                                 @else
                                     No hay tesis registradas
@@ -184,9 +213,7 @@
     </div>
 </div>
 
-<!-- =====================================================
-     Modal: Mover al histórico (introducir año)
-     ===================================================== -->
+<!-- Modal: Mover al histórico -->
 <div id="modal_historico" class="modal-overlay" style="display: none;">
     <div class="modal-content">
         <h2>📦 Mover al Histórico</h2>
@@ -246,12 +273,10 @@
         const checks = document.querySelectorAll('.check-fila');
         const seleccionados = Array.from(checks).filter(c => c.checked);
 
-        // Contador y botón eliminar
         document.getElementById('contador_seleccionados').textContent = seleccionados.length;
         document.getElementById('btn_eliminar_seleccionados').style.display =
             seleccionados.length > 0 ? 'inline-flex' : 'none';
 
-        // Contador y botón histórico
         const btnHist = document.getElementById('btn_mover_historico');
         const contHist = document.getElementById('contador_historico');
         if (btnHist && contHist) {
@@ -259,14 +284,12 @@
             btnHist.style.display = seleccionados.length > 0 ? 'inline-flex' : 'none';
         }
 
-        // Checkbox maestro
         const master = document.getElementById('check_todos');
         if (master) {
             master.checked = seleccionados.length === checks.length && checks.length > 0;
             master.indeterminate = seleccionados.length > 0 && seleccionados.length < checks.length;
         }
 
-        // Resaltado
         checks.forEach(c => {
             const fila = c.closest('tr');
             if (fila) fila.classList.toggle('fila-seleccionada', c.checked);
@@ -318,7 +341,6 @@
         const errorEl = document.getElementById('modal_error');
         const año = parseInt(añoInput.value, 10);
 
-        // Validar año
         if (!año || año < 2000 || año > 2100) {
             errorEl.textContent = 'Introduce un año válido entre 2000 y 2100.';
             errorEl.style.display = 'block';
@@ -335,14 +357,12 @@
             return;
         }
 
-        // Confirmación final
         const ok = confirm(
             `¿Confirmas mover ${ids.length} tesis al histórico del año ${año}?\n\n` +
             `Esta acción es IRREVERSIBLE.`
         );
         if (!ok) return;
 
-        // Rellenar el formulario
         document.getElementById('input_año_historico').value = año;
 
         const contenedor = document.getElementById('inputs_historico');
@@ -358,7 +378,6 @@
         document.getElementById('formMoverHistorico').submit();
     }
 
-    // Cerrar modal con Escape
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             const modal = document.getElementById('modal_historico');
@@ -368,7 +387,6 @@
         }
     });
 
-    // Cerrar modal al hacer clic fuera del contenido
     document.addEventListener('click', function (e) {
         const modal = document.getElementById('modal_historico');
         if (e.target === modal) {

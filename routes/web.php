@@ -392,11 +392,13 @@ Route::get('/estadisticas', [estadisticasController::class, 'obtenerEstadisticas
     // Fundamentaciones
     Route::get('/subirFundamentación', [App\Http\Controllers\Estudiante\SubirFundamentacionController::class, 'index'])->name('subirFundamentación');
     Route::post('/fundamentacion/subir-version', [App\Http\Controllers\Estudiante\SubirFundamentacionController::class, 'subirVersion'])->name('subirVersionFundamentación');
+    Route::delete('/fundamentacion/version/{idVersion}', [App\Http\Controllers\Estudiante\SubirFundamentacionController::class, 'eliminarVersion'])->name('eliminar-version-fundamentacion-estudiante');
   
     
     // Cortes
     Route::get('/subirCorte', [App\Http\Controllers\Estudiante\SubirCorteController::class, 'index'])->name('subirCorte');
     Route::post('/cortes/subir-version/{numeroCorte}', [App\Http\Controllers\Estudiante\SubirCorteController::class, 'subirVersion'])->name('subirVersionCorte');
+    Route::delete('/corte/version/{idVersion}', [App\Http\Controllers\Estudiante\SubirCorteController::class, 'eliminarVersion'])->name('eliminar-version-corte-estudiante');
     
     // Descargar documento de revisión del tutor (fundamentación)
     Route::get('/estudiante/descargar-revision-fundamentacion/{idFundamentacion}',

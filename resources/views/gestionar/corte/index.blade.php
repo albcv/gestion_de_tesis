@@ -26,6 +26,16 @@
             <div class="alerta alerta-error">{{ session('error') }}</div>
         @endif
 
+        @php
+            $hayFiltros = request('buscar')
+                       || request('filtro_facultad')
+                       || request('filtro_carrera')
+                       || request('filtro_modalidad')
+                       || request('filtro_año')
+                       || request('filtro_estado')
+                       || request('filtro_numero_corte');
+        @endphp
+
         <form method="GET" action="{{ route('gestionarCortes') }}" class="form-filtros-usuarios">
             <div class="filtros-fila">
                 <input type="text" name="buscar" placeholder="Buscar tesis o estudiante..."
@@ -47,6 +57,28 @@
                         <option value="{{ $carrera->id }}"
                             {{ request('filtro_carrera') == $carrera->id ? 'selected' : '' }}>
                             {{ $carrera->Nombre_carrera }}
+                        </option>
+                    @endforeach
+                </select>
+
+                {{-- NUEVO: filtro por modalidad --}}
+                <select name="filtro_modalidad" class="input-filtro">
+                    <option value="">Todas las modalidades</option>
+                    @foreach($modalidades as $modalidad)
+                        <option value="{{ $modalidad->idModalidad }}"
+                            {{ (string) request('filtro_modalidad') === (string) $modalidad->idModalidad ? 'selected' : '' }}>
+                            {{ $modalidad->Nombre_modalidad }}
+                        </option>
+                    @endforeach
+                </select>
+
+                {{-- NUEVO: filtro por año académico --}}
+                <select name="filtro_año" class="input-filtro">
+                    <option value="">Todos los años</option>
+                    @foreach($aniosAcademicos as $anio)
+                        <option value="{{ $anio }}"
+                            {{ (string) request('filtro_año') === (string) $anio ? 'selected' : '' }}>
+                            {{ $anio }}º año
                         </option>
                     @endforeach
                 </select>
@@ -74,7 +106,7 @@
                 </select>
 
                 <button type="submit" class="btn-guardar-filtro">Aplicar</button>
-                @if(request('buscar') || request('filtro_facultad') || request('filtro_carrera') || request('filtro_estado') || request('filtro_numero_corte'))
+                @if ($hayFiltros)
                     <a href="{{ route('gestionarCortes') }}" class="btn-limpiar-filtro">Limpiar</a>
                 @endif
             </div>
@@ -84,7 +116,7 @@
             <p>
                 Mostrando {{ $cortes->firstItem() ?? 0 }} - {{ $cortes->lastItem() ?? 0 }}
                 de {{ $cortes->total() }} cortes
-                @if(request('buscar') || request('filtro_facultad') || request('filtro_carrera') || request('filtro_estado') || request('filtro_numero_corte')) (filtrados) @endif
+                @if ($hayFiltros) (filtrados) @endif
             </p>
 
             <button type="button" id="btn_eliminar_seleccionados"
@@ -208,7 +240,6 @@
                             </td>
                             <td>
                                 <div class="acciones-td">
-                                    {{-- 🔗 Asignar Oponente --}}
                                     <a href="{{ route('vincularProfesorCorte', ['id' => $corte->idCortes_de_tesis]) }}"
                                        class="btn-asignar-oponente"
                                        title="Asignar oponente(s) a este corte">
@@ -232,7 +263,7 @@
                     @empty
                         <tr>
                             <td colspan="10" class="sin-registros">
-                                @if(request('buscar') || request('filtro_facultad') || request('filtro_carrera') || request('filtro_estado') || request('filtro_numero_corte'))
+                                @if ($hayFiltros)
                                     No se encontraron cortes con los criterios de búsqueda
                                 @else
                                     No hay cortes registrados

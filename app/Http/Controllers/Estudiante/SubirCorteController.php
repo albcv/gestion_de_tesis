@@ -9,6 +9,8 @@ use App\Models\Tesis;
 use App\Models\FechaEntregaCorte;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class SubirCorteController extends Controller
@@ -31,7 +33,6 @@ class SubirCorteController extends Controller
                     ->with('info', 'No tienes una tesis registrada aún');
             }
 
-            // Verificar si la fundamentación está aprobada
             if (!$tesis->fundamentacion || !$tesis->fundamentacion->aprobada) {
                 return view('estudiante.subirCorte', compact('tesis'))
                     ->with('error', 'Debes tener una fundamentación aprobada para subir cortes');
@@ -69,32 +70,27 @@ class SubirCorteController extends Controller
                     ->with('error', 'No tienes una tesis registrada');
             }
 
-            // Verificar si la fundamentación está aprobada
             if (!$tesis->fundamentacion || !$tesis->fundamentacion->aprobada) {
                 return redirect()->back()
                     ->with('error', 'Debes tener una fundamentación aprobada para subir cortes');
             }
 
-            // Buscar el corte
             $corte = Cortes_de_tesis::where('id_tesis', $tesis->id)
                 ->where('Numero_corte', $numeroCorte)
                 ->first();
 
             if (!$corte) {
-                // Si no existe el corte, crearlo
                 $corte = new Cortes_de_tesis();
                 $corte->id_tesis = $tesis->id;
                 $corte->Numero_corte = $numeroCorte;
                 $corte->save();
             }
 
-            // Verificar si ya está aprobado
             if ($corte->aprobado) {
                 return redirect()->back()
                     ->with('error', "El corte {$numeroCorte} ya está aprobado. No puedes subir nuevas versiones.");
             }
 
-            // Verificar fecha de entrega
             $fechaEntrega = FechaEntregaCorte::where('numero_corte', $numeroCorte)->first();
             if ($fechaEntrega && now()->greaterThan($fechaEntrega->fecha_entrega)) {
                 return redirect()->back()
@@ -102,9 +98,6 @@ class SubirCorteController extends Controller
             }
 
             // ---------- VALIDACIÓN ----------
-            // Se usa 'extensions' (Laravel 9+) en lugar de 'mimes' porque los
-            // archivos .docx son ZIP internamente y PHP puede detectarlos como
-            // application/zip en vez del MIME correcto.
             $validator = Validator::make($request->all(), [
                 'documento' => [
                     'required',
@@ -140,21 +133,17 @@ class SubirCorteController extends Controller
                     ->withInput();
             }
 
-            // Obtener la última versión
             $ultimaVersion = version_corte::where('id_corte', $corte->idCortes_de_tesis)
                 ->orderBy('version_numero', 'desc')
                 ->first();
 
             $nuevaVersionNumero = $ultimaVersion ? $ultimaVersion->version_numero + 1 : 1;
 
-            // Preparar nombre del archivo
             $nombreOriginal = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $nombreArchivo = "corte_{$corte->idCortes_de_tesis}_v{$nuevaVersionNumero}_{$nombreOriginal}.{$extension}";
 
-            // Almacenar el archivo
             $path = $file->storeAs("cortes/{$corte->idCortes_de_tesis}", $nombreArchivo);
 
-            // Crear registro de versión
             $version = new version_corte();
             $version->id_corte       = $corte->idCortes_de_tesis;
             $version->version_numero = $nuevaVersionNumero;
@@ -173,6 +162,105 @@ class SubirCorteController extends Controller
             return redirect()->back()
                 ->with('error', 'Error al subir la versión: ' . $e->getMessage())
                 ->withInput();
+        }
+    }
+
+    /**
+     * Elimina una versión de un corte del estudiante autenticado.
+     *
+     * Reglas:
+     *  - El estudiante debe ser dueño de la tesis.
+     *  - El corte NO debe estar aprobado ni desaprobado.
+     *  - Debe existir más de una versión (no se puede borrar la única).
+     *  - Se elimina el archivo físico y el registro en la BD.
+     *  - Se reordenan las versiones restantes (v1, v2, ...).
+     */
+    public function eliminarVersion(Request $request, $idVersion)
+    {
+        try {
+            $user = Auth::user();
+            $estudiante = $user->estudiante;
+
+            if (!$estudiante) {
+                return redirect()->back()
+                    ->with('error', 'No se encontró información del estudiante');
+            }
+
+            // Buscar la versión
+            $version = version_corte::findOrFail($idVersion);
+
+            // Cargar el corte con la tesis y el estudiante
+            $corte = Cortes_de_tesis::with(['tesis.estudiante'])
+                ->findOrFail($version->id_corte);
+
+            // Verificar que el estudiante autenticado sea dueño de la tesis
+            if (!$corte->tesis
+                || !$corte->tesis->estudiante
+                || (int) $corte->tesis->estudiante->id !== (int) $estudiante->id) {
+                return redirect()->back()
+                    ->with('error', 'No tienes permisos para eliminar esta versión');
+            }
+
+            // No se puede eliminar si el corte está aprobado o desaprobado
+            if ($corte->aprobado || $corte->desaprobado) {
+                return redirect()->back()
+                    ->with('error', 'No puedes eliminar versiones de un corte aprobado o desaprobado');
+            }
+
+            // Verificar que no sea la única versión
+            $totalVersiones = version_corte::where('id_corte', $corte->idCortes_de_tesis)->count();
+
+            if ($totalVersiones <= 1) {
+                return redirect()->route('subirCorte')
+                    ->with('error', 'No puedes eliminar la única versión del corte. Sube una nueva antes de eliminar esta.');
+            }
+
+            DB::beginTransaction();
+
+            // Eliminar el archivo físico si existe
+            if (!empty($version->ruta_documento) && Storage::exists($version->ruta_documento)) {
+                Storage::delete($version->ruta_documento);
+            }
+
+            // Eliminar el registro
+            $version->delete();
+
+            // Reordenar versiones restantes
+            $this->reordenarVersiones($corte->idCortes_de_tesis);
+
+            DB::commit();
+
+            return redirect()->route('subirCorte')
+                ->with('success', 'Versión eliminada correctamente');
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('subirCorte')
+                ->with('error', 'La versión que intentas eliminar no existe');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->with('error', 'Error al eliminar la versión: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reordena las versiones de un corte asignando números consecutivos
+     * (1, 2, 3...) según su fecha de creación.
+     */
+    private function reordenarVersiones($idCorte)
+    {
+        $versiones = version_corte::where('id_corte', $idCorte)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $numero = 1;
+        foreach ($versiones as $v) {
+            if ((int) $v->version_numero !== $numero) {
+                $v->version_numero = $numero;
+                $v->save();
+            }
+            $numero++;
         }
     }
 }
