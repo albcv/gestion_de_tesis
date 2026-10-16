@@ -158,7 +158,7 @@ class SubirFundamentacionController extends Controller
      * Reglas:
      *  - El estudiante debe ser dueño de la tesis.
      *  - La fundamentación NO debe estar aprobada.
-     *  - Debe existir más de una versión (no se puede borrar la única).
+     *  - Se permite eliminar TODAS las versiones (incluso la última).
      *  - Se elimina el archivo físico y el registro en la BD.
      *  - NO se reordenan las versiones restantes: se conservan sus números.
      */
@@ -178,6 +178,7 @@ class SubirFundamentacionController extends Controller
             $fundamentacion = fundamentaciones::with(['tesis.estudiante'])
                 ->findOrFail($version->id_fundamentacion);
 
+            // Verificar que el estudiante sea dueño de la tesis
             if (!$fundamentacion->tesis
                 || !$fundamentacion->tesis->estudiante
                 || (int) $fundamentacion->tesis->estudiante->id !== (int) $estudiante->id) {
@@ -185,16 +186,10 @@ class SubirFundamentacionController extends Controller
                     ->with('error', 'No tienes permisos para eliminar esta versión');
             }
 
+            // No se puede eliminar si la fundamentación está aprobada
             if ($fundamentacion->aprobada) {
                 return redirect()->back()
                     ->with('error', 'No puedes eliminar versiones de una fundamentación aprobada');
-            }
-
-            $totalVersiones = version_fundamentacion::where('id_fundamentacion', $version->id_fundamentacion)->count();
-
-            if ($totalVersiones <= 1) {
-                return redirect()->route('subirFundamentación')
-                    ->with('error', 'No puedes eliminar la única versión de la fundamentación. Sube una nueva antes de eliminar esta.');
             }
 
             DB::beginTransaction();

@@ -145,9 +145,9 @@
                                     // Ordenar las versiones de mayor a menor
                                     $versionesOrdenadas = $fundamentacion->versiones->sortByDesc('version_numero')->values();
 
-                                    // Determinar si el estudiante puede eliminar versiones
-                                    $puedeEliminar = !$fundamentacion->aprobada
-                                                  && $fundamentacion->versiones->count() > 1;
+                                    // El estudiante puede eliminar CUALQUIER versión
+                                    // siempre que la fundamentación no esté aprobada.
+                                    $puedeEliminar = !$fundamentacion->aprobada;
                                 @endphp
 
                                 <div class="table-wrapper">

@@ -560,53 +560,61 @@ class cortesController extends Controller
         }
     }
 
+       /**
+     * Elimina una versión de un corte.
+     *
+     * Reglas:
+     *  - El corte NO debe estar aprobado ni desaprobado.
+     *  - Se permite eliminar TODAS las versiones (incluso la última).
+     *  - Se elimina el archivo físico y el registro en la BD.
+     *  - NO se reordenan las versiones restantes: se conservan sus números.
+     */
     public function eliminarVersion(Request $request, $idVersion)
     {
         try {
             $version = version_corte::findOrFail($idVersion);
             $corteId = $version->id_corte;
-            $versionNumero = $version->version_numero;
 
-            $totalVersiones = version_corte::where('id_corte', $corteId)->count();
-            if ($totalVersiones <= 1) {
-                return redirect()->route($this->rutaVista, ['accion' => 'detalles', 'id' => $corteId])
-                    ->with('error', 'No se puede eliminar la única versión del corte');
+            $corte = $this->modeloCorte::findOrFail($corteId);
+
+            // No se puede eliminar si el corte está aprobado o desaprobado
+            if ($corte->aprobado || $corte->desaprobado) {
+                return redirect()
+                    ->route($this->rutaVista, ['accion' => 'detalles', 'id' => $corteId])
+                    ->with('error', 'No puedes eliminar versiones de un corte aprobado o desaprobado');
             }
 
-            if (Storage::exists($version->ruta_documento)) {
+            DB::beginTransaction();
+
+            // Eliminar el archivo físico si existe
+            if (!empty($version->ruta_documento) && Storage::exists($version->ruta_documento)) {
                 Storage::delete($version->ruta_documento);
             }
-            $version->delete();
-          
 
-            return redirect()->route($this->rutaVista, ['accion' => 'detalles', 'id' => $corteId]);
+            // Eliminar el registro
+            $version->delete();
+
+            // ⚠️ NO reordenar: se conservan los números originales de las versiones restantes
+
+            DB::commit();
+
+            return redirect()
+                ->route($this->rutaVista, ['accion' => 'detalles', 'id' => $corteId])
+                ->with('success', 'Versión eliminada correctamente');
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'La versión que intentas eliminar no existe');
 
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->back()
                 ->with('error', 'Error al eliminar la versión: ' . $e->getMessage());
         }
     }
 
-    private function reordenarVersionesCorte($idCorte)
-    {
-        DB::beginTransaction();
-        try {
-            $versiones = version_corte::where('id_corte', $idCorte)
-                ->orderBy('created_at', 'asc')
-                ->get();
-
-            $numero = 1;
-            foreach ($versiones as $version) {
-                $version->version_numero = $numero;
-                $version->save();
-                $numero++;
-            }
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-    }
+    
 
     public function vaciar()
     {

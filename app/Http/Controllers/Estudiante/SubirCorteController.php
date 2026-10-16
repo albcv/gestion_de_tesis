@@ -171,7 +171,7 @@ class SubirCorteController extends Controller
      * Reglas:
      *  - El estudiante debe ser dueño de la tesis.
      *  - El corte NO debe estar aprobado ni desaprobado.
-     *  - Debe existir más de una versión (no se puede borrar la única).
+     *  - Se permite eliminar TODAS las versiones (incluso la última).
      *  - Se elimina el archivo físico y el registro en la BD.
      *  - NO se reordenan las versiones restantes: se conservan sus números.
      */
@@ -205,14 +205,6 @@ class SubirCorteController extends Controller
             if ($corte->aprobado || $corte->desaprobado) {
                 return redirect()->back()
                     ->with('error', 'No puedes eliminar versiones de un corte aprobado o desaprobado');
-            }
-
-            // Verificar que no sea la única versión
-            $totalVersiones = version_corte::where('id_corte', $corte->idCortes_de_tesis)->count();
-
-            if ($totalVersiones <= 1) {
-                return redirect()->route('subirCorte')
-                    ->with('error', 'No puedes eliminar la única versión del corte. Sube una nueva antes de eliminar esta.');
             }
 
             DB::beginTransaction();

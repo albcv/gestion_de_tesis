@@ -114,6 +114,35 @@
             border-left-color: #16a34a;
         }
 
+        /* ---------- Botón mostrar/ocultar contraseña ---------- */
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            line-height: 1;
+            padding: 4px 6px;
+            border-radius: 6px;
+            color: #6b7280;
+            transition: background .15s, color .15s;
+        }
+        .toggle-password:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+        .toggle-password:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(37,99,235,.35);
+        }
+        .toggle-password .eye-icon {
+            display: inline-block;
+            pointer-events: none;
+        }
+
         @media (max-width: 600px) {
             .rol-selector { grid-template-columns: 1fr; }
             .form-row-2   { grid-template-columns: 1fr; }
@@ -264,6 +293,9 @@
                                        required minlength="6"
                                        autocomplete="new-password"
                                        placeholder="Repite la contraseña">
+                                <button type="button" id="togglePasswordConfirmation" class="toggle-password" aria-label="Mostrar contraseña">
+                                    <span class="eye-icon">👁️</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -436,14 +468,25 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            /* ---------- Toggle password ---------- */
-            const toggle = document.getElementById('togglePassword');
-            const password = document.getElementById('password');
+            /* ---------- Toggle password (contraseña) ---------- */
+            const toggle       = document.getElementById('togglePassword');
+            const password     = document.getElementById('password');
             if (toggle && password) {
                 toggle.addEventListener('click', function () {
                     const isHidden = password.type === 'password';
                     password.type = isHidden ? 'text' : 'password';
                     toggle.querySelector('.eye-icon').textContent = isHidden ? '🙈' : '👁️';
+                });
+            }
+
+            /* ---------- Toggle password (confirmar contraseña) ---------- */
+            const toggleConfirm       = document.getElementById('togglePasswordConfirmation');
+            const passwordConfirm     = document.getElementById('password_confirmation');
+            if (toggleConfirm && passwordConfirm) {
+                toggleConfirm.addEventListener('click', function () {
+                    const isHidden = passwordConfirm.type === 'password';
+                    passwordConfirm.type = isHidden ? 'text' : 'password';
+                    toggleConfirm.querySelector('.eye-icon').textContent = isHidden ? '🙈' : '👁️';
                 });
             }
 

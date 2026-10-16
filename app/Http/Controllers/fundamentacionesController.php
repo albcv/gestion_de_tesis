@@ -502,56 +502,61 @@ class fundamentacionesController extends Controller
         }
     }
 
+       /**
+     * Elimina una versión de la fundamentación.
+     *
+     * Reglas:
+     *  - La fundamentación NO debe estar aprobada.
+     *  - Se permite eliminar TODAS las versiones (incluso la última).
+     *  - Se elimina el archivo físico y el registro en la BD.
+     *  - NO se reordenan las versiones restantes: se conservan sus números.
+     */
     public function eliminarVersion(Request $request, $idVersion)
     {
         try {
             $version = version_fundamentacion::findOrFail($idVersion);
             $fundamentacionId = $version->id_fundamentacion;
-            $versionNumero = $version->version_numero;
 
-            $totalVersiones = version_fundamentacion::where('id_fundamentacion', $fundamentacionId)->count();
+            $fundamentacion = $this->modelo::findOrFail($fundamentacionId);
 
-            if ($totalVersiones <= 1) {
-                return redirect()->route($this->rutaVista, ['accion' => 'detalles', 'id' => $fundamentacionId])
-                    ->with('error', 'No se puede eliminar la única versión de la fundamentación');
+            // No se puede eliminar si la fundamentación está aprobada
+            if ($fundamentacion->aprobada) {
+                return redirect()
+                    ->route($this->rutaVista, ['accion' => 'detalles', 'id' => $fundamentacionId])
+                    ->with('error', 'No puedes eliminar versiones de una fundamentación aprobada');
             }
 
-            if (Storage::exists($version->ruta_documento)) {
+            DB::beginTransaction();
+
+            // Eliminar el archivo físico si existe
+            if (!empty($version->ruta_documento) && Storage::exists($version->ruta_documento)) {
                 Storage::delete($version->ruta_documento);
             }
 
+            // Eliminar el registro
             $version->delete();
-           
 
-            return redirect()->route($this->rutaVista, ['accion' => 'detalles', 'id' => $fundamentacionId]);
+            // ⚠️ NO reordenar: se conservan los números originales de las versiones restantes
+
+            DB::commit();
+
+            return redirect()
+                ->route($this->rutaVista, ['accion' => 'detalles', 'id' => $fundamentacionId])
+                ->with('success', 'Versión eliminada correctamente');
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()
+                ->route($this->rutaVista)
+                ->with('error', 'La versión que intentas eliminar no existe');
 
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->back()
                 ->with('error', 'Error al eliminar la versión: ' . $e->getMessage());
         }
     }
 
-    private function reordenarVersiones($idFundamentacion)
-    {
-        DB::beginTransaction();
-        try {
-            $versiones = version_fundamentacion::where('id_fundamentacion', $idFundamentacion)
-                ->orderBy('created_at', 'asc')
-                ->get();
-
-            $numero = 1;
-            foreach ($versiones as $version) {
-                $version->version_numero = $numero;
-                $version->save();
-                $numero++;
-            }
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-    }
-
+    
     public function vaciar()
     {
         try {

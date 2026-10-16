@@ -21,6 +21,10 @@
         <div class="alerta alerta-error">{{ session('error') }}</div>
     @endif
 
+    @if (session('success'))
+        <div class="alerta alerta-exito">{{ session('success') }}</div>
+    @endif
+
     <!-- ============ INFO FUNDAMENTACIÓN ============ -->
     <div class="detalle-seccion">
         <h2>📋 Información de la Fundamentación</h2>
@@ -156,14 +160,12 @@
 
         @if($fundamentacion->versiones && $fundamentacion->versiones->count() > 0)
             @php
-                /* ============================================================
-                 * Calcular la versión más reciente comparando version_numero,
-                 * sin depender del orden en que vengan las versiones.
-                 * Así, si las versiones vienen ASC o DESC, siempre se
-                 * marcará como "Actual" solo la de mayor version_numero.
-                 * ============================================================ */
                 $maxVersionNumero   = $fundamentacion->versiones->max('version_numero');
                 $versionesOrdenadas = $fundamentacion->versiones->sortByDesc('version_numero')->values();
+
+                // El admin puede eliminar CUALQUIER versión
+                // siempre que la fundamentación no esté aprobada.
+                $puedeEliminarVersion = !$fundamentacion->aprobada;
             @endphp
 
             <div style="overflow-x:auto;">
@@ -184,7 +186,6 @@
                                 <td style="padding:10px 14px;">
                                     <strong>v{{ $version->version_numero }}</strong>
 
-                                    {{-- Marcar como "Actual" SOLO la versión de mayor número --}}
                                     @if((int) $version->version_numero === (int) $maxVersionNumero)
                                         <span class="badge-rol-detalle"
                                               style="background:linear-gradient(135deg,#2563eb,#1e40af); font-size:11px;">
@@ -211,7 +212,7 @@
                                         <a href="{{ route('ver-documento-version', $version->id) }}"
                                            style="text-decoration:none; font-size:20px;" title="Descargar">📥</a>
 
-                                        @if(!$fundamentacion->aprobada && !$fundamentacion->desaprobada && $fundamentacion->versiones->count() > 1)
+                                        @if($puedeEliminarVersion)
                                             <form method="POST"
                                                   action="{{ route('eliminar-version-fundamentacion', $version->id) }}"
                                                   style="display:inline;"

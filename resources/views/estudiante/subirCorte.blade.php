@@ -189,10 +189,9 @@
                                                 // Ordenar versiones de mayor a menor
                                                 $versionesOrdenadas = $corte->versiones->sortByDesc('version_numero')->values();
 
-                                                // ¿Puede el estudiante eliminar versiones?
-                                                $puedeEliminarVersion = !$corte->aprobado
-                                                                     && !$corte->desaprobado
-                                                                     && $corte->versiones->count() > 1;
+                                                // El estudiante puede eliminar CUALQUIER versión
+                                                // siempre que el corte no esté aprobado ni desaprobado.
+                                                $puedeEliminarVersion = !$corte->aprobado && !$corte->desaprobado;
                                             @endphp
 
                                             <div class="corte-info-item">

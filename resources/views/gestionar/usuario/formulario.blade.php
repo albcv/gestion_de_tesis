@@ -126,11 +126,20 @@
                                     <small style="font-weight:400; color:#666;">(dejar en blanco para no cambiar)</small>
                                 @endif
                             </label>
-                            <input type="password" id="password" name="password"
-                                   class="atributo @error('password') atributo-error @enderror"
-                                   {{ $esEdicion ? '' : 'required' }}
-                                   minlength="6" maxlength="255" autocomplete="new-password"
-                                   placeholder="{{ $esEdicion ? 'Dejar en blanco para no cambiar' : 'Mínimo 6 caracteres' }}">
+                            <div class="input-wrapper-password">
+                                <input type="password" id="password" name="password"
+                                       class="atributo @error('password') atributo-error @enderror"
+                                       {{ $esEdicion ? '' : 'required' }}
+                                       minlength="6" maxlength="255" autocomplete="new-password"
+                                       placeholder="{{ $esEdicion ? 'Dejar en blanco para no cambiar' : 'Mínimo 6 caracteres' }}">
+                                <button type="button"
+                                        id="togglePassword"
+                                        class="toggle-password"
+                                        aria-label="Mostrar contraseña"
+                                        title="Mostrar/ocultar contraseña">
+                                    <span class="eye-icon">👁️</span>
+                                </button>
+                            </div>
                             @error('password') <small class="mensaje-error">{{ $message }}</small> @enderror
                         </div>
                     </div>
@@ -390,10 +399,88 @@
     color: #1f2937;
     font-weight: 600;
 }
+
+/* ============================================================
+   INPUT CON BOTÓN MOSTRAR/OCULTAR CONTRASEÑA
+   ============================================================ */
+.input-wrapper-password {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-wrapper-password input.atributo {
+    width: 100%;
+    padding-right: 46px; /* espacio para el botón */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.05rem;
+    line-height: 1;
+    padding: 4px 6px;
+    border-radius: 6px;
+    color: #6b7280;
+    transition: background .15s, color .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.toggle-password:hover {
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+.toggle-password:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, .35);
+}
+
+.toggle-password .eye-icon {
+    display: inline-block;
+    pointer-events: none;
+    font-size: 1.1rem;
+}
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
+    /* ============================================================
+       TOGGLE: MOSTRAR / OCULTAR CONTRASEÑA
+       ============================================================ */
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput  = document.getElementById('password');
+
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', function () {
+            const isHidden = passwordInput.type === 'password';
+
+            passwordInput.type = isHidden ? 'text' : 'password';
+
+            const icon = togglePassword.querySelector('.eye-icon');
+            if (icon) icon.textContent = isHidden ? '🙈' : '👁️';
+
+            // Actualizar aria-label para accesibilidad
+            togglePassword.setAttribute(
+                'aria-label',
+                isHidden ? 'Ocultar contraseña' : 'Mostrar contraseña'
+            );
+        });
+    }
+
+    /* ============================================================
+       MOSTRAR / OCULTAR SECCIONES SEGÚN ROLES
+       ============================================================ */
     const checkboxes       = document.querySelectorAll('input[name="roles[]"]');
     const datosEstudiante  = document.getElementById('datos_estudiante');
     const datosProfesor    = document.getElementById('datos_profesor');
